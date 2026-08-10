@@ -168,6 +168,11 @@ button{cursor:pointer}
   background:var(--ac);color:#fff;padding:7px 14px;border-radius:13px;font-size:13px;font-weight:800;
   box-shadow:0 8px 22px var(--ac-b);white-space:nowrap;letter-spacing:-.015em}
 #dropinfo.on{opacity:1}
+.cont{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:10px;
+  background:var(--ac-s);border:1px dashed var(--ac-b);opacity:.85}
+.cont i{font-style:normal;font-size:12.5px;font-weight:700;color:var(--ac);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cont b{font-size:10.5px;font-weight:800;color:var(--ac);opacity:.75;margin-left:auto;flex:none}
 .inbox{display:flex;flex-direction:column;gap:7px;padding:0 14px 15px}
 .empty{text-align:center;padding:26px 16px;color:var(--ink3);font-size:13.5px;font-weight:600}
 
@@ -375,20 +380,25 @@ function repHits(rep,ds){
   return false;
 }
 /** 그 날짜에 해당하는 반복 인스턴스를 만든다. 시각(min)·소요(dur)를 그대로 복사한다. */
+let _dirty=false;
 function materialize(ds){
   DB.repeats.forEach(rep=>{
     if(!repHits(rep,ds))return;
     if(rep.ex&&rep.ex.indexOf(ds)>=0)return;
+    // 24시간 기준으로 만든 루틴이 평일에 오면 그 날도 24시간 보기로 바꾼다
+    if(rep.mode24&&!blocksFor(ds).is24){DB.s.force24[ds]=true;_dirty=true;}
     if(DB.tasks.some(t=>t.repId===rep.id&&t.date===ds))return;
     const sibs=DB.tasks.filter(t=>t.date===ds&&(t.min==null)===(rep.min==null));
     DB.tasks.push({id:uid(),title:rep.title,date:ds,min:rep.min,dur:rep.dur,
       ord:sibs.length,done:false,subj:rep.subj,repId:rep.id});
+    _dirty=true;
   });
 }
 function materializeWindow(){
   const base=new Date(calM.getFullYear(),calM.getMonth(),1);
   for(let i=-7;i<45;i++){const d=new Date(base);d.setDate(base.getDate()+i);materialize(dstr(d));}
   for(let i=-2;i<60;i++)materialize(addDays(TODAY(),i));
+  if(_dirty){_dirty=false;save();}
 }
 function repLabel(r){
   if(r.freq==='daily')return '매일';
@@ -406,7 +416,12 @@ function tasksOf(ds){return DB.tasks.filter(t=>t.date===ds);}
 function subjOf(id){return DB.subjects.find(s=>s.id===id);}
 function tkHTML(t){
   const sj=t.subj?subjOf(t.subj):null,meta=[];
-  if(t.min!=null)meta.push('<span>'+hhmm(t.min)+'</span>');
+  if(t.min!=null){
+    const en=t.min+taskDur(t);
+    const b=blockOf(t.date,t.min);
+    const spans=b&&en>b.e;
+    meta.push('<span>'+hhmm(t.min)+(spans?' ~ '+hhmm(en):'')+'</span>');
+  }
   if(t.dur!=null)meta.push('<span>'+durTxt(t.dur)+'</span>');
   if(t.repId)meta.push('<span class="rp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3.5 3.5L17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5"/><path d="M7 21.5L3.5 18 7 14.5"/><path d="M20.5 13v1.5a3.5 3.5 0 0 1-3.5 3.5H3.5"/></svg>반복</span>');
   if(sj)meta.push('<span class="sj" style="background:'+sj.color+'22;color:'+sj.color+'">'+esc(sj.name)+'</span>');
@@ -427,10 +442,12 @@ function renderDay(ds){
   const now=new Date(),nowM=now.getHours()*60+now.getMinutes(),isT=ds===TODAY();
   for(const b of list){
     const bt=ts.filter(t=>t.min!=null&&t.min>=b.s&&t.min<b.e).sort((a,b2)=>a.min!==b2.min?a.min-b2.min:a.ord-b2.ord);
+    const cont=ts.filter(t=>t.min!=null&&t.min<b.s&&(t.min+taskDur(t,ds))>b.s);
     h+='<div class="blk'+(b.cls?' cls':'')+(isT&&nowM>=b.s&&nowM<b.e?' now':'')+'" data-s="'+b.s+'" data-e="'+b.e+'">'+
       '<div class="bt"><i>'+hhmm(b.s)+'</i><s>'+hhmm(b.e)+'</s></div>'+
       '<div class="bb"><div class="bh"><b>'+esc(b.name)+'</b><span class="dur">'+durTxt(b.e-b.s)+'</span>'+
       '<button class="add" onclick="newTask(\''+ds+'\','+b.s+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button></div>'+
+      cont.map(t=>'<div class="cont" onclick="openTask(\''+t.id+'\')"><i>'+esc(t.title)+'</i><b>이어짐 ~'+hhmm(t.min+taskDur(t,ds))+'</b></div>').join('')+
       bt.map(tkHTML).join('')+'</div></div>';}
   return h+'</div>';
 }
@@ -774,20 +791,39 @@ function taskSheet(){
   const e=_ed,{list}=blocksFor(e.date),blk=e.min!=null?blockOf(e.date,e.min):null,rep=e.rep;
   let h='<div class="sh2">'+(e.id?'할일 수정':'새 할일')+'</div>'+
     '<input class="fi" id="f_title" placeholder="무엇을 할까" value="'+esc(e.title)+'">'+
-    '<div class="fl">언제</div>'+
-    '<div class="seg"><button class="sg'+(e.min==null?' on':'')+'" onclick="setMin(null)">미배정</button>'+
-      list.map(b=>'<button class="sg'+(blk&&blk.id===b.id?' on':'')+'" onclick="setMin('+b.s+')">'+esc(b.name)+'</button>').join('')+'</div>';
-  h+='<div class="fl">세부 설정<button onclick="toggleAdv()">'+(_adv?'접기':'시각·소요시간 조정')+'</button></div>';
+    '';
+  const is24=blocksFor(e.date).is24;
+  const eEnd=e.min!=null?e.min+(e.dur!=null?e.dur:(blk?blk.e-blk.s:30)):null;
+  if(is24){
+    h+='<div class="fl">언제 (30분 단위)</div>'+
+      '<div class="seg" style="margin-bottom:10px">'+
+      '<button class="sg'+(e.min==null?' on':'')+'" onclick="setMin(null)">미배정</button>'+
+      '<button class="sg'+(e.min!=null?' on':'')+'" onclick="setMin(540)">시각 지정</button></div>';
+    if(e.min!=null)h+='<div class="two">'+
+      '<div><label>시작</label><div class="tp" style="gap:7px;padding:0">'+
+        '<button class="tpb" onclick="bumpStart(-30)">−</button>'+
+        '<div class="tpv" style="font-size:25px;min-width:0;flex:1">'+hhmm(e.min)+'</div>'+
+        '<button class="tpb" onclick="bumpStart(30)">+</button></div></div>'+
+      '<div><label>종료</label><div class="tp" style="gap:7px;padding:0">'+
+        '<button class="tpb" onclick="bumpEnd(-30)">−</button>'+
+        '<div class="tpv" style="font-size:25px;min-width:0;flex:1">'+hhmm(eEnd)+'</div>'+
+        '<button class="tpb" onclick="bumpEnd(30)">+</button></div></div></div>'+
+      '<div style="font-size:12.5px;font-weight:700;color:var(--ink3);text-align:center;margin-top:9px">'+durTxt(eEnd-e.min)+'</div>';
+  }else{
+    h+='<div class="fl">언제<span style="font-weight:650;text-transform:none;letter-spacing:0;color:var(--ink3)">여러 칸에 걸치려면 이어서 탭</span></div>'+
+      '<div class="seg"><button class="sg'+(e.min==null?' on':'')+'" onclick="setMin(null)">미배정</button>'+
+        list.map(b=>{const on=e.min!=null&&b.s<eEnd&&b.e>e.min;
+          return '<button class="sg'+(on?' on':'')+'" onclick="tapBlock('+b.s+','+b.e+')">'+esc(b.name)+'</button>';}).join('')+'</div>';
+    if(e.min!=null)h+='<div style="font-size:12.5px;font-weight:700;color:var(--ink3);padding:9px 2px 0">'+
+      hhmm(e.min)+' ~ '+hhmm(eEnd)+' · '+durTxt(eEnd-e.min)+'</div>';
+  }
+  if(!is24)h+='<div class="fl">세부 설정<button onclick="toggleAdv()">'+(_adv?'접기':'시각·소요시간 조정')+'</button></div>';
   if(_adv){
     if(e.min!=null)h+='<div class="tp"><button class="tpb" onclick="bumpMin(-5)">−</button>'+
       '<div><div class="tpv" id="f_time">'+hhmm(e.min)+'</div><div class="tpu">'+(blk?esc(blk.name)+' · 5분 단위':'')+'</div></div>'+
       '<button class="tpb" onclick="bumpMin(5)">+</button></div>';
     h+='<div class="seg" style="margin-top:6px"><button class="sg'+(e.dur==null?' on':'')+'" onclick="setDur(null)">칸에 꽉 맞게</button>'+
       [10,20,30,50,60,90,120].map(d=>'<button class="sg'+(e.dur===d?' on':'')+'" onclick="setDur('+d+')">'+durTxt(d)+'</button>').join('')+'</div>';
-  }else{
-    h+='<div style="font-size:13px;font-weight:650;color:var(--ink3);padding:2px 2px 0">'+
-      (e.min==null?'미배정 — 나중에 끌어서 배치하면 된다':
-        hhmm(e.min)+' 시작 · '+(e.dur==null?'그 칸에 꽉 맞게':durTxt(e.dur)))+'</div>';
   }
   if(DB.subjects.length)h+='<div class="fl">과목 (선택)</div><div class="seg"><button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">없음</button>'+
     DB.subjects.map(s=>'<button class="sg'+(e.subj===s.id?' on':'')+'" onclick="setSubj(\''+s.id+'\')">'+esc(s.name)+'</button>').join('')+'</div>';
@@ -815,7 +851,31 @@ function taskSheet(){
 function readTitle(){const i=$('#f_title');if(i)_ed.title=i.value;
   const rs=$('#r_s'),re=$('#r_e');if(_ed.rep){if(rs)_ed.rep.start=rs.value;if(re)_ed.rep.end=re.value;}}
 function toggleAdv(){readTitle();_adv=!_adv;taskSheet();}
-function setMin(m){readTitle();_ed.min=m;taskSheet();}
+function setMin(m){readTitle();_ed.min=m;_ed.dur=(m==null?null:_ed.dur);taskSheet();}
+/** 블록 탭 — 범위 밖이면 그 칸까지 늘리고, 범위 안이면 그 칸 하나로 줄인다 */
+function tapBlock(bs,be){
+  readTitle();const e=_ed;
+  if(e.min==null){e.min=bs;e.dur=null;taskSheet();return;}
+  const blk=blockOf(e.date,e.min);
+  const en=e.min+(e.dur!=null?e.dur:(blk?blk.e-blk.s:30));
+  if(bs>=e.min&&be<=en){        // 이미 범위 안 → 그 칸만 남긴다
+    e.min=bs;e.dur=null;
+  }else{                         // 범위 밖 → 늘린다
+    const ns=Math.min(e.min,bs),ne=Math.max(en,be);
+    e.min=ns;e.dur=ne-ns;
+  }
+  taskSheet();
+}
+function bumpStart(d){readTitle();const e=_ed;if(e.min==null)return;
+  const blk=blockOf(e.date,e.min);
+  const en=e.min+(e.dur!=null?e.dur:(blk?blk.e-blk.s:30));
+  const ns=Math.max(0,Math.min(en-30,Math.round((e.min+d)/30)*30));
+  e.min=ns;e.dur=en-ns;taskSheet();}
+function bumpEnd(d){readTitle();const e=_ed;if(e.min==null)return;
+  const blk=blockOf(e.date,e.min);
+  const en=e.min+(e.dur!=null?e.dur:(blk?blk.e-blk.s:30));
+  const ne=Math.max(e.min+30,Math.min(1440,Math.round((en+d)/30)*30));
+  e.dur=ne-e.min;taskSheet();}
 function setDur(d){readTitle();_ed.dur=d;taskSheet();}
 function setSubj(s){readTitle();_ed.subj=s;taskSheet();}
 function bumpMin(d){readTitle();if(_ed.min==null)return;
@@ -832,7 +892,8 @@ function saveTask(){
   if(!e.title.trim()){toast('할일 이름을 적어줘');return;}
   const mkRule=()=>({id:e.repId||uid(),title:e.title.trim(),freq:e.rep.freq,
     weekdays:e.rep.weekdays.slice(),interval:e.rep.interval,
-    start:e.rep.start||e.date,end:e.rep.end||'',min:e.min,dur:e.dur,subj:e.subj,ex:[]});
+    start:e.rep.start||e.date,end:e.rep.end||'',min:e.min,dur:e.dur,subj:e.subj,
+    mode24:blocksFor(e.date).is24,ex:[]});
   if(e.id){
     const t=DB.tasks.find(x=>x.id===e.id);if(!t)return;
     Object.assign(t,{title:e.title.trim(),min:e.min,dur:e.dur,subj:e.subj});
@@ -951,7 +1012,7 @@ function dataSheet(){
     '<div class="fl">반복 규칙</div>'+
     (DB.repeats.length?DB.repeats.map(r=>'<div class="dd" style="border-top:1px solid var(--line2)">'+
       '<div style="flex:1;min-width:0"><div class="ddn">'+esc(r.title)+'</div>'+
-      '<div class="ddd">'+repLabel(r)+' · '+r.start+(r.end?' ~ '+r.end:' ~')+(r.min!=null?' · '+hhmm(r.min):'')+'</div></div>'+
+      '<div class="ddd">'+repLabel(r)+' · '+r.start+(r.end?' ~ '+r.end:' ~')+(r.min!=null?' · '+hhmm(r.min):'')+(r.mode24?' · 24시간':'')+'</div></div>'+
       '<button class="mini" style="flex:0 0 auto;padding:8px 12px;color:var(--gd)" onclick="delRule(\''+r.id+'\')">삭제</button></div>').join('')
       :'<div class="empty" style="padding:14px">등록된 반복이 없다</div>'));
 }
