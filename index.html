@@ -125,6 +125,7 @@ button{cursor:pointer}
   background:var(--gapc);border:1px solid var(--line2);transition:background .16s,box-shadow .16s,transform .16s}
 .blk.cls{background:var(--cls);border-color:var(--ac-s);min-height:74px}
 .blk.now{border-color:var(--ac-b);box-shadow:0 0 0 2px var(--ac-b) inset}
+.blk:active{background:var(--ac-s)}
 .blk.tgt{background:var(--ac-s);box-shadow:0 0 0 2.5px var(--ac) inset;transform:scale(1.012)}
 .bt{flex:none;width:66px;padding:13px 0 13px 14px;display:flex;flex-direction:column;gap:2px;align-items:flex-start}
 .bt i{font-style:normal;font-size:15px;font-weight:800;color:var(--ink2);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -134,9 +135,6 @@ button{cursor:pointer}
 .bh b{font-size:14.5px;font-weight:750;color:var(--ink2);letter-spacing:-.02em}
 .blk.cls .bh b{color:var(--ink);font-weight:800;font-size:15.5px}
 .bh .dur{font-size:11px;font-weight:700;color:var(--ink3);background:var(--line2);padding:2px 8px;border-radius:8px}
-.bh .add{margin-left:auto;width:32px;height:32px;border-radius:11px;display:grid;place-items:center;color:var(--ink3);flex:none}
-.bh .add:active{background:var(--ac-s);color:var(--ac)}
-.bh .add svg{width:17px;height:17px}
 
 .tk{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:var(--r3);
   background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 6px rgba(90,70,50,.06);
@@ -262,6 +260,10 @@ button{cursor:pointer}
 .btn.p{background:var(--ac);color:#fff;box-shadow:0 4px 14px var(--ac-b)}
 .btn.s{background:var(--line2);color:var(--ink2)}
 .btn.d{background:var(--gd-s);color:var(--gd)}
+#popfab{position:fixed;z-index:110;bottom:calc(var(--sb) + 22px);
+  right:max(20px, calc(50% - 380px + 20px));
+  opacity:0;pointer-events:none;transform:scale(.7);transition:opacity .22s,transform .28s cubic-bezier(.34,1.5,.6,1)}
+#popfab.on{opacity:1;pointer-events:auto;transform:none}
 .popnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .popt{text-align:center}
 .popt .p1{font-size:19px;font-weight:800;letter-spacing:-.03em}
@@ -291,6 +293,7 @@ button{cursor:pointer}
 <div id="dropinfo"></div>
 <div id="scrim" onclick="closeSheet()"></div>
 <div id="sheet"></div>
+<button id="popfab" class="fab" onclick="newTask(popDate,null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
 <div id="toast"></div>
 <input type="file" id="fileIn" accept="application/json,.json" style="display:none" onchange="doImport(this)">
 
@@ -425,7 +428,7 @@ function tkHTML(t){
   if(t.dur!=null)meta.push('<span>'+durTxt(t.dur)+'</span>');
   if(t.repId)meta.push('<span class="rp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3.5 3.5L17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5"/><path d="M7 21.5L3.5 18 7 14.5"/><path d="M20.5 13v1.5a3.5 3.5 0 0 1-3.5 3.5H3.5"/></svg>반복</span>');
   if(sj)meta.push('<span class="sj" style="background:'+sj.color+'22;color:'+sj.color+'">'+esc(sj.name)+'</span>');
-  return '<div class="tk'+(t.done?' done':'')+'" data-id="'+t.id+'">'+
+  return '<div class="tk'+(t.done?' done':'')+'" data-id="'+t.id+'" onclick="chipTap(event,\''+t.id+'\')">'+
     '<button class="ck'+(t.done?' on':'')+'" onclick="event.stopPropagation();toggleDone(\''+t.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
     '<div class="tkb"><div class="tkt">'+esc(t.title)+'</div>'+
     (meta.length?'<div class="tkm">'+meta.join('')+'</div>':'')+'</div>'+
@@ -443,10 +446,9 @@ function renderDay(ds){
   for(const b of list){
     const bt=ts.filter(t=>t.min!=null&&t.min>=b.s&&t.min<b.e).sort((a,b2)=>a.min!==b2.min?a.min-b2.min:a.ord-b2.ord);
     const cont=ts.filter(t=>t.min!=null&&t.min<b.s&&(t.min+taskDur(t,ds))>b.s);
-    h+='<div class="blk'+(b.cls?' cls':'')+(isT&&nowM>=b.s&&nowM<b.e?' now':'')+'" data-s="'+b.s+'" data-e="'+b.e+'">'+
+    h+='<div class="blk'+(b.cls?' cls':'')+(isT&&nowM>=b.s&&nowM<b.e?' now':'')+'" data-s="'+b.s+'" data-e="'+b.e+'" onclick="blockTap(event,\''+ds+'\','+b.s+')">'+
       '<div class="bt"><i>'+hhmm(b.s)+'</i><s>'+hhmm(b.e)+'</s></div>'+
-      '<div class="bb"><div class="bh"><b>'+esc(b.name)+'</b><span class="dur">'+durTxt(b.e-b.s)+'</span>'+
-      '<button class="add" onclick="newTask(\''+ds+'\','+b.s+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button></div>'+
+      '<div class="bb"><div class="bh"><b>'+esc(b.name)+'</b><span class="dur">'+durTxt(b.e-b.s)+'</span></div>'+
       cont.map(t=>'<div class="cont" onclick="openTask(\''+t.id+'\')"><i>'+esc(t.title)+'</i><b>이어짐 ~'+hhmm(t.min+taskDur(t,ds))+'</b></div>').join('')+
       bt.map(tkHTML).join('')+'</div></div>';}
   return h+'</div>';
@@ -533,8 +535,9 @@ function openDay(ds){
       '<button class="ib'+(is24?' on':'')+'" onclick="popToggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+
       '<button class="ib" onclick="popMove(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button></div></div>'+
     '<div id="popbody" data-date="'+ds+'">'+renderDay(ds)+'</div>'+
-    '<div class="row2"><button class="btn p" onclick="newTask(\''+ds+'\',null)">할일 추가</button></div>';
+    '';
   openSheet(h);
+  $('#popfab').classList.add('on');
   setTimeout(()=>bindDrag($('#popbody')),50);
 }
 function popMove(n){openDay(addDays(popDate,n));}
@@ -627,13 +630,25 @@ function toggle24(){
   if(is24===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];
   save();paint();toast(blocksFor(ds).is24?'24시간 보기':'학교 시간표');
 }
+/** 칸 아무데나 눌러 그 시각으로 할일 추가. 칩을 누른 경우·드래그 직후는 무시한다. */
+function chipTap(ev,id){
+  ev.stopPropagation();
+  if(DRAG.on)return;
+  if(DRAG.endedAt&&Date.now()-DRAG.endedAt<420)return;  // 터치 경로와 중복 방지
+  openTask(id);
+}
+function blockTap(ev,ds,s){
+  if(ev.target.closest('.tk, .cont'))return;
+  if(DRAG.on)return;
+  if(DRAG.endedAt&&Date.now()-DRAG.endedAt<420)return;
+  newTask(ds,s);
+}
 function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
 function refresh(){paint();if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody'))openDay(popDate);}
 function quickAdd(){
   if(tab==='subj'){editSubject(null);return;}
   if(tab==='cal'){openDay(TODAY());return;}
-  const now=new Date();
-  newTask(TODAY(),Math.floor((now.getHours()*60+now.getMinutes())/5)*5);
+  newTask(TODAY(),null);
 }
 
 /* ═════ 9. 스와이프 ═════ */
@@ -671,7 +686,7 @@ function bindDrag(root){
     if(line&&line.parentNode)line.parentNode.removeChild(line);line=null;
     gh.classList.remove('on');gh.innerHTML='';info.classList.remove('on');
     if(src)src.classList.remove('dragging');
-    src=null;curBlk=null;curIdx=-1;DRAG.on=false;};
+    src=null;curBlk=null;curIdx=-1;DRAG.on=false;DRAG.endedAt=Date.now();};
   const lift=()=>{DRAG.on=true;src.classList.add('dragging');
     const r=src.getBoundingClientRect();
     gh.style.width=r.width+'px';gh.innerHTML=src.outerHTML;
@@ -737,7 +752,7 @@ function bindDrag(root){
   root.addEventListener('touchend',()=>{
     if(DRAG.on){drop();return;}
     if(timer&&src&&moved<=9){clearTimeout(timer);timer=null;
-      const id=src.dataset.id;src=null;openTask(id);return;}
+      const id=src.dataset.id;src=null;DRAG.endedAt=Date.now();openTask(id);return;}
     clearTimeout(timer);timer=null;src=null;});
   root.addEventListener('touchcancel',()=>{if(DRAG.on)cleanup();else{clearTimeout(timer);timer=null;src=null;}});
 }
@@ -773,8 +788,10 @@ function bindGoalDrag(){
 
 /* ═════ 11. 시트 ═════ */
 function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
-  $('#scrim').classList.add('on');$('#sheet').classList.add('on');}
-function closeSheet(){$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');popDate=null;}
+  $('#scrim').classList.add('on');$('#sheet').classList.add('on');
+  $('#popfab').classList.remove('on');}   // 날짜 팝업일 때만 openDay 가 다시 켠다
+function closeSheet(){$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
+  $('#popfab').classList.remove('on');popDate=null;}
 let _ed={},_adv=false;
 function newTask(ds,min){
   _ed={id:null,title:'',date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,rep:null,repId:null};
@@ -789,7 +806,22 @@ function openTask(id){
 }
 function taskSheet(){
   const e=_ed,{list}=blocksFor(e.date),blk=e.min!=null?blockOf(e.date,e.min):null,rep=e.rep;
-  let h='<div class="sh2">'+(e.id?'할일 수정':'새 할일')+'</div>'+
+  // 새 할일은 이름(+과목)만 받는다. 시간대·반복·세부는 나중에 수정에서.
+  if(!e.id){
+    const where=e.min==null?'미배정':(blk?esc(blk.name)+' · '+hhmm(e.min):hhmm(e.min));
+    let n='<div class="sh2">새 할일</div>'+
+      '<input class="fi" id="f_title" placeholder="무엇을 할까" value="'+esc(e.title)+'">';
+    if(DB.subjects.length)n+='<div class="fl">과목 (선택)</div><div class="seg">'+
+      '<button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">없음</button>'+
+      DB.subjects.map(x=>'<button class="sg'+(e.subj===x.id?' on':'')+'" onclick="setSubj(\''+x.id+'\')">'+esc(x.name)+'</button>').join('')+'</div>';
+    n+='<div style="font-size:13px;font-weight:700;color:var(--ink3);padding:14px 2px 0;text-align:center">'+
+      where+'에 들어간다 · 시간대와 반복은 나중에 <b style="color:var(--ac)">꾹 눌러 수정</b></div>'+
+      '<div class="row2"><button class="btn p" onclick="saveTask()">추가</button></div>';
+    openSheet(n);
+    setTimeout(()=>{if($('#f_title'))$('#f_title').focus();},380);
+    return;
+  }
+  let h='<div class="sh2">할일 수정</div>'+
     '<input class="fi" id="f_title" placeholder="무엇을 할까" value="'+esc(e.title)+'">'+
     '';
   const is24=blocksFor(e.date).is24;
