@@ -1,13 +1,13 @@
 {
   "name": "플랜",
   "short_name": "플랜",
-  "description": "학종 플래너. 로컬 우선 · GitHub 볼트 열람 · 오프라인 작동.",
+  "description": "학교 시간표 기반 플래너. 로컬 저장 · 오프라인 작동.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#D6EBFB",
-  "theme_color": "#D6EBFB",
+  "background_color": "#F4F5FA",
+  "theme_color": "#0B0D14",
   "lang": "ko",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
