@@ -113,6 +113,28 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .uck.on{background:var(--ok);border-color:var(--ok)}
 .uck.on svg{opacity:1}
 
+/* 전날 미완료 정리 — 오늘 시간표보다 먼저 선택하게 한다. */
+.carry{margin-bottom:14px;padding:14px;border-radius:var(--r);box-shadow:var(--shadow-md)}
+.carryhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.carryhead b{display:block;font-size:16px;letter-spacing:-.025em}
+.carryhead span{display:block;margin-top:2px;font-size:11.5px;font-weight:700;color:var(--ink3)}
+.carrycount{flex:none;min-width:28px;height:28px;padding:0 9px;border-radius:10px;display:grid;place-items:center;
+  background:var(--ac-s);color:var(--ac);font-size:12px;font-weight:850}
+.carrylist{display:flex;flex-direction:column;gap:7px}
+.carryrow{display:grid;grid-template-columns:minmax(0,1fr) 38px 38px auto;align-items:center;gap:6px;
+  min-height:52px;padding:7px 7px 7px 11px;border:1px solid var(--line2);border-radius:var(--r3);background:var(--blur-strong)}
+.carrytext{min-width:0}
+.carrytitle{font-size:13.5px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carrymeta{margin-top:2px;font-size:10.5px;font-weight:700;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carryck,.carrydel{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;border:1.5px solid var(--line)}
+.carryck{background:var(--ok-s);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}
+.carrydel{background:var(--gd-s);color:var(--gd);border-color:color-mix(in srgb,var(--gd) 30%,transparent)}
+.carryck svg,.carrydel svg{width:17px;height:17px}
+.carrymove{height:38px;padding:0 11px;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:5px;
+  background:var(--ac-s);color:var(--ac);font-size:11.5px;font-weight:850;white-space:nowrap}
+.carrymove svg{width:15px;height:15px}
+.carryck:active,.carrydel:active,.carrymove:active{transform:scale(.94)}
+
 /* ── 타임그리드 ── */
 #gridwrap{position:relative}
 .grid{position:relative;margin-left:var(--gut);border-left:1px solid var(--line)}
@@ -256,6 +278,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   .unbar .uh{font-size:10px;letter-spacing:0}
   .uchip{padding:9px 6px}
   .uchip .gr{display:none}
+  .carry{padding:12px 10px}
+  .carryrow{grid-template-columns:minmax(0,1fr) 38px 38px;padding-left:10px}
+  .carrymove{grid-column:1/-1;width:100%}
 }
 
 #scrim{position:fixed;inset:0;z-index:100;background:rgba(30,22,14,.34);opacity:0;pointer-events:none;transition:opacity .3s;
@@ -506,6 +531,17 @@ function bandLen(ds,min){const b=min==null?null:bandAt(ds,min);return b?b.e-b.s:
 function taskDur(t,ds){return t.dur!=null?t.dur:bandLen(ds||t.date,t.min);}
 function tasksOf(ds){return DB.tasks.filter(t=>t.date===ds);}
 function subjOf(id){return DB.subjects.find(s=>s.id===id);}
+function carryTasks(){
+  const prev=addDays(TODAY(),-1);
+  return tasksOf(prev).filter(t=>!t.done).sort((a,b)=>{
+    const ap=a.min==null?1:0,bp=b.min==null?1:0;
+    return ap-bp||(a.min||0)-(b.min||0)||(a.ord||0)-(b.ord||0);});
+}
+function addRepException(t){
+  if(!t.repId)return;
+  const r=DB.repeats.find(x=>x.id===t.repId);if(!r)return;
+  r.ex=r.ex||[];if(r.ex.indexOf(t.date)<0)r.ex.push(t.date);
+}
 
 /* ═════ 5. 타임그리드 ═════ */
 /** 겹치면 나란히 놓지 않고 서로 경계를 맞춘다 (이동·크기조절 뒤 정리) */
@@ -622,7 +658,25 @@ function soonHTML(){
   a.sort((x,y)=>x.n-y.n);
   return '<div class="soon">'+a.map(x=>'<span><b>'+(x.n===0?'D-DAY':'D-'+x.n)+'</b> '+esc(x.s.name)+' '+esc(x.d.title)+'</span>').join('')+'</div>';
 }
-function todayHTML(){return renderDay(TODAY());}
+function carryHTML(){
+  const a=carryTasks();if(!a.length)return '';
+  const prev=parseD(addDays(TODAY(),-1));
+  return '<section class="carry glass" aria-label="전날 미완료 할일">'+
+    '<div class="carryhead"><div><b>어제 남은 할 일</b><span>'+(prev.getMonth()+1)+'월 '+prev.getDate()+'일 · 하나씩 정리해 주세요</span></div>'+
+    '<div class="carrycount">'+a.length+'</div></div><div class="carrylist">'+
+    a.map(t=>{const sj=t.subj?subjOf(t.subj):null;
+      const meta=(t.min==null?'미배정':hhmm(t.min))+(sj?' · '+esc(sj.name):'')+(t.repId?' · 반복':'');
+      return '<div class="carryrow" data-carry-id="'+t.id+'"><div class="carrytext">'+
+        '<div class="carrytitle">'+esc(t.title)+'</div><div class="carrymeta">'+meta+'</div></div>'+
+        '<button class="carryck" aria-label="'+esc(t.title)+' 완료" onclick="carryAction(\''+t.id+'\',\'done\')">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
+        '<button class="carrydel" aria-label="'+esc(t.title)+' 삭제" onclick="carryAction(\''+t.id+'\',\'delete\')">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M7 7l1 13h8l1-13M10 10.5v6M14 10.5v6"/></svg></button>'+
+        '<button class="carrymove" onclick="carryAction(\''+t.id+'\',\'move\')">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h12M13 7l5 5-5 5"/></svg>오늘 미배정</button></div>';}).join('')+
+    '</div></section>';
+}
+function todayHTML(){return carryHTML()+renderDay(TODAY());}
 
 /* ═════ 6. 헤더 ═════ */
 function themeIcon(){
@@ -743,8 +797,9 @@ function paint(){
 function firstPaint(){
   paint();
   const S=$('#scroll');
-  requestAnimationFrame(()=>{S.scrollTop=Math.max(0,timeMap(TODAY()).y(rel(M(7,0)))-40);});
+  requestAnimationFrame(()=>{S.scrollTop=todayStartScroll();});
 }
+function todayStartScroll(){return carryTasks().length?0:Math.max(0,timeMap(TODAY()).y(rel(M(7,0)))-40);}
 function placeThumb(){
   const bar=$('#navtabs');if(!bar)return;
   const th=bar.querySelector('.dockthumb'),a=bar.querySelector('.nb.on');if(!th||!a)return;
@@ -778,7 +833,7 @@ function go(t){
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
   v.style.transform='translateX('+(-dir*28)+'px)';v.style.opacity='0';
   setTimeout(()=>{tab=t;$('#scroll').scrollTop=0;paint();
-    if(t==='today')requestAnimationFrame(()=>{$('#scroll').scrollTop=Math.max(0,timeMap(TODAY()).y(rel(M(7,0)))-40);});
+    if(t==='today')requestAnimationFrame(()=>{$('#scroll').scrollTop=todayStartScroll();});
     v.style.transition='none';v.style.transform='translateX('+(dir*28)+'px)';v.style.opacity='0';
     requestAnimationFrame(()=>{v.style.transition='transform .32s cubic-bezier(.3,1.1,.4,1),opacity .3s';
       v.style.transform='translateX(0)';v.style.opacity='1';setTimeout(()=>{_anim=false;},320);});},170);
@@ -791,6 +846,23 @@ function toggle24(){
   save();paint();toast(is24(ds)?'24시간 보기':'학교 시간표 표시');
 }
 function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
+function carryAction(id,action){
+  const prev=addDays(TODAY(),-1),t=DB.tasks.find(x=>x.id===id&&x.date===prev&&!x.done);if(!t)return;
+  if(action==='done'){
+    t.done=true;
+  }else if(action==='delete'||action==='move'){
+    const oldDate=t.date,oldBand=t.min!=null?bandAt(t.date,t.min):null;
+    addRepException(t);
+    if(action==='delete')DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
+    else{
+      const ord=DB.tasks.filter(x=>x.date===TODAY()&&x.min==null).length;
+      Object.assign(t,{date:TODAY(),min:null,dur:null,ord,done:false,repId:null});
+    }
+    if(oldBand)splitBand(oldDate,oldBand,true);
+  }else return;
+  SEL=null;save();buzz(10);paint();
+  toast(action==='done'?'어제 할 일을 완료했다':action==='delete'?'어제 할 일을 지웠다':'오늘 미배정으로 옮겼다');
+}
 function refresh(){
   if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody')){
     // #popbody 는 그대로 두고 안쪽만 다시 그린다. 제스처는 위임이라 다시 붙일 필요가 없다.
@@ -1206,8 +1278,7 @@ function delTask(all){
     DB.repeats=DB.repeats.filter(r=>r.id!==t.repId);
     DB.tasks=DB.tasks.filter(x=>x.repId!==t.repId);
   }else{
-    if(t.repId){const r=DB.repeats.find(x=>x.id===t.repId);
-      if(r){r.ex=r.ex||[];if(r.ex.indexOf(t.date)<0)r.ex.push(t.date);}}
+    addRepException(t);
     const b=t.min!=null?bandAt(t.date,t.min):null;
     DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
     if(b)splitBand(t.date,b,true);}
