@@ -338,7 +338,8 @@ button{cursor:pointer}
 /* ═════ 1. 시간·시간표 ═════ */
 const M=(h,m)=>h*60+m;
 const DAY0=M(2,0);          // 하루의 시작 = 새벽 2시
-const PPM=4;                // 1분당 픽셀 — 5분 일정도 한 줄 제목이 보이는 20px
+const PPM=1.4;              // 기본 1분당 픽셀
+const MIN_EVENT_PX=20;      // 짧은 일정이 있는 구간만 이 높이까지 부분 확대
 const SNAP=5;               // 5분 단위
 const CLASSES=[
   ['roll', M(6,50), M(7,15), '점호'],
@@ -528,14 +529,36 @@ function gridItems(ds){
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
     return {t,s,e:Math.min(1440,s+d)};});
 }
-function evHTML(it){
-  const t=it.t,h=(it.e-it.s)*PPM,sm=h<40;
+/* 기본 시간축은 작게 유지하고, 짧은 일정이 놓인 분 구간만 늘린다. */
+function timeMap(ds){
+  const spans=gridItems(ds).filter(it=>it.e>it.s&&(it.e-it.s)*PPM<MIN_EVENT_PX)
+    .map(it=>({s:it.s,e:it.e,scale:MIN_EVENT_PX/(it.e-it.s)}));
+  const cuts=[0,1440];spans.forEach(x=>{cuts.push(x.s,x.e);});
+  cuts.sort((a,b)=>a-b);
+  const uniq=cuts.filter((x,i)=>!i||x!==cuts[i-1]),segs=[];let total=0;
+  for(let i=0;i<uniq.length-1;i++){
+    const s=uniq[i],e=uniq[i+1],mid=(s+e)/2;
+    let scale=PPM;
+    spans.forEach(x=>{if(mid>=x.s&&mid<x.e)scale=Math.max(scale,x.scale);});
+    segs.push({s,e,y:total,scale});total+=(e-s)*scale;}
+  const y=min=>{min=Math.max(0,Math.min(1440,min));
+    if(min===1440)return total;
+    const q=segs.find(x=>min>=x.s&&min<x.e)||segs[segs.length-1];
+    return q.y+(min-q.s)*q.scale;};
+  const min=px=>{px=Math.max(0,Math.min(total,px));
+    if(px===total)return 1440;
+    const q=segs.find(x=>px>=x.y&&px<x.y+(x.e-x.s)*x.scale)||segs[segs.length-1];
+    return q.s+(px-q.y)/q.scale;};
+  return {height:total,y,min};
+}
+function evHTML(it,map){
+  const t=it.t,h=map.y(it.e)-map.y(it.s),sm=h<40;
   const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
   const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
   const ck='<button class="evck'+(t.done?' on':'')+'">'+
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
   return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
-    'style="top:'+(it.s*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
+    'style="top:'+map.y(it.s)+'px;height:'+h+'px;left:3px;right:3px">'+
     '<div class="evh t"></div>'+
     '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
     (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
@@ -544,23 +567,23 @@ function evHTML(it){
     '<div class="evh b"></div></div>';
 }
 function renderDay(ds){
-  const H=1440*PPM;
+  const map=timeMap(ds),H=map.height;
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
   let h='<div class="daylayout"><div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 학교 시간표 밴드
   if(!is24(ds))SCHOOL.forEach(b=>{
-    const top=rel(b.s)*PPM,hh=(b.e-b.s)*PPM;
+    const s=rel(b.s),e=Math.min(1440,s+b.e-b.s),top=map.y(s),hh=map.y(e)-top;
     h+='<div class="band'+(b.cls?'':' gap')+'" style="top:'+top+'px;height:'+hh+'px">'+
        (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';});
   // 시간선
   for(let i=0;i<=24;i++){
     const m=(DAY0+i*60)%1440;
-    h+='<div class="hl'+(m%180===0?' major':'')+'" style="top:'+(i*60*PPM)+'px"><i>'+hhmm(m)+'</i></div>';}
+    h+='<div class="hl'+(m%180===0?' major':'')+'" style="top:'+map.y(i*60)+'px"><i>'+hhmm(m)+'</i></div>';}
   // 지금
   if(ds===TODAY()){
     const now=new Date(),nm=rel(now.getHours()*60+now.getMinutes());
-    h+='<div class="nowl" style="top:'+(nm*PPM)+'px"></div>';}
-  gridItems(ds).forEach(it=>{h+=evHTML(it);});
+    h+='<div class="nowl" style="top:'+map.y(nm)+'px"></div>';}
+  gridItems(ds).forEach(it=>{h+=evHTML(it,map);});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">미배정'+(un.length?' '+un.length:'')+'</div>'+
     '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip" data-id="'+t.id+'">'+
@@ -603,7 +626,7 @@ function bindRail(){
     const g=document.querySelector('.grid');if(!g)return;
     const S=document.getElementById('scroll');
     const gTop=g.getBoundingClientRect().top-S.getBoundingClientRect().top+S.scrollTop;
-    S.scrollTop=gTop+relMin*PPM-S.clientHeight*0.25;};
+    S.scrollTop=gTop+timeMap(g.dataset.date).y(relMin)-S.clientHeight*0.25;};
   const pick=cy=>{
     const bs=[...R.querySelectorAll('b')];if(!bs.length)return;
     let best=bs[0],bd=1e9;
@@ -687,7 +710,7 @@ function openDay(ds){
   openSheet(h);
   $('#popfab').classList.add('on');
   setTimeout(()=>{bindGrid($('#popbody'));const g=$('#popbody .grid');
-    if(g)$('#sheet').scrollTop=Math.max(0,rel(M(7,0))*PPM-60);},60);
+    if(g)$('#sheet').scrollTop=Math.max(0,timeMap(ds).y(rel(M(7,0)))-60);},60);
 }
 function popMove(n){openDay(addDays(popDate,n));}
 function popToggle24(){const ds=popDate,cur=is24(ds),wd=parseD(ds).getDay(),def=(wd===0||wd===6);
@@ -740,7 +763,7 @@ function paint(){
 function firstPaint(){
   paint();
   const S=$('#scroll');
-  requestAnimationFrame(()=>{S.scrollTop=Math.max(0,rel(M(7,0))*PPM-40);});
+  requestAnimationFrame(()=>{S.scrollTop=Math.max(0,timeMap(TODAY()).y(rel(M(7,0)))-40);});
 }
 function placeThumb(){
   const bar=$('#navtabs');if(!bar)return;
@@ -775,7 +798,7 @@ function go(t){
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
   v.style.transform='translateX('+(-dir*28)+'px)';v.style.opacity='0';
   setTimeout(()=>{tab=t;$('#scroll').scrollTop=0;paint();
-    if(t==='today')requestAnimationFrame(()=>{$('#scroll').scrollTop=Math.max(0,rel(M(7,0))*PPM-40);});
+    if(t==='today')requestAnimationFrame(()=>{$('#scroll').scrollTop=Math.max(0,timeMap(TODAY()).y(rel(M(7,0)))-40);});
     v.style.transition='none';v.style.transform='translateX('+(dir*28)+'px)';v.style.opacity='0';
     requestAnimationFrame(()=>{v.style.transition='transform .32s cubic-bezier(.3,1.1,.4,1),opacity .3s';
       v.style.transform='translateX(0)';v.style.opacity='1';setTimeout(()=>{_anim=false;},320);});},170);
@@ -842,20 +865,21 @@ function bindGrid(root){
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
   const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
   const tag=document.getElementById('ptag');
+  const map=timeMap(dateOf());
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
-    return Math.max(0,Math.min(1440,(cy-r.top)/PPM));};
+    return map.min(cy-r.top);};
   // 짧은 일정은 실제 시간 높이를 유지하고, 손가락 좌표만 가까운 일정에 매칭한다.
   const pickAt=(cx,cy)=>{
     const g=grid();if(!g)return null;
     const r=g.getBoundingClientRect();
     if(cx<r.left||cx>r.right||cy<r.top||cy>r.bottom)return null;
-    const y=(cy-r.top)/PPM,pad=22/PPM;
-    const hits=gridItems(dateOf()).filter(it=>y>=it.s-pad&&y<=it.e+pad);
+    const py=cy-r.top,pad=22;
+    const hits=gridItems(dateOf()).filter(it=>py>=map.y(it.s)-pad&&py<=map.y(it.e)+pad);
     hits.sort((a,b)=>{
-      const da=Math.abs(y-(a.s+a.e)/2),db=Math.abs(y-(b.s+b.e)/2);
+      const da=Math.abs(py-(map.y(a.s)+map.y(a.e))/2),db=Math.abs(py-(map.y(b.s)+map.y(b.e))/2);
       if(Math.abs(da-db)>.01)return da-db;
       if(a.t.id===SEL)return -1;if(b.t.id===SEL)return 1;
       return (a.t.ord||0)-(b.t.ord||0);});
@@ -868,8 +892,9 @@ function bindGrid(root){
     tag.style.top=Math.max(8,cy-64)+'px';};
   const paintEl=(sMin,dMin)=>{
     if(!el)return;
-    el.style.top=(sMin*PPM)+'px';el.style.height=(dMin*PPM)+'px';
-    el.classList.toggle('sm',dMin*PPM<40);
+    const top=map.y(sMin),h=Math.max(MIN_EVENT_PX,map.y(Math.min(1440,sMin+dMin))-top);
+    el.style.top=top+'px';el.style.height=h+'px';
+    el.classList.toggle('sm',h<40);
     const lab=el.querySelector('.evtime');
     if(lab)lab.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin));
     const m=el.querySelector('.evm');
@@ -882,8 +907,9 @@ function bindGrid(root){
       (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div><div class="evm"></div></div>';
     grid().appendChild(ghost);return ghost;};
   const paintGhost=(sMin,dMin)=>{
-    const g=ensureGhost();g.style.top=(sMin*PPM)+'px';g.style.height=(dMin*PPM)+'px';g.style.left='3px';g.style.right='3px';
-    g.classList.toggle('sm',dMin*PPM<40);
+    const g=ensureGhost(),top=map.y(sMin),h=Math.max(MIN_EVENT_PX,map.y(Math.min(1440,sMin+dMin))-top);
+    g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
+    g.classList.toggle('sm',h<40);
     const m=g.querySelector('.evm');if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
   const clearAll=()=>{
     if(el)el.classList.remove('act','dragging');
@@ -898,9 +924,8 @@ function bindGrid(root){
   const autoScroll=cy=>{
     if(overUn)return;                       // 미배정 바 위에선 스크롤하지 않는다
     const S=scroller(),r=S.getBoundingClientRect();
-    const u=unbar(),ub=u?u.getBoundingClientRect().bottom:r.top;
     let v=0;
-    if(cy<Math.max(r.top,ub)+70)v=-Math.min(13,(Math.max(r.top,ub)+70-cy)/5);
+    if(cy<r.top+70)v=-Math.min(13,(r.top+70-cy)/5);
     else if(cy>r.bottom-110)v=Math.min(13,(cy-(r.bottom-110))/5);
     if(v)S.scrollTop+=v;};
 
