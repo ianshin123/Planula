@@ -108,8 +108,10 @@ button{cursor:pointer}
   font-style:normal;font-size:11.5px;font-weight:750;color:var(--ink3);font-variant-numeric:tabular-nums}
 .band{position:absolute;left:0;right:0;background:var(--band);pointer-events:none;
   border-top:1px solid var(--ac-s);border-bottom:1px solid var(--ac-s)}
+.band.gap{background:transparent;border-top:1px dashed var(--line2);border-bottom:none}
 .band b{position:absolute;left:7px;top:2px;font-size:11px;font-weight:800;color:var(--ac);opacity:.85;
   letter-spacing:-.02em;white-space:nowrap}
+.band.gap b{color:var(--ink3);opacity:.65;font-weight:750}
 .nowl{position:absolute;left:0;right:0;height:2px;background:var(--gd);z-index:6;pointer-events:none}
 .nowl::before{content:'';position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd)}
 
@@ -153,13 +155,15 @@ button{cursor:pointer}
 #ptag.on{opacity:1}
 
 /* 좌측 빠른 스크롤 레일 */
-#rail{position:fixed;left:4px;top:calc(var(--st) + 108px);bottom:calc(var(--sb) + var(--dockh) + 22px);
-  width:30px;z-index:30;display:none;flex-direction:column;justify-content:space-between;
-  padding:6px 0;touch-action:none}
-#rail.on{display:flex}
-#rail b{font-size:9.5px;font-weight:800;color:var(--ink3);text-align:center;font-variant-numeric:tabular-nums;
-  opacity:.8;padding:1px 0;border-radius:5px}
-#rail b.hot{color:#fff;background:var(--ac)}
+#rail{position:fixed;left:2px;top:calc(var(--st) + 104px);bottom:calc(var(--sb) + var(--dockh) + 20px);
+  width:36px;z-index:30;display:none;touch-action:none}
+#rail.on{display:block}
+#rail b{position:absolute;left:0;right:0;transform:translateY(-50%);
+  font-size:9.5px;font-weight:800;color:var(--ink3);text-align:center;
+  font-variant-numeric:tabular-nums;opacity:.75;padding:1px 0;border-radius:6px;
+  white-space:nowrap;letter-spacing:-.03em}
+#rail b.cls{color:var(--ac);opacity:.95}
+#rail b.hot{color:#fff;background:var(--ac);opacity:1}
 
 .card{border-radius:var(--r);margin-bottom:14px;overflow:hidden}
 .ctitle{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 10px;gap:8px}
@@ -486,10 +490,11 @@ function resolveOverlaps(ds, movedId){
   });
 }
 /** 수업 칸에 여러 개가 들어가면 그 칸 시간을 똑같이 나눈다 */
-function splitBand(ds, band){
+function splitBand(ds, band, fillEvenIfOne){
   const inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.min>=band.s&&t.min<band.e)
     .sort((a,b)=>a.min-b.min||(a.ord||0)-(b.ord||0));
-  if(inB.length<2) return;
+  if(!inB.length) return;
+  if(inB.length<2&&!fillEvenIfOne) return;
   const each=Math.max(SNAP, snap((band.e-band.s)/inB.length));
   inB.forEach((t,i)=>{
     t.min=band.s+each*i;
@@ -526,9 +531,9 @@ function renderDay(ds){
   h+='<div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 학교 시간표 밴드
   if(!is24(ds))SCHOOL.forEach(b=>{
-    if(!b.cls)return;
     const top=rel(b.s)*PPM,hh=(b.e-b.s)*PPM;
-    h+='<div class="band" style="top:'+top+'px;height:'+hh+'px">'+(hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';});
+    h+='<div class="band'+(b.cls?'':' gap')+'" style="top:'+top+'px;height:'+hh+'px">'+
+       (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';});
   // 시간선
   for(let i=0;i<=24;i++){
     const m=(DAY0+i*60)%1440;
@@ -553,28 +558,41 @@ function soonHTML(){
 function todayHTML(){return renderDay(TODAY());}
 
 /* ═════ 6. 좌측 빠른 스크롤 레일 ═════ */
+const RAIL_SHORT={'점호':'점호','아침조례':'조례','1교시':'1','2교시':'2','3교시':'3','4교시':'4',
+  '5교시':'5','6교시':'6','7교시':'7','8교시':'8','점심시간':'점심','저녁시간':'저녁',
+  '야자 1차시':'야1','야자 2차시':'야2','아침 시간':'아침','새벽':'새벽','취침 전':'취침'};
+/** 학교 시간표를 볼 때는 교시 이름으로, 24시간일 때는 시각으로 */
 function railHTML(){
+  const ds=(tab==='today')?TODAY():TODAY();
+  if(!is24(ds)){
+    return SCHOOL.filter(b=>RAIL_SHORT[b.name]&&(b.cls||b.e-b.s>=40))
+      .map(b=>{const mid=rel(b.s)+(b.e-b.s)/2;
+        return '<b class="'+(b.cls?'cls':'')+'" data-r="'+rel(b.s)+'" style="top:'+(mid/1440*100)+'%">'+
+          RAIL_SHORT[b.name]+'</b>';}).join('');
+  }
   let h='';
-  for(let i=0;i<=24;i+=2){const m=(DAY0+i*60)%1440;h+='<b data-r="'+(i*60)+'">'+String(Math.floor(m/60)).padStart(2,'0')+'</b>';}
+  for(let i=0;i<=24;i+=2){const m=(DAY0+i*60)%1440;
+    h+='<b data-r="'+(i*60)+'" style="top:'+(i*60/1440*100)+'%">'+String(Math.floor(m/60)).padStart(2,'0')+'</b>';}
   return h;
 }
 function bindRail(){
-  const R=$('#rail');if(R._b)return;R._b=true;
-  const jump=cy=>{
-    const r=R.getBoundingClientRect();
-    const p=Math.max(0,Math.min(1,(cy-r.top)/r.height));
+  const R=document.getElementById('rail');if(R._b)return;R._b=true;
+  const goTo=relMin=>{
     const g=document.querySelector('.grid');if(!g)return;
-    const S=$('#scroll');
+    const S=document.getElementById('scroll');
     const gTop=g.getBoundingClientRect().top-S.getBoundingClientRect().top+S.scrollTop;
-    S.scrollTop=gTop+p*1440*PPM-S.clientHeight*0.28;
-    const bs=[...R.querySelectorAll('b')];
-    bs.forEach(b=>b.classList.remove('hot'));
-    const bi=Math.round(p*(bs.length-1));if(bs[bi])bs[bi].classList.add('hot');
-  };
-  R.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();jump(e.touches[0].clientY);},{passive:false});
-  R.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();jump(e.touches[0].clientY);},{passive:false});
-  R.addEventListener('touchend',()=>{setTimeout(()=>R.querySelectorAll('b').forEach(b=>b.classList.remove('hot')),700);});
-  R.addEventListener('click',e=>jump(e.clientY));
+    S.scrollTop=gTop+relMin*PPM-S.clientHeight*0.25;};
+  const pick=cy=>{
+    const bs=[...R.querySelectorAll('b')];if(!bs.length)return;
+    let best=bs[0],bd=1e9;
+    bs.forEach(b=>{const r=b.getBoundingClientRect(),c=(r.top+r.bottom)/2;
+      if(Math.abs(cy-c)<bd){bd=Math.abs(cy-c);best=b;}});
+    bs.forEach(b=>b.classList.toggle('hot',b===best));
+    goTo(+best.dataset.r);};
+  R.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
+  R.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
+  R.addEventListener('touchend',()=>{setTimeout(()=>R.querySelectorAll('b').forEach(b=>b.classList.remove('hot')),800);});
+  R.addEventListener('click',e=>pick(e.clientY));
 }
 
 /* ═════ 7. 헤더 ═════ */
@@ -784,12 +802,12 @@ function quickAdd(){
 
 /* ═════ 12. 그리드 조작 — 이동 / 크기 / 경계 / 미배정 끌어놓기 ═════ */
 const GD={on:false,endedAt:0};
-/* 제스처
-   · 짧게 탭      → 선택(위아래 손잡이가 나온다). 다시 탭하면 해제
-   · 꾹 누르고 정지 → 자세한 옵션(수정 시트)
-   · 꾹 누르고 끌기 → 이동
-   · 손잡이 끌기   → 길이 조절. 뒤엣것과 맞닿아 있으면 경계를 함께 민다
-   · 미배정 바로 끌어올리면 → 미배정으로 되돌린다                          */
+/* 제스처 (롱프레스 없음)
+   · 탭            → 선택. 위아래 손잡이가 나온다
+   · 선택된 걸 탭   → 자세한 옵션(수정)
+   · 선택된 걸 끌기 → 이동
+   · 손잡이 끌기    → 길이 조절 (뒤엣것과 맞닿아 있으면 경계를 함께 민다)
+   · 미배정 바로 끌어올리면 → 미배정으로 되돌린다                         */
 function bindGrid(root){
   if(!root||root._b)return;root._b=true;
   const grid=()=>root.querySelector('.grid');
@@ -797,8 +815,8 @@ function bindGrid(root){
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
   const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
   const tag=document.getElementById('ptag');
-  let mode=null,tHold=null,tOpt=null,el=null,tid=null,sy=0,sx=0,moved=0;
-  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false;
+  let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false;
+  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return Math.max(0,Math.min(1440,(cy-r.top)/PPM));};
@@ -807,7 +825,7 @@ function bindGrid(root){
     const r=tag.getBoundingClientRect(),g=grid().getBoundingClientRect();
     tag.style.left=Math.max(8,Math.min(window.innerWidth-r.width-8,g.left+g.width/2-r.width/2))+'px';
     tag.style.top=Math.max(8,cy-64)+'px';};
-  const paintEl=(sMin,dMin)=>{                 // 요소 자체를 실시간으로 움직인다
+  const paintEl=(sMin,dMin)=>{
     if(!el)return;
     el.style.top=(sMin*PPM)+'px';el.style.height=(dMin*PPM)+'px';
     el.classList.toggle('sm',dMin*PPM<40);
@@ -816,18 +834,22 @@ function bindGrid(root){
     const m=el.querySelector('.evm');
     if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
   const clearAll=()=>{
-    clearTimeout(tHold);clearTimeout(tOpt);tHold=tOpt=null;
-    if(el)el.classList.remove('act');
+    if(el)el.classList.remove('act','dragging');
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;nextT=null;overUn=false;GD.on=false;GD.endedAt=Date.now();};
-  const autoScroll=cy=>{const S=scroller(),r=S.getBoundingClientRect();let v=0;
-    if(cy<r.top+90)v=-Math.min(16,(r.top+90-cy)/4);
-    else if(cy>r.bottom-110)v=Math.min(16,(cy-(r.bottom-110))/4);
-    if(v)S.scrollTop+=v;};
+    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;
+    GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
     return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom;};
+  const autoScroll=cy=>{
+    if(overUn)return;                       // 미배정 바 위에선 스크롤하지 않는다
+    const S=scroller(),r=S.getBoundingClientRect();
+    const u=unbar(),ub=u?u.getBoundingClientRect().bottom:r.top;
+    let v=0;
+    if(cy<Math.max(r.top,ub)+70)v=-Math.min(13,(Math.max(r.top,ub)+70-cy)/5);
+    else if(cy>r.bottom-110)v=Math.min(13,(cy-(r.bottom-110))/5);
+    if(v)S.scrollTop+=v;};
 
   root.addEventListener('touchstart',e=>{
     if(e.target.closest('.evck'))return;
@@ -836,12 +858,14 @@ function bindGrid(root){
     const ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
 
-    if(uc){                                   // 미배정 칩 → 그리드
-      el=uc;tid=uc.dataset.id;
-      tHold=setTimeout(()=>{mode='new';GD.on=true;el.classList.add('dragging');buzz(14);},200);
+    if(uc){                                   // 미배정 칩은 바로 끌린다
+      el=uc;tid=uc.dataset.id;mode='new';armed=true;prevBand=null;
+      const task=DB.tasks.find(x=>x.id===tid);
+      baseD=task&&task.dur?task.dur:60;curD=baseD;
+      if(e.cancelable)e.preventDefault();
       return;}
 
-    if(handle&&ev){                           // 손잡이 = 즉시 길이 조절
+    if(handle&&ev){                           // 손잡이 = 길이 조절
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
       el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
@@ -855,87 +879,87 @@ function bindGrid(root){
 
     if(ev){
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
-      el=ev;tid=task.id;baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
-      tHold=setTimeout(()=>{                  // 250ms: 들어올림(이동 준비)
-        mode='move';GD.on=true;el.classList.add('act');buzz(14);
-        tOpt=setTimeout(()=>{                 // 그대로 700ms 더: 자세한 옵션
-          if(mode==='move'&&moved<=9){const id=tid;buzz(22);clearAll();openTask(id);}
-        },500);
-      },250);}
+      el=ev;tid=task.id;
+      baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
+      prevBand=bandAt(ds,task.min);
+      if(SEL===task.id){                      // 이미 선택돼 있으면 바로 끌 수 있다
+        mode='move';armed=true;
+        if(e.cancelable)e.preventDefault();}
+    }
   },{passive:false});
 
   root.addEventListener('touchmove',e=>{
     const t=e.touches[0];
     moved=Math.max(moved,Math.abs(t.clientX-sx)+Math.abs(t.clientY-sy));
-    if(!GD.on){if(moved>9&&tHold){clearTimeout(tHold);tHold=null;el=null;tid=null;}return;}
-    if(moved>9&&tOpt){clearTimeout(tOpt);tOpt=null;}
+    if(!GD.on){
+      if(armed&&moved>7){GD.on=true;if(el)el.classList.add(mode==='new'?'dragging':'act');buzz(12);}
+      else return;}
     if(e.cancelable)e.preventDefault();
-    autoScroll(t.clientY);
     const ds=dateOf(),r=relAt(t.clientY);
 
     if(mode==='move'||mode==='new'){
       overUn=inUnbar(t.clientX,t.clientY);
       const u=unbar();if(u)u.classList.toggle('tgt',overUn);
+      autoScroll(t.clientY);
       if(overUn){showTag('미배정으로',t.clientY);return;}
-      let d=baseD;
-      if(mode==='new'){                       // 놓는 자리의 수업 칸 길이에 맞춘다
-        const b=bandAt(ds,abs(snap(r)));
-        d=(b&&b.cls)?(b.e-b.s):60;}
-      let sM=snap(r-d/2);
-      const b2=bandAt(ds,abs(snap(r)));
-      if(b2&&b2.cls){sM=rel(b2.s);d=b2.e-b2.s;}   // 수업 칸 안이면 그 칸에 꽉 맞춘다
+      let d=baseD,sM=snap(r-d/2);
+      const b=bandAt(ds,abs(snap(r)));        // 학교 시간표면 쉬는시간까지 모든 칸에 맞춘다
+      if(b){sM=rel(b.s);d=b.e-b.s;}
       sM=Math.max(0,Math.min(1440-d,sM));curS=sM;curD=d;
       if(mode==='move')paintEl(sM,d);
-      showTag(hhmm(abs(sM))+' ~ '+hhmm(abs(sM+d))+' · '+durTxt(d),t.clientY);
-    }else if(mode==='rt'){
-      let sM=snap(r);sM=Math.max(0,Math.min(baseS+baseD-SNAP,sM));
-      curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
-      showTag(hhmm(abs(curS))+' 시작 · '+durTxt(curD),t.clientY);
-    }else if(mode==='rb'){
-      const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
-      let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
-      curS=baseS;curD=en-baseS;paintEl(curS,curD);
-      showTag((nextT?'경계 ':'')+hhmm(abs(en))+' · '+durTxt(curD),t.clientY);
+      showTag(hhmm(abs(sM))+' ~ '+hhmm(abs(sM+d))+' \u00b7 '+durTxt(d),t.clientY);
+    }else{
+      autoScroll(t.clientY);
+      if(mode==='rt'){
+        let sM=snap(r);sM=Math.max(0,Math.min(baseS+baseD-SNAP,sM));
+        curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
+        showTag(hhmm(abs(curS))+' 시작 \u00b7 '+durTxt(curD),t.clientY);
+      }else{
+        const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
+        let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
+        curS=baseS;curD=en-baseS;paintEl(curS,curD);
+        showTag((nextT?'경계 ':'')+hhmm(abs(en))+' \u00b7 '+durTxt(curD),t.clientY);}
     }
   },{passive:false});
 
   const commit=()=>{
-    clearTimeout(tHold);clearTimeout(tOpt);tHold=tOpt=null;
-    if(!GD.on){                                // 짧게 탭 = 선택 토글
+    if(!GD.on){                                // 끌지 않았다 = 탭
       if(el&&tid&&moved<=9&&el.classList.contains('ev')){
-        SEL=(SEL===tid)?null:tid;const id=tid;clearAll();refresh();
-        const n=document.querySelector('.ev[data-id="'+id+'"]');
-        if(n&&SEL)buzz(8);
+        const id=tid,wasSel=(SEL===id);clearAll();
+        if(wasSel){GD.endedAt=Date.now();openTask(id);}   // 선택된 걸 또 탭 → 수정
+        else{SEL=id;buzz(8);refresh();}                   // 처음 탭 → 선택
         return;}
-      el=null;tid=null;return;}
+      clearAll();return;}
     const ds=dateOf(),task=DB.tasks.find(x=>x.id===tid);
+    const leftBand=prevBand;
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
-        task.min=null;task.dur=null;SEL=null;save();buzz(11);
+        task.min=null;task.dur=null;if(SEL===task.id)SEL=null;
       }else if(mode==='rb'&&nextT){
         const delta=(curS+curD)-(baseS+baseD);
         task.dur=curD;
         nextT.min=abs(rel(nextT.min)+delta);nextT.dur=Math.max(SNAP,nextBase-delta);
-        save();buzz(11);
       }else{
         task.min=abs(curS);task.dur=Math.max(SNAP,curD);
         const b=bandAt(ds,task.min);
-        if(b&&b.cls&&task.min===b.s&&(mode==='move'||mode==='new'))splitBand(ds,b);
+        if(b&&(mode==='move'||mode==='new'))splitBand(ds,b);
         else resolveOverlaps(ds,task.id);
-        SEL=task.id;save();buzz(11);}}
+        SEL=task.id;}
+      // 원래 있던 칸에서 빠져나갔으면 남은 것들이 그 칸을 다시 채운다
+      if(leftBand&&(task.min==null||task.min<leftBand.s||task.min>=leftBand.e))
+        splitBand(ds,leftBand,true);
+      save();buzz(11);}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
   root.addEventListener('touchcancel',()=>{clearAll();refresh();});
 
   root.addEventListener('click',e=>{
-    if(e.target.closest('.evck')){             // 완료 토글
+    if(e.target.closest('.evck')){
       const ev=e.target.closest('.ev');if(ev){e.stopPropagation();toggleDone(ev.dataset.id);}return;}
-    if(GD.on||Date.now()-GD.endedAt<420)return;
+    if(GD.on||Date.now()-GD.endedAt<300)return;
     if(e.target.closest('.ev, .uchip'))return;
     const g=grid();if(!g||!g.contains(e.target))return;
-    if(SEL){SEL=null;refresh();return;}        // 빈 곳 탭 = 선택 해제 먼저
-    const ds=dateOf(),a=abs(relAt(e.clientY)),band=bandAt(ds,a);
-    newTask(ds,(band&&band.cls)?band.s:snap(a));
+    if(SEL){SEL=null;refresh();}          // 빈 곳 탭 = 선택 해제. 추가는 큰 + 버튼으로만.
   });
 }
 function bindGoalDrag(){
@@ -1104,7 +1128,9 @@ function delTask(all){
   }else{
     if(t.repId){const r=DB.repeats.find(x=>x.id===t.repId);
       if(r){r.ex=r.ex||[];if(r.ex.indexOf(t.date)<0)r.ex.push(t.date);}}
-    DB.tasks=DB.tasks.filter(x=>x.id!==t.id);}
+    const b=t.min!=null?bandAt(t.date,t.min):null;
+    DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
+    if(b)splitBand(t.date,b,true);}
   save();closeSheet();popDate=keepPop;
   if(keepPop)openDay(keepPop);else paint();
   toast(all?'반복 전체를 지웠다':'지웠다');
