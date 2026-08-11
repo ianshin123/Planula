@@ -20,11 +20,12 @@
   --ok:#3F9E6B; --ok-s:rgba(63,158,107,.13);
   --band:rgba(224,122,79,.075);
   --surface:var(--bg2); --surface-brd:var(--line);
+  --blur-surface:rgba(255,254,252,.76); --blur-strong:rgba(255,254,252,.88); --done-bg:rgba(241,238,232,.62);
   --shadow-sm:0 1px 2px rgba(63,49,36,.055),0 5px 14px rgba(63,49,36,.045);
   --shadow-md:0 10px 28px rgba(63,49,36,.12); --shadow-lg:0 18px 52px rgba(47,35,24,.18);
   --r:20px; --r2:16px; --r3:12px;
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
-  --dockh:78px; --wrap:780px; --gut:50px; --unw:112px;
+  --dockh:78px; --wrap:780px; --gut:50px; --unw:144px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#181613; --bg2:#23201C; --solid:#23201C; --muted:#2B2722;
@@ -35,6 +36,7 @@
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
   --band:rgba(255,146,100,.085);
   --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
+  --blur-surface:rgba(35,32,28,.72); --blur-strong:rgba(35,32,28,.86); --done-bg:rgba(43,39,34,.62);
   --shadow-sm:0 1px 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.16);
   --shadow-md:0 12px 30px rgba(0,0,0,.34); --shadow-lg:0 20px 56px rgba(0,0,0,.48);
 }}
@@ -47,6 +49,7 @@
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
   --band:rgba(255,146,100,.085);
   --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
+  --blur-surface:rgba(35,32,28,.72); --blur-strong:rgba(35,32,28,.86); --done-bg:rgba(43,39,34,.62);
   --shadow-sm:0 1px 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.16);
   --shadow-md:0 12px 30px rgba(0,0,0,.34); --shadow-lg:0 20px 56px rgba(0,0,0,.48);
 }
@@ -58,8 +61,9 @@ button,input,textarea,select{font:inherit;color:inherit;background:none;border:n
 button{cursor:pointer}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 ::-webkit-scrollbar{width:0;height:0}
-/* 이름은 기존 마크업 호환용. 시각은 유리가 아니라 단단한 공통 표면이다. */
-.glass{background:var(--surface);border:1px solid var(--surface-brd);box-shadow:var(--shadow-sm)}
+/* 단순 반투명 표면 + 일반 블러. 채도·광택 효과는 섞지 않는다. */
+.glass{background:var(--blur-surface);border:1px solid var(--surface-brd);box-shadow:var(--shadow-sm);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 
 #app{height:100%;display:flex;flex-direction:column}
 #top{padding:calc(var(--st) + 14px) 20px 8px;flex:none}
@@ -92,13 +96,22 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
-  background:var(--muted);border:1px solid var(--line2)}
+  background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
 .uchip.dragging{opacity:.25}
+.uchip.done{background:var(--done-bg)}
+.uchip.done .ut{opacity:.56}
+.uchip.done .ut>i{text-decoration:line-through}
 .uchip .ut{min-width:0;flex:1}
 .uchip .ut>i{display:block;font-style:normal;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .uchip .gr{width:14px;flex:none;display:flex;flex-direction:column;gap:2.5px;opacity:.35}
 .uchip .gr b{display:block;width:11px;height:1.6px;border-radius:1px;background:var(--ink2)}
+.uck{width:28px;height:28px;border-radius:9px;border:1.5px solid var(--line);background:var(--blur-strong);
+  display:grid;place-items:center;flex:none;z-index:2}
+.uck:active{transform:scale(.9)}
+.uck svg{width:11px;height:11px;color:#fff;opacity:0}
+.uck.on{background:var(--ok);border-color:var(--ok)}
+.uck.on svg{opacity:1}
 
 /* ── 타임그리드 ── */
 #gridwrap{position:relative}
@@ -119,7 +132,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .ev{position:absolute;border-radius:11px;overflow:hidden;z-index:4;
   background:var(--bg2);border:1px solid var(--line);box-shadow:0 1px 3px rgba(63,49,36,.08);
   display:flex;flex-direction:column;min-height:0;touch-action:none}
-.ev.done{opacity:.45}
+.ev.done{opacity:1;background:var(--done-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ev.done .evb{opacity:.55}
 .ev.done .evt{text-decoration:line-through}
 .ev.act{z-index:12;overflow:visible;box-shadow:var(--shadow-md);border-color:var(--ac)}
 .ev.sel{z-index:11;overflow:visible;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s)}
@@ -155,7 +169,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .evck svg{width:11px;height:11px;color:#fff;opacity:0}
 .evck.on svg{opacity:1}
 .ev.sm .evck{right:1px;top:0;bottom:0;width:30px;border-radius:4px}
-.ev.sm .evck svg{display:none}
+.ev.sm .evck svg{display:block;width:10px;height:10px}
 .dropghost{z-index:16;pointer-events:none;border-color:var(--ac);background:var(--ac-s);
   box-shadow:0 6px 16px rgba(224,122,79,.2);opacity:.94}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
@@ -163,15 +177,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   box-shadow:var(--shadow-md);white-space:nowrap;font-variant-numeric:tabular-nums}
 #ptag.on{opacity:1}
 
-/* 좌측 빠른 스크롤 레일 */
-#rail{position:fixed;left:2px;top:calc(var(--st) + 104px);bottom:calc(var(--sb) + var(--dockh) + 20px);
-  width:36px;z-index:30;display:none;touch-action:none}
+/* 왼손 반원 시간 다이얼 — 화면 왼쪽 전체를 쓸어 시간대로 이동 */
+#rail{--dial-y:50%;position:fixed;left:0;top:calc(var(--st) + 104px);bottom:calc(var(--sb) + var(--dockh) + 20px);
+  width:54px;z-index:30;display:none;touch-action:none}
 #rail.on{display:block}
-#rail b{position:absolute;left:0;right:0;transform:translateY(-50%);
-  font-size:9.5px;font-weight:800;color:var(--ink3);text-align:center;
-  font-variant-numeric:tabular-nums;opacity:.75;padding:1px 0;border-radius:6px;
-  white-space:nowrap;letter-spacing:-.03em}
-#rail b.cls{color:var(--ac);opacity:.95}
+#rail::before{content:'';position:absolute;left:-38px;top:calc(var(--dial-y) - 42px);width:84px;height:84px;
+  border-radius:0 44px 44px 0;background:var(--blur-surface);border:1px solid var(--line);box-shadow:var(--shadow-md);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);opacity:.72;transform:translateX(-8px);transition:.16s}
+#rail::after{content:'↕';position:absolute;left:23px;top:calc(var(--dial-y) - 10px);color:var(--ink3);
+  font-size:13px;font-weight:900;opacity:.65;transition:.12s}
+#rail.active::before{opacity:1;transform:none}
+#rail.active::after{opacity:0}
+#rail b{position:absolute;left:7px;width:38px;transform:translateY(-50%);font-size:9.5px;font-weight:800;
+  color:var(--ink3);text-align:center;font-variant-numeric:tabular-nums;opacity:0;padding:2px 0;border-radius:7px;
+  white-space:nowrap;letter-spacing:-.03em;pointer-events:none;transition:opacity .1s}
+#rail b.near{opacity:.5}
 #rail b.hot{color:#fff;background:var(--ac);opacity:1}
 
 .card{border-radius:var(--r);margin-bottom:14px;overflow:hidden}
@@ -245,11 +265,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   opacity:0;pointer-events:none;transform:scale(.7);transition:opacity .22s,transform .28s cubic-bezier(.34,1.5,.6,1)}
 #popfab.on{opacity:1;pointer-events:auto;transform:none}
 @media(max-width:620px){
-  :root{--gut:44px;--unw:88px}
+  :root{--gut:44px;--unw:104px}
   #top{padding-left:14px;padding-right:14px}
   #scroll{padding-left:30px;padding-right:10px}
   .daylayout{gap:8px}
-  #rail{left:1px;width:25px}
   #rail b{font-size:8.5px}
   .unbar{padding:8px 6px}
   .unbar .uh{font-size:10px;letter-spacing:0}
@@ -258,10 +277,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 
 #scrim{position:fixed;inset:0;z-index:100;background:rgba(30,22,14,.34);opacity:0;pointer-events:none;transition:opacity .3s;
-  }
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 #scrim.on{opacity:1;pointer-events:auto}
 #sheet{position:fixed;left:0;right:0;bottom:0;z-index:101;max-width:760px;margin:0 auto;
-  background:var(--bg2);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
+  background:var(--blur-strong);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   transform:translateY(110%);transition:transform .36s cubic-bezier(.32,.72,0,1);
   padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;overflow-y:auto}
 #sheet.on{transform:translateY(0)}
@@ -379,7 +399,18 @@ function is24(ds){
   return f!==undefined?f:(wd===0||wd===6);
 }
 function blocksFor(ds){return {list:SCHOOL,is24:is24(ds)};}
-function bandAt(ds,min){if(is24(ds))return null;return SCHOOL.find(b=>min>=b.s&&min<b.e)||null;}
+function bandAt(ds,min){
+  if(is24(ds))return null;
+  const b=SCHOOL.find(x=>min>=x.s&&min<x.e)||null;
+  if(!b||b.cls||b.e-b.s<=120)return b;
+  // 자정~등교 전처럼 긴 빈 구간은 통째로 채우지 않고 손가락이 놓인 1시간만 사용한다.
+  const s=Math.max(b.s,Math.floor(min/60)*60);
+  return {id:b.id+'h'+s,s,e:Math.min(b.e,s+60),name:b.name,cls:false};
+}
+function relParts(s,e){
+  const rs=rel(s),re=rs+(e-s);
+  return re<=1440?[[rs,re]]:[[rs,1440],[0,re-1440]];
+}
 function hhmm(m){m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function durTxt(d){return d>=60?(d%60?Math.floor(d/60)+'시간 '+(d%60)+'분':Math.floor(d/60)+'시간'):d+'분';}
 /** 절대 분 → 하루 안에서의 상대 위치(0=02:00) */
@@ -574,10 +605,10 @@ function renderDay(ds){
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
   let h='<div class="daylayout"><div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 학교 시간표 밴드
-  if(!is24(ds))SCHOOL.forEach(b=>{
-    const s=rel(b.s),e=Math.min(1440,s+b.e-b.s),top=map.y(s),hh=map.y(e)-top;
+  if(!is24(ds))SCHOOL.forEach(b=>relParts(b.s,b.e).forEach(([s,e])=>{
+    const top=map.y(s),hh=map.y(e)-top;
     h+='<div class="band'+(b.cls?'':' gap')+'" style="top:'+top+'px;height:'+hh+'px">'+
-       (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';});
+       (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';}));
   // 시간선
   for(let i=0;i<=24;i++){
     const m=(DAY0+i*60)%1440;
@@ -589,7 +620,8 @@ function renderDay(ds){
   gridItems(ds).forEach(it=>{h+=evHTML(it,map);});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">미배정'+(un.length?' '+un.length:'')+'</div>'+
-    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip" data-id="'+t.id+'">'+
+    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip'+(t.done?' done':'')+'" data-id="'+t.id+'">'+
+      '<button class="uck'+(t.done?' on':'')+'" aria-label="완료 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
       '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
       '<div class="gr"><b></b><b></b><b></b></div></div>';}).join(''):'끌어와서<br>미배정')+'</div></div></div>';
   return h;
@@ -613,10 +645,13 @@ const RAIL_SHORT={'점호':'점호','아침조례':'조례','1교시':'1','2교�
 function railHTML(){
   const ds=(tab==='today')?TODAY():TODAY();
   if(!is24(ds)){
-    return SCHOOL.filter(b=>RAIL_SHORT[b.name]&&(b.cls||b.e-b.s>=40))
-      .map(b=>{const mid=rel(b.s)+(b.e-b.s)/2;
-        return '<b class="'+(b.cls?'cls':'')+'" data-r="'+rel(b.s)+'" style="top:'+(mid/1440*100)+'%">'+
-          RAIL_SHORT[b.name]+'</b>';}).join('');
+    const entries=[];
+    SCHOOL.filter(b=>RAIL_SHORT[b.name]&&(b.cls||b.e-b.s>=40)).forEach(b=>{
+      const r=rel(b.s),len=b.e-b.s;
+      if(r+len>1440){entries.push({r:0,label:RAIL_SHORT[b.name],cls:b.cls});entries.push({r,label:'00',cls:false});}
+      else entries.push({r,label:RAIL_SHORT[b.name],cls:b.cls});});
+    return entries.sort((a,b)=>a.r-b.r).map(x=>
+      '<b class="'+(x.cls?'cls':'')+'" data-r="'+x.r+'">'+x.label+'</b>').join('');
   }
   let h='';
   for(let i=0;i<=24;i+=2){const m=(DAY0+i*60)%1440;
@@ -625,6 +660,7 @@ function railHTML(){
 }
 function bindRail(){
   const R=document.getElementById('rail');if(R._b)return;R._b=true;
+  let hideTimer=null;
   const goTo=relMin=>{
     const g=document.querySelector('.grid');if(!g)return;
     const S=document.getElementById('scroll');
@@ -632,15 +668,21 @@ function bindRail(){
     S.scrollTop=gTop+timeMap(g.dataset.date).y(relMin)-S.clientHeight*0.25;};
   const pick=cy=>{
     const bs=[...R.querySelectorAll('b')];if(!bs.length)return;
-    let best=bs[0],bd=1e9;
-    bs.forEach(b=>{const r=b.getBoundingClientRect(),c=(r.top+r.bottom)/2;
-      if(Math.abs(cy-c)<bd){bd=Math.abs(cy-c);best=b;}});
-    bs.forEach(b=>b.classList.toggle('hot',b===best));
+    const rr=R.getBoundingClientRect(),ratio=Math.max(0,Math.min(1,(cy-rr.top)/rr.height));
+    const idx=Math.round(ratio*(bs.length-1)),best=bs[idx];
+    const dialY=Math.max(42,Math.min(rr.height-42,cy-rr.top));
+    clearTimeout(hideTimer);R.classList.add('active');R.style.setProperty('--dial-y',dialY+'px');
+    bs.forEach((b,i)=>{
+      const delta=i-idx,near=Math.abs(delta)===1;
+      b.classList.toggle('hot',delta===0);b.classList.toggle('near',near);
+      if(Math.abs(delta)<=1)b.style.top=(dialY+delta*25)+'px';});
     goTo(+best.dataset.r);};
+  const rest=()=>{clearTimeout(hideTimer);hideTimer=setTimeout(()=>{
+    R.classList.remove('active');R.querySelectorAll('b').forEach(b=>b.classList.remove('hot','near'));},700);};
   R.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
   R.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
-  R.addEventListener('touchend',()=>{setTimeout(()=>R.querySelectorAll('b').forEach(b=>b.classList.remove('hot')),800);});
-  R.addEventListener('click',e=>pick(e.clientY));
+  R.addEventListener('touchend',rest);R.addEventListener('touchcancel',rest);
+  R.addEventListener('click',e=>{pick(e.clientY);rest();});
 }
 
 /* ═════ 7. 헤더 ═════ */
@@ -712,8 +754,7 @@ function openDay(ds){
     '<div id="popbody">'+renderDay(ds)+'</div>';
   openSheet(h);
   $('#popfab').classList.add('on');
-  setTimeout(()=>{bindGrid($('#popbody'));const g=$('#popbody .grid');
-    if(g)$('#sheet').scrollTop=Math.max(0,timeMap(ds).y(rel(M(7,0)))-60);},60);
+  setTimeout(()=>{bindGrid($('#popbody'));$('#sheet').scrollTop=0;},60);
 }
 function popMove(n){openDay(addDays(popDate,n));}
 function popToggle24(){const ds=popDate,cur=is24(ds),wd=parseD(ds).getDay(),def=(wd===0||wd===6);
@@ -934,7 +975,7 @@ function bindGrid(root){
 
   root.addEventListener('touchstart',e=>{
     const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;virtualDoneId=null;
-    if(e.target.closest('.evck')){
+    if(e.target.closest('.evck,.uck')){
       blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
       return;}
     blocked=false;
@@ -1067,6 +1108,8 @@ function bindGrid(root){
   root.addEventListener('click',e=>{
     if(e.target.closest('.evck')){
       const ev=e.target.closest('.ev');if(ev){e.stopPropagation();toggleDone(ev.dataset.id);}return;}
+    if(e.target.closest('.uck')){
+      const uc=e.target.closest('.uchip');if(uc){e.stopPropagation();toggleDone(uc.dataset.id);}return;}
     if(GD.on||Date.now()-GD.endedAt<300)return;
     const ev=e.target.closest('.ev'),uc=e.target.closest('.uchip');
     if(ev&&!ev.classList.contains('dropghost')){
