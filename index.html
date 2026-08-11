@@ -85,7 +85,11 @@ button{cursor:pointer}
 #view{max-width:var(--wrap);margin:0 auto;will-change:transform}
 
 /* 미배정 — 상단 고정 */
-.unbar{position:sticky;top:0;z-index:20;margin:0 -4px 8px;padding:9px 11px;border-radius:17px}
+.unbar{position:sticky;top:0;z-index:20;margin:0 -4px 8px;padding:9px 11px;border-radius:17px;
+  transition:box-shadow .16s}
+.unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
+.unbar.empty .unrow{min-height:34px;display:flex;align-items:center;justify-content:center;
+  border:1.5px dashed var(--line);border-radius:11px;font-size:12px;font-weight:700;color:var(--ink3)}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
 .uchip{flex:0 0 auto;max-width:190px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;
@@ -114,7 +118,8 @@ button{cursor:pointer}
   display:flex;flex-direction:column;min-height:19px;touch-action:none}
 .ev.done{opacity:.45}
 .ev.done .evt{text-decoration:line-through}
-.ev.act{z-index:9;box-shadow:0 10px 26px rgba(90,70,50,.28);border-color:var(--ac);transform:scale(1.012)}
+.ev.act{z-index:12;box-shadow:0 12px 30px rgba(90,70,50,.3);border-color:var(--ac)}
+.ev.sel{z-index:11;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-b),0 6px 18px rgba(90,70,50,.18)}
 .evbar{position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--ac)}
 .evb{flex:1;min-width:0;padding:4px 8px 4px 11px;overflow:hidden}
 .evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;
@@ -124,21 +129,24 @@ button{cursor:pointer}
 .ev.sm .evm{display:none}
 .ev.sm .evb{padding-top:1px;padding-bottom:1px}
 .ev.sm .evt{font-size:11.5px}
-.evh{position:absolute;left:0;right:0;height:16px;z-index:2;display:flex;align-items:center;justify-content:center}
-.evh.t{top:-6px}
-.evh.b{bottom:-6px}
-.evh::after{content:'';width:34px;height:4px;border-radius:2px;background:var(--ac);opacity:0;transition:opacity .16s}
-.ev.act .evh::after,.ev:active .evh::after{opacity:.85}
+.evh{position:absolute;left:0;right:0;height:28px;z-index:5;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .16s}
+.evh.t{top:-14px}
+.evh.b{bottom:-14px}
+.evh::after{content:'';width:54px;height:7px;border-radius:4px;background:var(--ac);
+  box-shadow:0 2px 7px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.5)}
+.ev.sel .evh,.ev.act .evh{pointer-events:auto;opacity:1}
+.evtime{position:absolute;right:8px;bottom:3px;font-size:11px;font-weight:850;color:var(--ac);
+  font-variant-numeric:tabular-nums;opacity:0;transition:opacity .14s;pointer-events:none;
+  background:var(--bg2);padding:0 4px;border-radius:5px}
+.ev.act .evtime{opacity:1}
+.ev.sm .evtime{display:none}
 .evck{position:absolute;right:5px;top:4px;width:19px;height:19px;border-radius:6px;border:2px solid var(--line);
   display:grid;place-items:center;z-index:3;background:var(--bg2)}
 .evck.on{background:var(--ok);border-color:var(--ok)}
 .evck svg{width:11px;height:11px;color:#fff;opacity:0}
 .evck.on svg{opacity:1}
 .ev.sm .evck{width:15px;height:15px;top:2px}
-/* 드롭 미리보기 — 레이아웃에 영향 없는 오버레이 */
-#preview{position:absolute;left:0;right:0;z-index:8;pointer-events:none;border-radius:11px;
-  background:var(--ac-s);border:2px dashed var(--ac);display:none}
-#preview.on{display:block}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
   background:var(--ac);color:#fff;padding:6px 12px;border-radius:11px;font-size:12.5px;font-weight:800;
   box-shadow:0 8px 20px var(--ac-b);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -405,6 +413,7 @@ const PALETTE=['#E07A4F','#F0A059','#D64F4F','#C9639E','#8A6FD4','#4F86D6','#3F9
 
 /* ═════ 3. 상태 ═════ */
 let tab='today', calM=new Date(), popDate=null, _anim=false;
+let SEL=null;   // 선택된 일정 id — 선택하면 위아래 손잡이가 나온다
 load();
 function applyTheme(){
   const t=DB.s.theme||'sys';
@@ -455,24 +464,37 @@ function tasksOf(ds){return DB.tasks.filter(t=>t.date===ds);}
 function subjOf(id){return DB.subjects.find(s=>s.id===id);}
 
 /* ═════ 5. 타임그리드 ═════ */
-/** 겹치는 것들을 레인으로 나눠 나란히 놓는다 */
-function laneLayout(items){
-  const sorted=items.slice().sort((a,b)=>a.s-b.s||a.e-b.e);
-  let cluster=[],clusterEnd=-1,out=[];
-  const flush=()=>{
-    if(!cluster.length)return;
-    const lanes=[];
-    cluster.forEach(it=>{
-      let li=lanes.findIndex(end=>end<=it.s);
-      if(li<0){li=lanes.length;lanes.push(0);}
-      lanes[li]=it.e;it.lane=li;});
-    cluster.forEach(it=>{it.cols=lanes.length;});
-    out=out.concat(cluster);cluster=[];clusterEnd=-1;};
-  sorted.forEach(it=>{
-    if(cluster.length&&it.s>=clusterEnd)flush();
-    cluster.push(it);clusterEnd=Math.max(clusterEnd,it.e);});
-  flush();
-  return out;
+/** 겹치면 나란히 놓지 않고 서로 경계를 맞춘다 (이동·크기조절 뒤 정리) */
+function resolveOverlaps(ds, movedId){
+  const R=t=>rel(t.min), E=t=>rel(t.min)+taskDur(t,ds);
+  const day=()=>DB.tasks.filter(t=>t.date===ds&&t.min!=null);
+  const moved=day().find(t=>t.id===movedId); if(!moved) return;
+  const ms=R(moved), me=E(moved);
+  day().filter(t=>t.id!==movedId).forEach(t=>{
+    const ts=R(t), te=E(t);
+    if(te<=ms||ts>=me) return;
+    if(ts<ms){ t.dur=Math.max(SNAP, ms-ts); }          // 앞엣것은 끝을 잘라 맞춘다
+    else { const d=Math.max(SNAP,te-ts);               // 뒤엣것은 뒤로 밀어 이어 붙인다
+           t.min=abs(Math.min(1440-d, me)); t.dur=d; }
+  });
+  // 밀린 것끼리 다시 겹치면 순서대로 정렬해 붙인다
+  let cur=me;
+  day().filter(t=>t.id!==movedId&&R(t)>=me).sort((a,b)=>R(a)-R(b)).forEach(t=>{
+    const d=Math.max(SNAP,taskDur(t,ds));
+    if(R(t)<cur) t.min=abs(Math.min(1440-d,cur));
+    cur=rel(t.min)+taskDur(t,ds);
+  });
+}
+/** 수업 칸에 여러 개가 들어가면 그 칸 시간을 똑같이 나눈다 */
+function splitBand(ds, band){
+  const inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.min>=band.s&&t.min<band.e)
+    .sort((a,b)=>a.min-b.min||(a.ord||0)-(b.ord||0));
+  if(inB.length<2) return;
+  const each=Math.max(SNAP, snap((band.e-band.s)/inB.length));
+  inB.forEach((t,i)=>{
+    t.min=band.s+each*i;
+    t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-t.min):each;
+    t.ord=i;});
 }
 function gridItems(ds){
   return tasksOf(ds).filter(t=>t.min!=null).map(t=>{
@@ -481,26 +503,26 @@ function gridItems(ds){
 }
 function evHTML(it){
   const t=it.t,h=(it.e-it.s)*PPM,sm=h<40;
-  const sj=t.subj?subjOf(t.subj):null;
-  const w=100/(it.cols||1),L=(it.lane||0)*w;
-  const end=abs(it.e);
-  return '<div class="ev'+(t.done?' done':'')+(sm?' sm':'')+'" data-id="'+t.id+'" '+
-    'style="top:'+(it.s*PPM)+'px;height:'+h+'px;left:calc('+L+'% + 3px);width:calc('+w+'% - 6px);'+
-    (sj?'border-left-color:'+sj.color+';':'')+'">'+
+  const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
+  const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
+  const ck='<button class="evck'+(t.done?' on':'')+'">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
+  return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
+    'style="top:'+(it.s*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
     '<div class="evbar"'+(sj?' style="background:'+sj.color+'"':'')+'></div>'+
     '<div class="evh t"></div>'+
     '<div class="evb"><div class="evt">'+esc(t.title)+'</div>'+
-    '<div class="evm">'+hhmm(t.min)+'–'+hhmm(end)+' · '+durTxt(it.e-it.s)+(t.repId?' · 반복':'')+'</div></div>'+
-    '<button class="evck'+(t.done?' on':'')+'" onclick="event.stopPropagation();toggleDone(\''+t.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
+    '<div class="evm">'+hhmm(t.min)+'~'+hhmm(end)+' \u00b7 '+durTxt(it.e-it.s)+(t.repId?' \u00b7 반복':'')+'</div></div>'+
+    '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+
     '<div class="evh b"></div></div>';
 }
 function renderDay(ds){
   const H=1440*PPM;
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
-  let h='';
-  if(un.length)h+='<div class="unbar glass" data-un="1"><div class="uh">미배정 '+un.length+' · 끌어서 시간에 놓기</div>'+
-    '<div class="unrow">'+un.map(t=>'<div class="uchip" data-id="'+t.id+'"><i>'+esc(t.title)+'</i>'+
-      '<div class="gr"><b></b><b></b><b></b></div></div>').join('')+'</div></div>';
+  let h='<div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
+    '<div class="uh">미배정'+(un.length?' '+un.length+' · 끌어서 시간에 놓기':'')+'</div>'+
+    '<div class="unrow">'+(un.length?un.map(t=>'<div class="uchip" data-id="'+t.id+'"><i>'+esc(t.title)+'</i>'+
+      '<div class="gr"><b></b><b></b><b></b></div></div>').join(''):'여기로 끌어오면 미배정으로 뺀다')+'</div></div>';
   h+='<div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 학교 시간표 밴드
   if(!is24(ds))SCHOOL.forEach(b=>{
@@ -515,8 +537,8 @@ function renderDay(ds){
   if(ds===TODAY()){
     const now=new Date(),nm=rel(now.getHours()*60+now.getMinutes());
     h+='<div class="nowl" style="top:'+(nm*PPM)+'px"></div>';}
-  laneLayout(gridItems(ds)).forEach(it=>{h+=evHTML(it);});
-  h+='<div id="preview"></div></div></div>';
+  gridItems(ds).forEach(it=>{h+=evHTML(it);});
+  h+='</div></div>';
   return h;
 }
 /* 2주 이내 마감 — 작은 빨간 글씨 */
@@ -762,118 +784,157 @@ function quickAdd(){
 
 /* ═════ 12. 그리드 조작 — 이동 / 크기 / 경계 / 미배정 끌어놓기 ═════ */
 const GD={on:false,endedAt:0};
+/* 제스처
+   · 짧게 탭      → 선택(위아래 손잡이가 나온다). 다시 탭하면 해제
+   · 꾹 누르고 정지 → 자세한 옵션(수정 시트)
+   · 꾹 누르고 끌기 → 이동
+   · 손잡이 끌기   → 길이 조절. 뒤엣것과 맞닿아 있으면 경계를 함께 민다
+   · 미배정 바로 끌어올리면 → 미배정으로 되돌린다                          */
 function bindGrid(root){
   if(!root||root._b)return;root._b=true;
   const grid=()=>root.querySelector('.grid');
+  const unbar=()=>root.querySelector('.unbar');
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
-  const scroller=()=>root.closest('#sheet')||$('#scroll');
-  const pv=()=>root.querySelector('#preview');
-  const tag=$('#ptag');
-  let mode=null,timer=null,el=null,tid=null,sy=0,sx=0,moved=0;
-  let baseS=0,baseD=0,nextT=null,nextBase=0,downT=0;
+  const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
+  const tag=document.getElementById('ptag');
+  let mode=null,tHold=null,tOpt=null,el=null,tid=null,sy=0,sx=0,moved=0;
+  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false;
 
-  const relAt=cy=>{const g=grid();const r=g.getBoundingClientRect();
+  const relAt=cy=>{const r=grid().getBoundingClientRect();
     return Math.max(0,Math.min(1440,(cy-r.top)/PPM));};
-  const showPv=(s,d,label)=>{
-    const p=pv();if(!p)return;
-    p.style.top=(s*PPM)+'px';p.style.height=(Math.max(SNAP,d)*PPM)+'px';p.classList.add('on');
-    tag.textContent=label;tag.classList.add('on');
+  const showTag=(txt,cy)=>{
+    tag.textContent=txt;tag.classList.add('on');
     const r=tag.getBoundingClientRect(),g=grid().getBoundingClientRect();
     tag.style.left=Math.max(8,Math.min(window.innerWidth-r.width-8,g.left+g.width/2-r.width/2))+'px';
-    tag.style.top=Math.max(8,g.top+s*PPM-r.height-8)+'px';
-  };
-  const hidePv=()=>{const p=pv();if(p)p.classList.remove('on');tag.classList.remove('on');};
-  const clear=()=>{
-    clearTimeout(timer);timer=null;
-    if(el)el.classList.remove('act','dragging');
-    hidePv();mode=null;el=null;tid=null;nextT=null;GD.on=false;GD.endedAt=Date.now();};
+    tag.style.top=Math.max(8,cy-64)+'px';};
+  const paintEl=(sMin,dMin)=>{                 // 요소 자체를 실시간으로 움직인다
+    if(!el)return;
+    el.style.top=(sMin*PPM)+'px';el.style.height=(dMin*PPM)+'px';
+    el.classList.toggle('sm',dMin*PPM<40);
+    const lab=el.querySelector('.evtime');
+    if(lab)lab.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin));
+    const m=el.querySelector('.evm');
+    if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
+  const clearAll=()=>{
+    clearTimeout(tHold);clearTimeout(tOpt);tHold=tOpt=null;
+    if(el)el.classList.remove('act');
+    const u=unbar();if(u)u.classList.remove('tgt');
+    tag.classList.remove('on');
+    mode=null;el=null;tid=null;nextT=null;overUn=false;GD.on=false;GD.endedAt=Date.now();};
   const autoScroll=cy=>{const S=scroller(),r=S.getBoundingClientRect();let v=0;
     if(cy<r.top+90)v=-Math.min(16,(r.top+90-cy)/4);
     else if(cy>r.bottom-110)v=Math.min(16,(cy-(r.bottom-110))/4);
     if(v)S.scrollTop+=v;};
+  const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
+    const r=u.getBoundingClientRect();
+    return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom;};
 
   root.addEventListener('touchstart',e=>{
     if(e.target.closest('.evck'))return;
-    const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;downT=Date.now();
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;
     const handle=e.target.closest('.evh');
     const ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
-    if(uc){ // 미배정 칩 → 그리드로
+
+    if(uc){                                   // 미배정 칩 → 그리드
       el=uc;tid=uc.dataset.id;
-      timer=setTimeout(()=>{mode='new';GD.on=true;el.classList.add('dragging');buzz(14);},220);
+      tHold=setTimeout(()=>{mode='new';GD.on=true;el.classList.add('dragging');buzz(14);},200);
       return;}
-    if(handle&&ev){
+
+    if(handle&&ev){                           // 손잡이 = 즉시 길이 조절
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
       el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
-      baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));
-      if(mode==='rb'){ // 바로 뒤에 붙어 있는 일이 있으면 경계를 함께 민다
+      baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
+      if(mode==='rb'){
         const endR=baseS+baseD;
         nextT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&Math.abs(rel(x.min)-endR)<1)||null;
         if(nextT)nextBase=Math.max(SNAP,taskDur(nextT,ds));}
       GD.on=true;el.classList.add('act');
       if(e.cancelable)e.preventDefault();
       return;}
+
     if(ev){
-      const task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
-      el=ev;tid=task.id;baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,dateOf()));
-      timer=setTimeout(()=>{mode='move';GD.on=true;el.classList.add('act');buzz(14);},250);}
+      const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
+      el=ev;tid=task.id;baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
+      tHold=setTimeout(()=>{                  // 250ms: 들어올림(이동 준비)
+        mode='move';GD.on=true;el.classList.add('act');buzz(14);
+        tOpt=setTimeout(()=>{                 // 그대로 700ms 더: 자세한 옵션
+          if(mode==='move'&&moved<=9){const id=tid;buzz(22);clearAll();openTask(id);}
+        },500);
+      },250);}
   },{passive:false});
 
   root.addEventListener('touchmove',e=>{
     const t=e.touches[0];
     moved=Math.max(moved,Math.abs(t.clientX-sx)+Math.abs(t.clientY-sy));
-    if(!GD.on){if(moved>9&&timer){clearTimeout(timer);timer=null;el=null;}return;}
+    if(!GD.on){if(moved>9&&tHold){clearTimeout(tHold);tHold=null;el=null;tid=null;}return;}
+    if(moved>9&&tOpt){clearTimeout(tOpt);tOpt=null;}
     if(e.cancelable)e.preventDefault();
     autoScroll(t.clientY);
-    const r=relAt(t.clientY);
-    if(mode==='move'){
-      let s=snap(r-baseD/2);s=Math.max(0,Math.min(1440-baseD,s));
-      showPv(s,baseD,hhmm(abs(s))+' – '+hhmm(abs(s+baseD)));
-    }else if(mode==='new'){
-      const d=60;let s=snap(r-d/2);s=Math.max(0,Math.min(1440-d,s));
-      showPv(s,d,hhmm(abs(s))+' – '+hhmm(abs(s+d)));
+    const ds=dateOf(),r=relAt(t.clientY);
+
+    if(mode==='move'||mode==='new'){
+      overUn=inUnbar(t.clientX,t.clientY);
+      const u=unbar();if(u)u.classList.toggle('tgt',overUn);
+      if(overUn){showTag('미배정으로',t.clientY);return;}
+      let d=baseD;
+      if(mode==='new'){                       // 놓는 자리의 수업 칸 길이에 맞춘다
+        const b=bandAt(ds,abs(snap(r)));
+        d=(b&&b.cls)?(b.e-b.s):60;}
+      let sM=snap(r-d/2);
+      const b2=bandAt(ds,abs(snap(r)));
+      if(b2&&b2.cls){sM=rel(b2.s);d=b2.e-b2.s;}   // 수업 칸 안이면 그 칸에 꽉 맞춘다
+      sM=Math.max(0,Math.min(1440-d,sM));curS=sM;curD=d;
+      if(mode==='move')paintEl(sM,d);
+      showTag(hhmm(abs(sM))+' ~ '+hhmm(abs(sM+d))+' · '+durTxt(d),t.clientY);
     }else if(mode==='rt'){
-      let s=snap(r);s=Math.max(0,Math.min(baseS+baseD-SNAP,s));
-      showPv(s,baseS+baseD-s,hhmm(abs(s))+' 시작 · '+durTxt(baseS+baseD-s));
+      let sM=snap(r);sM=Math.max(0,Math.min(baseS+baseD-SNAP,sM));
+      curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
+      showTag(hhmm(abs(curS))+' 시작 · '+durTxt(curD),t.clientY);
     }else if(mode==='rb'){
       const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
       let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
-      showPv(baseS,en-baseS,(nextT?'경계 ':'')+hhmm(abs(en))+' · '+durTxt(en-baseS));
+      curS=baseS;curD=en-baseS;paintEl(curS,curD);
+      showTag((nextT?'경계 ':'')+hhmm(abs(en))+' · '+durTxt(curD),t.clientY);
     }
   },{passive:false});
 
   const commit=()=>{
-    if(!GD.on){
-      // 짧게 탭 = 편집 / 빈 곳이면 추가
-      const wasTap=moved<=9&&Date.now()-downT<600;
-      clearTimeout(timer);timer=null;
-      if(wasTap&&el&&tid){const id=tid;clear();GD.endedAt=Date.now();openTask(id);return;}
+    clearTimeout(tHold);clearTimeout(tOpt);tHold=tOpt=null;
+    if(!GD.on){                                // 짧게 탭 = 선택 토글
+      if(el&&tid&&moved<=9&&el.classList.contains('ev')){
+        SEL=(SEL===tid)?null:tid;const id=tid;clearAll();refresh();
+        const n=document.querySelector('.ev[data-id="'+id+'"]');
+        if(n&&SEL)buzz(8);
+        return;}
       el=null;tid=null;return;}
     const ds=dateOf(),task=DB.tasks.find(x=>x.id===tid);
-    const p=pv();
-    if(task&&p&&p.classList.contains('on')){
-      const s=Math.round(parseFloat(p.style.top)/PPM);
-      const d=Math.round(parseFloat(p.style.height)/PPM);
-      if(mode==='rb'&&nextT){
-        const oldEnd=baseS+baseD,newEnd=s+d,delta=newEnd-oldEnd;
-        task.dur=d;
+    if(task){
+      if((mode==='move'||mode==='new')&&overUn){
+        task.min=null;task.dur=null;SEL=null;save();buzz(11);
+      }else if(mode==='rb'&&nextT){
+        const delta=(curS+curD)-(baseS+baseD);
+        task.dur=curD;
         nextT.min=abs(rel(nextT.min)+delta);nextT.dur=Math.max(SNAP,nextBase-delta);
-      }else{task.min=abs(s);task.dur=Math.max(SNAP,d);}
-      save();buzz(11);}
-    clear();refresh();};
+        save();buzz(11);
+      }else{
+        task.min=abs(curS);task.dur=Math.max(SNAP,curD);
+        const b=bandAt(ds,task.min);
+        if(b&&b.cls&&task.min===b.s&&(mode==='move'||mode==='new'))splitBand(ds,b);
+        else resolveOverlaps(ds,task.id);
+        SEL=task.id;save();buzz(11);}}
+    clearAll();refresh();};
   root.addEventListener('touchend',commit);
-  root.addEventListener('touchcancel',()=>{clear();});
+  root.addEventListener('touchcancel',()=>{clearAll();refresh();});
 
-  // 빈 그리드 탭 → 그 시각으로 추가
   root.addEventListener('click',e=>{
-    if(GD.on)return;
-    if(Date.now()-GD.endedAt<420)return;
-    if(e.target.closest('.ev, .uchip, .evck'))return;
+    if(e.target.closest('.evck')){             // 완료 토글
+      const ev=e.target.closest('.ev');if(ev){e.stopPropagation();toggleDone(ev.dataset.id);}return;}
+    if(GD.on||Date.now()-GD.endedAt<420)return;
+    if(e.target.closest('.ev, .uchip'))return;
     const g=grid();if(!g||!g.contains(e.target))return;
-    const ds=dateOf();
-    const r=relAt(e.clientY),a=abs(r);
-    // 화면에 보이는 수업 칸 안이면 그 칸 시작으로, 아니면 5분 단위로 스냅
-    const band=bandAt(ds,a);
+    if(SEL){SEL=null;refresh();return;}        // 빈 곳 탭 = 선택 해제 먼저
+    const ds=dateOf(),a=abs(relAt(e.clientY)),band=bandAt(ds,a);
     newTask(ds,(band&&band.cls)?band.s:snap(a));
   });
 }
