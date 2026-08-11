@@ -118,14 +118,13 @@ button{cursor:pointer}
 .nowl{position:absolute;left:0;right:0;height:2px;background:var(--gd);z-index:6;pointer-events:none}
 .nowl::before{content:'';position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd)}
 
-.ev{position:absolute;border-radius:11px;overflow:visible;z-index:4;
+.ev{position:absolute;border-radius:11px;overflow:hidden;z-index:4;
   background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 7px rgba(90,70,50,.09);
-  display:flex;flex-direction:column;min-height:19px;touch-action:none}
-.ev.sm{min-height:40px}
+  display:flex;flex-direction:column;min-height:0;touch-action:none}
 .ev.done{opacity:.45}
 .ev.done .evt{text-decoration:line-through}
-.ev.act{z-index:12;box-shadow:0 12px 30px rgba(90,70,50,.3);border-color:var(--ac)}
-.ev.sel{z-index:11;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-b),0 6px 18px rgba(90,70,50,.18)}
+.ev.act{z-index:12;overflow:visible;box-shadow:0 12px 30px rgba(90,70,50,.3);border-color:var(--ac)}
+.ev.sel{z-index:11;overflow:visible;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-b),0 6px 18px rgba(90,70,50,.18)}
 .evb{flex:1;min-width:0;padding:4px 40px 4px 9px;overflow:hidden;border-radius:10px}
 .evtitle{display:flex;align-items:center;gap:6px;min-width:0}
 .evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
@@ -151,13 +150,14 @@ button{cursor:pointer}
   background:var(--bg2);padding:0 4px;border-radius:5px}
 .ev.act .evtime{opacity:1}
 .ev.sm .evtime{display:none}
-.evck{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;border:2px solid var(--line);
+.evck{position:absolute;right:2px;top:1px;bottom:1px;width:30px;min-height:0;border-radius:8px;border:2px solid var(--line);
   display:grid;place-items:center;z-index:3;background:var(--bg2)}
-.evck:active{transform:translateY(-50%) scale(.9)}
+.evck:active{transform:scale(.9)}
 .evck.on{background:var(--ok);border-color:var(--ok)}
 .evck svg{width:11px;height:11px;color:#fff;opacity:0}
 .evck.on svg{opacity:1}
-.ev.sm .evck{width:34px;height:34px;top:50%}
+.ev.sm .evck{right:1px;top:0;bottom:0;width:30px;border-radius:4px}
+.ev.sm .evck svg{display:none}
 .dropghost{z-index:16;pointer-events:none;border-color:var(--ac);background:var(--ac-s);
   box-shadow:0 10px 26px var(--ac-b);opacity:.94}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
@@ -524,23 +524,18 @@ function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
     t.ord=i;});
 }
 function gridItems(ds){
-  const items=tasksOf(ds).filter(t=>t.min!=null).map(t=>{
+  return tasksOf(ds).filter(t=>t.min!=null).map(t=>{
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
-    return {t,s,e:Math.min(1440,s+d)};}).sort((a,b)=>a.s-b.s||(a.t.ord||0)-(b.t.ord||0));
-  let cursor=0;
-  return items.map(it=>{
-    const displayMin=Math.max(it.e-it.s,40/PPM),vs=Math.max(it.s,cursor);
-    const ve=Math.min(1440,vs+displayMin);cursor=ve;
-    return Object.assign(it,{vs,ve});});
+    return {t,s,e:Math.min(1440,s+d)};});
 }
 function evHTML(it){
-  const t=it.t,actualH=(it.e-it.s)*PPM,h=(it.ve-it.vs)*PPM,sm=actualH<40;
+  const t=it.t,h=(it.e-it.s)*PPM,sm=h<40;
   const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
   const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
   const ck='<button class="evck'+(t.done?' on':'')+'">'+
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
   return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
-    'style="top:'+(it.vs*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
+    'style="top:'+(it.s*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
     '<div class="evh t"></div>'+
     '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
     (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
@@ -847,11 +842,25 @@ function bindGrid(root){
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
   const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
   const tag=document.getElementById('ptag');
-  let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,ghost=null;
+  let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return Math.max(0,Math.min(1440,(cy-r.top)/PPM));};
+  // 짧은 일정은 실제 시간 높이를 유지하고, 손가락 좌표만 가까운 일정에 매칭한다.
+  const pickAt=(cx,cy)=>{
+    const g=grid();if(!g)return null;
+    const r=g.getBoundingClientRect();
+    if(cx<r.left||cx>r.right||cy<r.top||cy>r.bottom)return null;
+    const y=(cy-r.top)/PPM,pad=22/PPM;
+    const hits=gridItems(dateOf()).filter(it=>y>=it.s-pad&&y<=it.e+pad);
+    hits.sort((a,b)=>{
+      const da=Math.abs(y-(a.s+a.e)/2),db=Math.abs(y-(b.s+b.e)/2);
+      if(Math.abs(da-db)>.01)return da-db;
+      if(a.t.id===SEL)return -1;if(b.t.id===SEL)return 1;
+      return (a.t.ord||0)-(b.t.ord||0);});
+    return hits[0]||null;};
+  const inDoneZone=(cx)=>{const r=grid().getBoundingClientRect();return cx>=r.right-44;};
   const showTag=(txt,cy)=>{
     tag.textContent=txt;tag.classList.add('on');
     const r=tag.getBoundingClientRect(),g=grid().getBoundingClientRect();
@@ -881,7 +890,7 @@ function bindGrid(root){
     if(ghost){ghost.remove();ghost=null;}
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;
+    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
     GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
@@ -896,14 +905,25 @@ function bindGrid(root){
     if(v)S.scrollTop+=v;};
 
   root.addEventListener('touchstart',e=>{
+    const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;virtualDoneId=null;
     if(e.target.closest('.evck')){
       blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
       return;}
     blocked=false;
-    const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;
     const handle=e.target.closest('.evh');
-    const ev=e.target.closest('.ev');
+    let ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
+
+    // 실제 카드 밖을 눌러도 22px 안의 가장 가까운 일정이 잡힌다.
+    if(!handle&&!ev&&!uc){
+      const picked=pickAt(t.clientX,t.clientY);
+      if(picked){
+        ev=root.querySelector('.ev[data-id="'+picked.t.id+'"]');
+        if(inDoneZone(t.clientX)){
+          virtualDoneId=picked.t.id;blocked=true;
+          mode=null;el=null;tid=null;armed=false;dropIndex=null;
+          if(e.cancelable)e.preventDefault();
+          return;}}}
 
     if(uc){                                   // 미배정 칩은 바로 끌린다
       el=uc;tid=uc.dataset.id;mode='new';armed=true;prevBand=null;
@@ -979,7 +999,11 @@ function bindGrid(root){
   },{passive:false});
 
   const commit=()=>{
-    if(blocked){blocked=false;return;}
+    if(blocked){
+      const doneId=virtualDoneId,shouldToggle=doneId&&moved<=9;
+      blocked=false;virtualDoneId=null;
+      if(shouldToggle)toggleDone(doneId);
+      return;}
     if(!GD.on){                                // 끌지 않았다 = 탭
       if(el&&tid&&moved<=9){
         const id=tid,isEvent=el.classList.contains('ev'),isUnassigned=el.classList.contains('uchip');
