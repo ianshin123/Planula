@@ -136,7 +136,7 @@ button{cursor:pointer}
 .evm{font-size:10px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums;
   overflow:hidden;white-space:nowrap}
 .ev.sm .evm{display:none}
-.ev.sm .evb{padding-top:5px;padding-bottom:3px}
+.ev.sm .evb{padding:1px 34px 1px 7px}
 .ev.sm .evt{font-size:12.5px}
 .evh{position:absolute;left:0;right:0;height:28px;z-index:5;display:flex;align-items:center;justify-content:center;
   pointer-events:none;opacity:0;transition:opacity .16s}
@@ -338,7 +338,7 @@ button{cursor:pointer}
 /* ═════ 1. 시간·시간표 ═════ */
 const M=(h,m)=>h*60+m;
 const DAY0=M(2,0);          // 하루의 시작 = 새벽 2시
-const PPM=1.4;              // 1분당 픽셀
+const PPM=4;                // 1분당 픽셀 — 5분 일정도 한 줄 제목이 보이는 20px
 const SNAP=5;               // 5분 단위
 const CLASSES=[
   ['roll', M(6,50), M(7,15), '점호'],
