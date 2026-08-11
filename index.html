@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#FAF9F5">
+<meta name="theme-color" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
@@ -12,66 +12,63 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#FAF9F5; --bg2:#FFFFFF; --solid:#FFFFFF;
+  --bg:#F7F5F1; --bg2:#FFFEFC; --solid:#FFFFFF; --muted:#F1EEE8;
   --ink:#26221D; --ink2:#6E655A; --ink3:#A79D90;
-  --line:rgba(90,75,60,.13); --line2:rgba(90,75,60,.07);
+  --line:rgba(82,68,54,.14); --line2:rgba(82,68,54,.075);
   --ac:#E07A4F; --ac2:#F0A059; --ac-s:rgba(224,122,79,.13); --ac-b:rgba(224,122,79,.34);
   --gd:#D64F4F; --gd-s:rgba(214,79,79,.13);
   --ok:#3F9E6B; --ok-s:rgba(63,158,107,.13);
-  --band:rgba(224,122,79,.075); --gapc:rgba(120,105,88,.035);
-  --glass-bg:radial-gradient(150% 100% at 3% -12%, rgba(255,255,255,.9), transparent 44%), linear-gradient(165deg, rgba(255,255,255,.66), rgba(255,255,255,.36));
-  --glass-brd:rgba(255,255,255,.72);
-  --glass-shadow:0 16px 40px rgba(90,70,50,.13), 0 3px 10px rgba(90,70,50,.08), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -14px 28px -16px rgba(120,95,70,.1);
-  --glass-blur:blur(22px) saturate(185%) brightness(1.04);
-  --r:26px; --r2:19px; --r3:14px;
+  --band:rgba(224,122,79,.075);
+  --surface:var(--bg2); --surface-brd:var(--line);
+  --shadow-sm:0 1px 2px rgba(63,49,36,.055),0 5px 14px rgba(63,49,36,.045);
+  --shadow-md:0 10px 28px rgba(63,49,36,.12); --shadow-lg:0 18px 52px rgba(47,35,24,.18);
+  --r:20px; --r2:16px; --r3:12px;
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
-  --dockh:78px; --wrap:720px; --gut:52px;
+  --dockh:78px; --wrap:780px; --gut:50px; --unw:112px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#191713; --bg2:#221F1A; --solid:#221F1A;
+  --bg:#181613; --bg2:#23201C; --solid:#23201C; --muted:#2B2722;
   --ink:#F2EDE5; --ink2:#B0A597; --ink3:#7A7166;
   --line:rgba(255,255,255,.11); --line2:rgba(255,255,255,.055);
   --ac:#FF9264; --ac2:#FFB877; --ac-s:rgba(255,146,100,.16); --ac-b:rgba(255,146,100,.4);
   --gd:#FF7A6E; --gd-s:rgba(255,122,110,.16);
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
-  --band:rgba(255,146,100,.085); --gapc:rgba(255,255,255,.02);
-  --glass-bg:radial-gradient(150% 100% at 3% -12%, rgba(255,255,255,.09), transparent 44%), linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.028));
-  --glass-brd:rgba(255,255,255,.13);
-  --glass-shadow:0 18px 44px rgba(0,0,0,.5), 0 4px 12px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.14);
+  --band:rgba(255,146,100,.085);
+  --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.16);
+  --shadow-md:0 12px 30px rgba(0,0,0,.34); --shadow-lg:0 20px 56px rgba(0,0,0,.48);
 }}
 :root[data-theme="dark"]{
-  --bg:#191713; --bg2:#221F1A; --solid:#221F1A;
+  --bg:#181613; --bg2:#23201C; --solid:#23201C; --muted:#2B2722;
   --ink:#F2EDE5; --ink2:#B0A597; --ink3:#7A7166;
   --line:rgba(255,255,255,.11); --line2:rgba(255,255,255,.055);
   --ac:#FF9264; --ac2:#FFB877; --ac-s:rgba(255,146,100,.16); --ac-b:rgba(255,146,100,.4);
   --gd:#FF7A6E; --gd-s:rgba(255,122,110,.16);
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
-  --band:rgba(255,146,100,.085); --gapc:rgba(255,255,255,.02);
-  --glass-bg:radial-gradient(150% 100% at 3% -12%, rgba(255,255,255,.09), transparent 44%), linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.028));
-  --glass-brd:rgba(255,255,255,.13);
-  --glass-shadow:0 18px 44px rgba(0,0,0,.5), 0 4px 12px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.14);
+  --band:rgba(255,146,100,.085);
+  --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.16);
+  --shadow-md:0 12px 30px rgba(0,0,0,.34); --shadow-lg:0 20px 56px rgba(0,0,0,.48);
 }
 html,body{height:100%;overscroll-behavior:none}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;
   background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;letter-spacing:-.011em;
   -webkit-font-smoothing:antialiased;position:fixed;inset:0;overflow:hidden}
-body::before{content:'';position:fixed;inset:-20%;z-index:-1;pointer-events:none;
-  background:radial-gradient(52% 36% at 6% 0%, rgba(224,122,79,.09), transparent 62%),
-             radial-gradient(46% 32% at 100% 10%, rgba(240,160,89,.07), transparent 60%)}
 button,input,textarea,select{font:inherit;color:inherit;background:none;border:none;outline:none}
 button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 ::-webkit-scrollbar{width:0;height:0}
-.glass{background:var(--glass-bg);border:1px solid var(--glass-brd);box-shadow:var(--glass-shadow);
-  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+/* 이름은 기존 마크업 호환용. 시각은 유리가 아니라 단단한 공통 표면이다. */
+.glass{background:var(--surface);border:1px solid var(--surface-brd);box-shadow:var(--shadow-sm)}
 
 #app{height:100%;display:flex;flex-direction:column}
-#top{padding:calc(var(--st) + 14px) 18px 6px;flex:none}
+#top{padding:calc(var(--st) + 14px) 20px 8px;flex:none}
 #topin{max-width:var(--wrap);margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.h1{font-size:30px;font-weight:800;letter-spacing:-.034em;line-height:1.08}
+.h1{font-size:29px;font-weight:800;letter-spacing:-.034em;line-height:1.08}
 .h1 small{display:block;font-size:13px;font-weight:650;color:var(--ink3);letter-spacing:-.01em;margin-bottom:3px}
 .hbtns{display:flex;gap:8px;align-items:center}
-.ib{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:var(--ink2);flex:none}
+.ib{width:42px;height:42px;border-radius:var(--r3);display:grid;place-items:center;color:var(--ink2);flex:none}
 .ib:active{transform:scale(.9);color:var(--ac)}
 .ib svg{width:21px;height:21px}
 .ib.on{color:var(--ac);background:var(--ac-s)}
@@ -81,11 +78,11 @@ button{cursor:pointer}
 .soon span{white-space:nowrap}
 .soon b{font-weight:850}
 #scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  padding:4px 16px calc(var(--sb) + var(--dockh) + 26px)}
-#view{max-width:var(--wrap);margin:0 auto;will-change:transform}
+  padding:4px 20px calc(var(--sb) + var(--dockh) + 26px)}
+#view{width:100%;max-width:var(--wrap);margin:0 auto;will-change:transform}
 
 /* 미배정 — 오른쪽 세로 레일 */
-.daylayout{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:9px;align-items:start}
+.daylayout{display:grid;grid-template-columns:minmax(0,1fr) var(--unw);gap:12px;align-items:start}
 .unbar{position:sticky;top:4px;z-index:20;padding:9px 8px;border-radius:17px;
   height:calc(100dvh - var(--st) - var(--dockh) - 98px);min-height:180px;
   display:flex;flex-direction:column;transition:box-shadow .16s}
@@ -94,8 +91,9 @@ button{cursor:pointer}
   border:1.5px dashed var(--line);border-radius:11px;font-size:12px;font-weight:700;color:var(--ink3)}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
-.uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:12px;
-  background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 5px rgba(90,70,50,.06)}
+.uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
+  background:var(--muted);border:1px solid var(--line2)}
+.uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
 .uchip.dragging{opacity:.25}
 .uchip .ut{min-width:0;flex:1}
 .uchip .ut>i{display:block;font-style:normal;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -119,12 +117,12 @@ button{cursor:pointer}
 .nowl::before{content:'';position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd)}
 
 .ev{position:absolute;border-radius:11px;overflow:hidden;z-index:4;
-  background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 7px rgba(90,70,50,.09);
+  background:var(--bg2);border:1px solid var(--line);box-shadow:0 1px 3px rgba(63,49,36,.08);
   display:flex;flex-direction:column;min-height:0;touch-action:none}
 .ev.done{opacity:.45}
 .ev.done .evt{text-decoration:line-through}
-.ev.act{z-index:12;overflow:visible;box-shadow:0 12px 30px rgba(90,70,50,.3);border-color:var(--ac)}
-.ev.sel{z-index:11;overflow:visible;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-b),0 6px 18px rgba(90,70,50,.18)}
+.ev.act{z-index:12;overflow:visible;box-shadow:var(--shadow-md);border-color:var(--ac)}
+.ev.sel{z-index:11;overflow:visible;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s)}
 .evb{flex:1;min-width:0;padding:4px 40px 4px 9px;overflow:hidden;border-radius:10px}
 .evtitle{display:flex;align-items:center;gap:6px;min-width:0}
 .evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
@@ -143,7 +141,7 @@ button{cursor:pointer}
 .evh.t{top:-14px}
 .evh.b{bottom:-14px}
 .evh::after{content:'';width:54px;height:7px;border-radius:4px;background:var(--ac);
-  box-shadow:0 2px 7px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.5)}
+  box-shadow:0 2px 5px rgba(75,48,34,.2)}
 .ev.sel .evh,.ev.act .evh{pointer-events:auto;opacity:1}
 .evtime{position:absolute;right:8px;bottom:3px;font-size:11px;font-weight:850;color:var(--ac);
   font-variant-numeric:tabular-nums;opacity:0;transition:opacity .14s;pointer-events:none;
@@ -159,10 +157,10 @@ button{cursor:pointer}
 .ev.sm .evck{right:1px;top:0;bottom:0;width:30px;border-radius:4px}
 .ev.sm .evck svg{display:none}
 .dropghost{z-index:16;pointer-events:none;border-color:var(--ac);background:var(--ac-s);
-  box-shadow:0 10px 26px var(--ac-b);opacity:.94}
+  box-shadow:0 6px 16px rgba(224,122,79,.2);opacity:.94}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
   background:var(--ac);color:#fff;padding:6px 12px;border-radius:11px;font-size:12.5px;font-weight:800;
-  box-shadow:0 8px 20px var(--ac-b);white-space:nowrap;font-variant-numeric:tabular-nums}
+  box-shadow:var(--shadow-md);white-space:nowrap;font-variant-numeric:tabular-nums}
 #ptag.on{opacity:1}
 
 /* 좌측 빠른 스크롤 레일 */
@@ -187,7 +185,7 @@ button{cursor:pointer}
 .dow i{font-style:normal;text-align:center;font-size:11.5px;font-weight:800;color:var(--ink3);padding:3px 0}
 .dow i.sun{color:var(--gd)}
 .calgrid{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(6,1fr);gap:6px}
-.cell{border-radius:15px;background:var(--gapc);border:1px solid var(--line2);
+.cell{border-radius:var(--r3);background:var(--muted);border:1px solid transparent;
   display:flex;flex-direction:column;align-items:center;padding-top:7px;gap:3px;position:relative;
   transition:transform .12s;min-height:42px;overflow:hidden}
 .cell:active{transform:scale(.94)}
@@ -218,7 +216,7 @@ button{cursor:pointer}
 .gr2{width:22px;flex:none;display:flex;flex-direction:column;gap:3px;align-items:center;opacity:.3}
 .gr2 i{display:block;width:15px;height:1.8px;border-radius:1px;background:var(--ink2)}
 .sjf{display:flex;gap:8px;padding:11px 14px 15px}
-.mini{flex:1;padding:12px;border-radius:14px;background:var(--line2);color:var(--ink2);
+.mini{flex:1;padding:12px;border-radius:var(--r3);background:var(--muted);color:var(--ink2);
   font-size:13.5px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:5px}
 .mini:active{transform:scale(.96);background:var(--ac-s);color:var(--ac)}
 .mini svg{width:14px;height:14px}
@@ -226,9 +224,9 @@ button{cursor:pointer}
 .dock{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:center;gap:11px;
   padding:6px 14px calc(var(--sb) + 10px);z-index:40;pointer-events:none}
 .dock>*{pointer-events:auto}
-.dock-bar{display:flex;gap:3px;padding:7px 15px;border-radius:30px;flex:0 1 auto;touch-action:none;
+.dock-bar{display:flex;gap:3px;padding:7px 15px;border-radius:24px;flex:0 1 auto;touch-action:none;
   position:relative;height:66px;box-sizing:border-box;align-items:center}
-.dockthumb{position:absolute;top:7px;left:0;height:52px;width:64px;border-radius:19px;z-index:0;pointer-events:none;
+.dockthumb{position:absolute;top:7px;left:0;height:52px;width:64px;border-radius:16px;z-index:0;pointer-events:none;
   background:var(--ac-s);transition:transform .42s cubic-bezier(.32,1.75,.5,1),width .25s,background .28s}
 .dockthumb.drag{background:var(--ac-b)}
 .nb{width:64px;height:52px;border-radius:19px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
@@ -239,15 +237,20 @@ button{cursor:pointer}
 .nb.on .lb{font-weight:800}
 .nb:active{transform:scale(.9)}
 .fab{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;color:#fff;
-  background:var(--ac);box-shadow:0 8px 20px var(--ac-b)}
+  background:var(--ac);box-shadow:0 8px 18px rgba(164,79,43,.24)}
 .fab:active{transform:scale(.9)}
 .fab svg{width:27px;height:27px}
 #popfab{position:fixed;z-index:110;bottom:calc(var(--sb) + 22px);
   right:max(20px, calc(50% - 380px + 20px));
   opacity:0;pointer-events:none;transform:scale(.7);transition:opacity .22s,transform .28s cubic-bezier(.34,1.5,.6,1)}
 #popfab.on{opacity:1;pointer-events:auto;transform:none}
-@media(max-width:520px){
-  .daylayout{grid-template-columns:minmax(0,1fr) 84px;gap:6px}
+@media(max-width:620px){
+  :root{--gut:44px;--unw:88px}
+  #top{padding-left:14px;padding-right:14px}
+  #scroll{padding-left:30px;padding-right:10px}
+  .daylayout{gap:8px}
+  #rail{left:1px;width:25px}
+  #rail b{font-size:8.5px}
   .unbar{padding:8px 6px}
   .unbar .uh{font-size:10px;letter-spacing:0}
   .uchip{padding:9px 6px}
@@ -255,10 +258,10 @@ button{cursor:pointer}
 }
 
 #scrim{position:fixed;inset:0;z-index:100;background:rgba(30,22,14,.34);opacity:0;pointer-events:none;transition:opacity .3s;
-  -webkit-backdrop-filter:blur(5px) saturate(130%);backdrop-filter:blur(5px) saturate(130%)}
+  }
 #scrim.on{opacity:1;pointer-events:auto}
 #sheet{position:fixed;left:0;right:0;bottom:0;z-index:101;max-width:760px;margin:0 auto;
-  background:var(--bg2);border-radius:32px 32px 0 0;box-shadow:var(--glass-shadow);
+  background:var(--bg2);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
   transform:translateY(110%);transition:transform .36s cubic-bezier(.32,.72,0,1);
   padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;overflow-y:auto}
 #sheet.on{transform:translateY(0)}
@@ -267,15 +270,15 @@ button{cursor:pointer}
 .fl{font-size:11.5px;font-weight:800;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase;margin:18px 0 8px;
   display:flex;align-items:center;justify-content:space-between;gap:8px}
 .fl button{font-size:11.5px;font-weight:800;color:var(--ac);letter-spacing:-.01em;text-transform:none}
-.fi{width:100%;padding:15px 16px;border-radius:16px;background:var(--gapc);border:1px solid var(--line);
+.fi{width:100%;padding:15px 16px;border-radius:var(--r3);background:var(--muted);border:1px solid var(--line);
   font-size:16px;font-weight:600;transition:.16s}
 .fi:focus{border-color:var(--ac);background:var(--ac-s)}
 .seg{display:flex;gap:7px;flex-wrap:wrap}
-.sg{padding:11px 15px;border-radius:14px;background:var(--gapc);border:1px solid var(--line);
+.sg{padding:11px 15px;border-radius:var(--r3);background:var(--muted);border:1px solid var(--line);
   font-size:14px;font-weight:700;color:var(--ink2);transition:.16s}
 .sg.on{background:var(--ac);color:#fff;border-color:transparent;box-shadow:0 3px 10px var(--ac-b)}
 .dws{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
-.dw{aspect-ratio:1;border-radius:14px;background:var(--gapc);border:1px solid var(--line);
+.dw{aspect-ratio:1;border-radius:var(--r3);background:var(--muted);border:1px solid var(--line);
   font-size:15px;font-weight:750;color:var(--ink2);display:grid;place-items:center;transition:.16s}
 .dw.on{background:var(--ac);color:#fff;border-color:transparent}
 .dw.sun{color:var(--gd)}
@@ -284,7 +287,7 @@ button{cursor:pointer}
 .two>div{flex:1}
 .two label{display:block;font-size:11.5px;font-weight:750;color:var(--ink3);margin-bottom:5px}
 .tp{display:flex;align-items:center;gap:10px;justify-content:center;padding:4px 0}
-.tpb{width:50px;height:50px;border-radius:17px;background:var(--gapc);border:1px solid var(--line);
+.tpb{width:50px;height:50px;border-radius:var(--r3);background:var(--muted);border:1px solid var(--line);
   display:grid;place-items:center;color:var(--ink2);font-size:23px;font-weight:700}
 .tpb:active{transform:scale(.9);background:var(--ac-s);color:var(--ac)}
 .tpv{font-size:27px;font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums;text-align:center}
@@ -294,11 +297,11 @@ button{cursor:pointer}
   box-shadow:0 0 0 1px rgba(0,0,0,.08);transition:transform .18s}
 .sw.on{transform:scale(1.14);border-color:var(--solid);box-shadow:0 0 0 4px var(--ac-s),0 0 0 1px rgba(0,0,0,.1)}
 .row2{display:flex;gap:9px;margin-top:20px}
-.btn{flex:1;padding:16px;border-radius:17px;font-size:15.5px;font-weight:800;letter-spacing:-.018em;
+.btn{flex:1;padding:16px;border-radius:var(--r3);font-size:15.5px;font-weight:800;letter-spacing:-.018em;
   display:flex;align-items:center;justify-content:center;gap:7px;transition:.16s}
 .btn:active{transform:scale(.97)}
-.btn.p{background:var(--ac);color:#fff;box-shadow:0 4px 14px var(--ac-b)}
-.btn.s{background:var(--line2);color:var(--ink2)}
+.btn.p{background:var(--ac);color:#fff;box-shadow:0 4px 12px rgba(164,79,43,.2)}
+.btn.s{background:var(--muted);color:var(--ink2)}
 .btn.d{background:var(--gd-s);color:var(--gd)}
 .popnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .popt{text-align:center}
@@ -307,7 +310,7 @@ button{cursor:pointer}
 #toast{position:fixed;left:50%;bottom:calc(var(--sb) + var(--dockh) + 26px);z-index:210;
   transform:translateX(-50%) translateY(14px);background:var(--ink);color:var(--bg);
   padding:12px 19px;border-radius:15px;font-size:14px;font-weight:750;
-  opacity:0;pointer-events:none;transition:.26s;box-shadow:var(--glass-shadow);white-space:nowrap}
+  opacity:0;pointer-events:none;transition:.26s;box-shadow:var(--shadow-md);white-space:nowrap}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -1125,7 +1128,7 @@ function detailHTML(){
   const e=_ed,rep=e.rep;
   const eEnd=e.min!=null?e.min+(e.dur!=null?e.dur:taskDur({min:e.min,dur:null},e.date)):null;
   const when=e.min==null?'미배정':hhmm(e.min)+' ~ '+hhmm(eEnd)+' · '+durTxt(eEnd-e.min);
-  let h='<div class="fl">현재 배치</div><div style="padding:13px 15px;border-radius:15px;background:var(--gapc);'+
+  let h='<div class="fl">현재 배치</div><div style="padding:13px 15px;border-radius:var(--r3);background:var(--muted);'+
     'font-size:14px;font-weight:800;color:var(--ink2)">'+when+
     '<div style="margin-top:4px;font-size:11.5px;font-weight:650;color:var(--ink3)">시간 변경은 일정의 손잡이와 드래그로 한다</div></div>';
   if(DB.subjects.length)h+='<div class="fl">과목</div><div class="seg"><button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">없음</button>'+
