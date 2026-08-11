@@ -84,18 +84,21 @@ button{cursor:pointer}
   padding:4px 16px calc(var(--sb) + var(--dockh) + 26px)}
 #view{max-width:var(--wrap);margin:0 auto;will-change:transform}
 
-/* 미배정 — 상단 고정 */
-.unbar{position:sticky;top:0;z-index:20;margin:0 -4px 8px;padding:9px 11px;border-radius:17px;
-  transition:box-shadow .16s}
+/* 미배정 — 오른쪽 세로 레일 */
+.daylayout{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:9px;align-items:start}
+.unbar{position:sticky;top:4px;z-index:20;padding:9px 8px;border-radius:17px;
+  height:calc(100dvh - var(--st) - var(--dockh) - 98px);min-height:180px;
+  display:flex;flex-direction:column;transition:box-shadow .16s}
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
-.unbar.empty .unrow{min-height:34px;display:flex;align-items:center;justify-content:center;
+.unbar.empty .unrow{min-height:120px;display:flex;align-items:center;justify-content:center;
   border:1.5px dashed var(--line);border-radius:11px;font-size:12px;font-weight:700;color:var(--ink3)}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
-.unrow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
-.uchip{flex:0 0 auto;max-width:190px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;
+.unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
+.uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:12px;
   background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 5px rgba(90,70,50,.06)}
 .uchip.dragging{opacity:.25}
-.uchip i{font-style:normal;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uchip .ut{min-width:0;flex:1}
+.uchip .ut>i{display:block;font-style:normal;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .uchip .gr{width:14px;flex:none;display:flex;flex-direction:column;gap:2.5px;opacity:.35}
 .uchip .gr b{display:block;width:11px;height:1.6px;border-radius:1px;background:var(--ink2)}
 
@@ -115,22 +118,27 @@ button{cursor:pointer}
 .nowl{position:absolute;left:0;right:0;height:2px;background:var(--gd);z-index:6;pointer-events:none}
 .nowl::before{content:'';position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd)}
 
-.ev{position:absolute;border-radius:11px;overflow:hidden;z-index:4;
+.ev{position:absolute;border-radius:11px;overflow:visible;z-index:4;
   background:var(--bg2);border:1px solid var(--line);box-shadow:0 2px 7px rgba(90,70,50,.09);
   display:flex;flex-direction:column;min-height:19px;touch-action:none}
+.ev.sm{min-height:40px}
 .ev.done{opacity:.45}
 .ev.done .evt{text-decoration:line-through}
 .ev.act{z-index:12;box-shadow:0 12px 30px rgba(90,70,50,.3);border-color:var(--ac)}
 .ev.sel{z-index:11;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-b),0 6px 18px rgba(90,70,50,.18)}
-.evbar{position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--ac)}
-.evb{flex:1;min-width:0;padding:4px 8px 4px 11px;overflow:hidden}
-.evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;
+.evb{flex:1;min-width:0;padding:4px 40px 4px 9px;overflow:hidden;border-radius:10px}
+.evtitle{display:flex;align-items:center;gap:6px;min-width:0}
+.evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evcat,.ucat{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;max-width:44%;
+  font-size:10px;font-weight:800;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evcat i,.ucat i{width:7px;height:7px;border-radius:50%;flex:none}
+.ucat{display:flex;margin-top:2px;max-width:100%;font-size:9.5px}
 .evm{font-size:10px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums;
   overflow:hidden;white-space:nowrap}
 .ev.sm .evm{display:none}
-.ev.sm .evb{padding-top:1px;padding-bottom:1px}
-.ev.sm .evt{font-size:11.5px}
+.ev.sm .evb{padding-top:5px;padding-bottom:3px}
+.ev.sm .evt{font-size:12.5px}
 .evh{position:absolute;left:0;right:0;height:28px;z-index:5;display:flex;align-items:center;justify-content:center;
   pointer-events:none;opacity:0;transition:opacity .16s}
 .evh.t{top:-14px}
@@ -143,12 +151,15 @@ button{cursor:pointer}
   background:var(--bg2);padding:0 4px;border-radius:5px}
 .ev.act .evtime{opacity:1}
 .ev.sm .evtime{display:none}
-.evck{position:absolute;right:5px;top:4px;width:19px;height:19px;border-radius:6px;border:2px solid var(--line);
+.evck{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;border:2px solid var(--line);
   display:grid;place-items:center;z-index:3;background:var(--bg2)}
+.evck:active{transform:translateY(-50%) scale(.9)}
 .evck.on{background:var(--ok);border-color:var(--ok)}
 .evck svg{width:11px;height:11px;color:#fff;opacity:0}
 .evck.on svg{opacity:1}
-.ev.sm .evck{width:15px;height:15px;top:2px}
+.ev.sm .evck{width:34px;height:34px;top:50%}
+.dropghost{z-index:16;pointer-events:none;border-color:var(--ac);background:var(--ac-s);
+  box-shadow:0 10px 26px var(--ac-b);opacity:.94}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
   background:var(--ac);color:#fff;padding:6px 12px;border-radius:11px;font-size:12.5px;font-weight:800;
   box-shadow:0 8px 20px var(--ac-b);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -235,6 +246,13 @@ button{cursor:pointer}
   right:max(20px, calc(50% - 380px + 20px));
   opacity:0;pointer-events:none;transform:scale(.7);transition:opacity .22s,transform .28s cubic-bezier(.34,1.5,.6,1)}
 #popfab.on{opacity:1;pointer-events:auto;transform:none}
+@media(max-width:520px){
+  .daylayout{grid-template-columns:minmax(0,1fr) 84px;gap:6px}
+  .unbar{padding:8px 6px}
+  .unbar .uh{font-size:10px;letter-spacing:0}
+  .uchip{padding:9px 6px}
+  .uchip .gr{display:none}
+}
 
 #scrim{position:fixed;inset:0;z-index:100;background:rgba(30,22,14,.34);opacity:0;pointer-events:none;transition:opacity .3s;
   -webkit-backdrop-filter:blur(5px) saturate(130%);backdrop-filter:blur(5px) saturate(130%)}
@@ -489,10 +507,14 @@ function resolveOverlaps(ds, movedId){
     cur=rel(t.min)+taskDur(t,ds);
   });
 }
-/** 수업 칸에 여러 개가 들어가면 그 칸 시간을 똑같이 나눈다 */
-function splitBand(ds, band, fillEvenIfOne){
-  const inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.min>=band.s&&t.min<band.e)
+/** 한 칸의 일정을 원하는 순서로 놓고 칸 시간을 똑같이 나눈다 */
+function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
+  let inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.min>=band.s&&t.min<band.e)
     .sort((a,b)=>a.min-b.min||(a.ord||0)-(b.ord||0));
+  if(movingId&&insertAt!=null){
+    const mv=inB.find(t=>t.id===movingId);
+    if(mv){inB=inB.filter(t=>t.id!==movingId);
+      inB.splice(Math.max(0,Math.min(inB.length,insertAt)),0,mv);}}
   if(!inB.length) return;
   if(inB.length<2&&!fillEvenIfOne) return;
   const each=Math.max(SNAP, snap((band.e-band.s)/inB.length));
@@ -502,21 +524,26 @@ function splitBand(ds, band, fillEvenIfOne){
     t.ord=i;});
 }
 function gridItems(ds){
-  return tasksOf(ds).filter(t=>t.min!=null).map(t=>{
+  const items=tasksOf(ds).filter(t=>t.min!=null).map(t=>{
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
-    return {t,s,e:Math.min(1440,s+d)};});
+    return {t,s,e:Math.min(1440,s+d)};}).sort((a,b)=>a.s-b.s||(a.t.ord||0)-(b.t.ord||0));
+  let cursor=0;
+  return items.map(it=>{
+    const displayMin=Math.max(it.e-it.s,40/PPM),vs=Math.max(it.s,cursor);
+    const ve=Math.min(1440,vs+displayMin);cursor=ve;
+    return Object.assign(it,{vs,ve});});
 }
 function evHTML(it){
-  const t=it.t,h=(it.e-it.s)*PPM,sm=h<40;
+  const t=it.t,actualH=(it.e-it.s)*PPM,h=(it.ve-it.vs)*PPM,sm=actualH<40;
   const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
   const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
   const ck='<button class="evck'+(t.done?' on':'')+'">'+
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
   return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
-    'style="top:'+(it.s*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
-    '<div class="evbar"'+(sj?' style="background:'+sj.color+'"':'')+'></div>'+
+    'style="top:'+(it.vs*PPM)+'px;height:'+h+'px;left:3px;right:3px">'+
     '<div class="evh t"></div>'+
-    '<div class="evb"><div class="evt">'+esc(t.title)+'</div>'+
+    '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
+    (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
     '<div class="evm">'+hhmm(t.min)+'~'+hhmm(end)+' \u00b7 '+durTxt(it.e-it.s)+(t.repId?' \u00b7 반복':'')+'</div></div>'+
     '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+
     '<div class="evh b"></div></div>';
@@ -524,11 +551,7 @@ function evHTML(it){
 function renderDay(ds){
   const H=1440*PPM;
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
-  let h='<div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
-    '<div class="uh">미배정'+(un.length?' '+un.length+' · 끌어서 시간에 놓기':'')+'</div>'+
-    '<div class="unrow">'+(un.length?un.map(t=>'<div class="uchip" data-id="'+t.id+'"><i>'+esc(t.title)+'</i>'+
-      '<div class="gr"><b></b><b></b><b></b></div></div>').join(''):'여기로 끌어오면 미배정으로 뺀다')+'</div></div>';
-  h+='<div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
+  let h='<div class="daylayout"><div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 학교 시간표 밴드
   if(!is24(ds))SCHOOL.forEach(b=>{
     const top=rel(b.s)*PPM,hh=(b.e-b.s)*PPM;
@@ -543,7 +566,11 @@ function renderDay(ds){
     const now=new Date(),nm=rel(now.getHours()*60+now.getMinutes());
     h+='<div class="nowl" style="top:'+(nm*PPM)+'px"></div>';}
   gridItems(ds).forEach(it=>{h+=evHTML(it);});
-  h+='</div></div>';
+  h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
+    '<div class="uh">미배정'+(un.length?' '+un.length:'')+'</div>'+
+    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip" data-id="'+t.id+'">'+
+      '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
+      '<div class="gr"><b></b><b></b><b></b></div></div>';}).join(''):'끌어와서<br>미배정')+'</div></div></div>';
   return h;
 }
 /* 2주 이내 마감 — 작은 빨간 글씨 */
@@ -777,6 +804,11 @@ function quickAdd(){
   if(tab==='cal'){openDay(TODAY());return;}
   newTask(TODAY(),null);
 }
+$('#scroll').addEventListener('click',e=>{
+  if(!SEL)return;
+  if(e.target.closest('.ev,.uchip,button,input,textarea,select,.cell,.sj,.dd,.gl'))return;
+  SEL=null;refresh();
+});
 
 /* ═════ 11. 스와이프 ═════ */
 (function(){
@@ -815,8 +847,8 @@ function bindGrid(root){
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
   const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
   const tag=document.getElementById('ptag');
-  let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false;
-  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null;
+  let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,ghost=null;
+  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return Math.max(0,Math.min(1440,(cy-r.top)/PPM));};
@@ -833,11 +865,23 @@ function bindGrid(root){
     if(lab)lab.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin));
     const m=el.querySelector('.evm');
     if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
+  const ensureGhost=()=>{
+    if(ghost)return ghost;
+    const task=DB.tasks.find(x=>x.id===tid),sj=task&&task.subj?subjOf(task.subj):null;
+    ghost=document.createElement('div');ghost.className='ev dropghost';
+    ghost.innerHTML='<div class="evb"><div class="evtitle"><div class="evt">'+esc(task?task.title:'')+'</div>'+
+      (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div><div class="evm"></div></div>';
+    grid().appendChild(ghost);return ghost;};
+  const paintGhost=(sMin,dMin)=>{
+    const g=ensureGhost();g.style.top=(sMin*PPM)+'px';g.style.height=(dMin*PPM)+'px';g.style.left='3px';g.style.right='3px';
+    g.classList.toggle('sm',dMin*PPM<40);
+    const m=g.querySelector('.evm');if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
   const clearAll=()=>{
     if(el)el.classList.remove('act','dragging');
+    if(ghost){ghost.remove();ghost=null;}
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;
+    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;
     GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
@@ -852,7 +896,10 @@ function bindGrid(root){
     if(v)S.scrollTop+=v;};
 
   root.addEventListener('touchstart',e=>{
-    if(e.target.closest('.evck'))return;
+    if(e.target.closest('.evck')){
+      blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
+      return;}
+    blocked=false;
     const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;
     const handle=e.target.closest('.evh');
     const ev=e.target.closest('.ev');
@@ -901,12 +948,21 @@ function bindGrid(root){
       overUn=inUnbar(t.clientX,t.clientY);
       const u=unbar();if(u)u.classList.toggle('tgt',overUn);
       autoScroll(t.clientY);
-      if(overUn){showTag('미배정으로',t.clientY);return;}
+      if(overUn){if(ghost){ghost.remove();ghost=null;}showTag('미배정으로',t.clientY);return;}
       let d=baseD,sM=snap(r-d/2);
       const b=bandAt(ds,abs(snap(r)));        // 학교 시간표면 쉬는시간까지 모든 칸에 맞춘다
-      if(b){sM=rel(b.s);d=b.e-b.s;}
+      if(b){
+        const others=DB.tasks.filter(x=>x.date===ds&&x.id!==tid&&x.min!=null&&x.min>=b.s&&x.min<b.e)
+          .sort((a,c)=>a.min-c.min||(a.ord||0)-(c.ord||0));
+        const raw=abs(snap(r)),n=others.length+1;
+        dropIndex=Math.max(0,Math.min(others.length,Math.floor(((raw-b.s)/(b.e-b.s))*n)));
+        const each=Math.max(SNAP,snap((b.e-b.s)/n));
+        const sAbs=Math.min(b.e-SNAP,b.s+each*dropIndex);
+        sM=rel(sAbs);d=dropIndex===n-1?Math.max(SNAP,b.e-sAbs):each;
+      }else dropIndex=null;
       sM=Math.max(0,Math.min(1440-d,sM));curS=sM;curD=d;
       if(mode==='move')paintEl(sM,d);
+      else paintGhost(sM,d);
       showTag(hhmm(abs(sM))+' ~ '+hhmm(abs(sM+d))+' \u00b7 '+durTxt(d),t.clientY);
     }else{
       autoScroll(t.clientY);
@@ -923,12 +979,15 @@ function bindGrid(root){
   },{passive:false});
 
   const commit=()=>{
+    if(blocked){blocked=false;return;}
     if(!GD.on){                                // 끌지 않았다 = 탭
-      if(el&&tid&&moved<=9&&el.classList.contains('ev')){
-        const id=tid,wasSel=(SEL===id);clearAll();
-        if(wasSel){GD.endedAt=Date.now();openTask(id);}   // 선택된 걸 또 탭 → 수정
-        else{SEL=id;buzz(8);refresh();}                   // 처음 탭 → 선택
-        return;}
+      if(el&&tid&&moved<=9){
+        const id=tid,isEvent=el.classList.contains('ev'),isUnassigned=el.classList.contains('uchip');
+        if(isEvent){const wasSel=(SEL===id);clearAll();
+          if(wasSel){GD.endedAt=Date.now();openTask(id);}   // 선택된 걸 또 탭 → 수정
+          else{SEL=id;buzz(8);refresh();}                   // 처음 탭 → 선택
+          return;}
+        if(isUnassigned){clearAll();GD.endedAt=Date.now();openTask(id);return;}}
       clearAll();return;}
     const ds=dateOf(),task=DB.tasks.find(x=>x.id===tid);
     const leftBand=prevBand;
@@ -942,7 +1001,7 @@ function bindGrid(root){
       }else{
         task.min=abs(curS);task.dur=Math.max(SNAP,curD);
         const b=bandAt(ds,task.min);
-        if(b&&(mode==='move'||mode==='new'))splitBand(ds,b);
+        if(b&&(mode==='move'||mode==='new'))splitBand(ds,b,false,task.id,dropIndex);
         else resolveOverlaps(ds,task.id);
         SEL=task.id;}
       // 원래 있던 칸에서 빠져나갔으면 남은 것들이 그 칸을 다시 채운다
@@ -957,9 +1016,12 @@ function bindGrid(root){
     if(e.target.closest('.evck')){
       const ev=e.target.closest('.ev');if(ev){e.stopPropagation();toggleDone(ev.dataset.id);}return;}
     if(GD.on||Date.now()-GD.endedAt<300)return;
-    if(e.target.closest('.ev, .uchip'))return;
-    const g=grid();if(!g||!g.contains(e.target))return;
-    if(SEL){SEL=null;refresh();}          // 빈 곳 탭 = 선택 해제. 추가는 큰 + 버튼으로만.
+    const ev=e.target.closest('.ev'),uc=e.target.closest('.uchip');
+    if(ev&&!ev.classList.contains('dropghost')){
+      const id=ev.dataset.id;
+      if(SEL===id)openTask(id);else{SEL=id;buzz(8);refresh();}return;}
+    if(uc){openTask(uc.dataset.id);return;}
+    if(SEL){SEL=null;refresh();}          // 일정이 없는 곳을 누르면 어디든 선택 해제
   });
 }
 function bindGoalDrag(){
@@ -1013,21 +1075,10 @@ function openTask(id){
 function detailHTML(){
   const e=_ed,rep=e.rep;
   const eEnd=e.min!=null?e.min+(e.dur!=null?e.dur:taskDur({min:e.min,dur:null},e.date)):null;
-  let h='<div class="fl">언제</div>';
-  if(e.min==null){
-    h+='<div class="seg"><button class="sg on">미배정</button>'+
-      '<button class="sg" onclick="setMin(540)">시각 지정</button></div>';
-  }else{
-    h+='<div class="two">'+
-      '<div><label>시작</label><div class="tp" style="gap:6px;padding:0">'+
-        '<button class="tpb" onclick="bumpStart(-5)">−</button><div class="tpv" style="flex:1">'+hhmm(e.min)+'</div>'+
-        '<button class="tpb" onclick="bumpStart(5)">+</button></div></div>'+
-      '<div><label>종료</label><div class="tp" style="gap:6px;padding:0">'+
-        '<button class="tpb" onclick="bumpEnd(-5)">−</button><div class="tpv" style="flex:1">'+hhmm(eEnd)+'</div>'+
-        '<button class="tpb" onclick="bumpEnd(5)">+</button></div></div></div>'+
-      '<div style="font-size:12.5px;font-weight:700;color:var(--ink3);text-align:center;margin-top:8px">'+
-        durTxt(eEnd-e.min)+' · 5분 단위 <button style="color:var(--ac);font-weight:800" onclick="setMin(null)">미배정으로</button></div>';
-  }
+  const when=e.min==null?'미배정':hhmm(e.min)+' ~ '+hhmm(eEnd)+' · '+durTxt(eEnd-e.min);
+  let h='<div class="fl">현재 배치</div><div style="padding:13px 15px;border-radius:15px;background:var(--gapc);'+
+    'font-size:14px;font-weight:800;color:var(--ink2)">'+when+
+    '<div style="margin-top:4px;font-size:11.5px;font-weight:650;color:var(--ink3)">시간 변경은 일정의 손잡이와 드래그로 한다</div></div>';
   if(DB.subjects.length)h+='<div class="fl">과목</div><div class="seg"><button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">없음</button>'+
     DB.subjects.map(s=>'<button class="sg'+(e.subj===s.id?' on':'')+'" onclick="setSubj(\''+s.id+'\')">'+esc(s.name)+'</button>').join('')+'</div>';
   h+='<div class="fl">반복</div><div class="seg">'+
