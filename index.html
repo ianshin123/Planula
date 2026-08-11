@@ -177,23 +177,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   box-shadow:var(--shadow-md);white-space:nowrap;font-variant-numeric:tabular-nums}
 #ptag.on{opacity:1}
 
-/* 왼손 반원 시간 다이얼 — 화면 왼쪽 전체를 쓸어 시간대로 이동 */
-#rail{--dial-y:50%;position:fixed;left:0;top:calc(var(--st) + 104px);bottom:calc(var(--sb) + var(--dockh) + 20px);
-  width:54px;z-index:30;display:none;touch-action:none}
-#rail.on{display:block}
-#rail::before{content:'';position:absolute;left:-38px;top:calc(var(--dial-y) - 42px);width:84px;height:84px;
-  border-radius:0 44px 44px 0;background:var(--blur-surface);border:1px solid var(--line);box-shadow:var(--shadow-md);
-  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);opacity:.72;transform:translateX(-8px);transition:.16s}
-#rail::after{content:'↕';position:absolute;left:23px;top:calc(var(--dial-y) - 10px);color:var(--ink3);
-  font-size:13px;font-weight:900;opacity:.65;transition:.12s}
-#rail.active::before{opacity:1;transform:none}
-#rail.active::after{opacity:0}
-#rail b{position:absolute;left:7px;width:38px;transform:translateY(-50%);font-size:9.5px;font-weight:800;
-  color:var(--ink3);text-align:center;font-variant-numeric:tabular-nums;opacity:0;padding:2px 0;border-radius:7px;
-  white-space:nowrap;letter-spacing:-.03em;pointer-events:none;transition:opacity .1s}
-#rail b.near{opacity:.5}
-#rail b.hot{color:#fff;background:var(--ac);opacity:1}
-
 .card{border-radius:var(--r);margin-bottom:14px;overflow:hidden}
 .ctitle{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 10px;gap:8px}
 .ctitle b{font-size:12.5px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase}
@@ -269,7 +252,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   #top{padding-left:14px;padding-right:14px}
   #scroll{padding-left:30px;padding-right:10px}
   .daylayout{gap:8px}
-  #rail b{font-size:8.5px}
   .unbar{padding:8px 6px}
   .unbar .uh{font-size:10px;letter-spacing:0}
   .uchip{padding:9px 6px}
@@ -339,7 +321,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   <div id="top"><div id="topin"></div></div>
   <div id="scroll"><div id="view"></div></div>
 </div>
-<div id="rail"></div>
 <div class="dock">
   <div class="dock-bar glass" id="navtabs">
     <div class="dockthumb"></div>
@@ -398,7 +379,6 @@ function is24(ds){
   const wd=new Date(ds+'T00:00:00').getDay(),f=DB.s.force24[ds];
   return f!==undefined?f:(wd===0||wd===6);
 }
-function blocksFor(ds){return {list:SCHOOL,is24:is24(ds)};}
 function bandAt(ds,min){
   if(is24(ds))return null;
   const b=SCHOOL.find(x=>min>=x.s&&min<x.e)||null;
@@ -442,6 +422,13 @@ function load(){try{
     if(t.repId===undefined)t.repId=null;
   });
 }catch(e){}}
+/** 백업에 뭐가 들어있는지 — 되돌리기 전에 보여준다 */
+function bakInfo(){
+  const r=localStorage.getItem(BAK);if(!r)return null;
+  try{const d=JSON.parse(r);
+    return {tasks:(d.tasks||[]).length,subjects:(d.subjects||[]).length,repeats:(d.repeats||[]).length};
+  }catch(e){return null;}
+}
 function restoreBackup(){
   const r=localStorage.getItem(BAK);
   if(!r){toast('백업이 없다');return;}
@@ -637,55 +624,7 @@ function soonHTML(){
 }
 function todayHTML(){return renderDay(TODAY());}
 
-/* ═════ 6. 좌측 빠른 스크롤 레일 ═════ */
-const RAIL_SHORT={'점호':'점호','아침조례':'조례','1교시':'1','2교시':'2','3교시':'3','4교시':'4',
-  '5교시':'5','6교시':'6','7교시':'7','8교시':'8','점심시간':'점심','저녁시간':'저녁',
-  '야자 1차시':'야1','야자 2차시':'야2','아침 시간':'아침','새벽':'새벽','취침 전':'취침'};
-/** 학교 시간표를 볼 때는 교시 이름으로, 24시간일 때는 시각으로 */
-function railHTML(){
-  const ds=(tab==='today')?TODAY():TODAY();
-  if(!is24(ds)){
-    const entries=[];
-    SCHOOL.filter(b=>RAIL_SHORT[b.name]&&(b.cls||b.e-b.s>=40)).forEach(b=>{
-      const r=rel(b.s),len=b.e-b.s;
-      if(r+len>1440){entries.push({r:0,label:RAIL_SHORT[b.name],cls:b.cls});entries.push({r,label:'00',cls:false});}
-      else entries.push({r,label:RAIL_SHORT[b.name],cls:b.cls});});
-    return entries.sort((a,b)=>a.r-b.r).map(x=>
-      '<b class="'+(x.cls?'cls':'')+'" data-r="'+x.r+'">'+x.label+'</b>').join('');
-  }
-  let h='';
-  for(let i=0;i<=24;i+=2){const m=(DAY0+i*60)%1440;
-    h+='<b data-r="'+(i*60)+'" style="top:'+(i*60/1440*100)+'%">'+String(Math.floor(m/60)).padStart(2,'0')+'</b>';}
-  return h;
-}
-function bindRail(){
-  const R=document.getElementById('rail');if(R._b)return;R._b=true;
-  let hideTimer=null;
-  const goTo=relMin=>{
-    const g=document.querySelector('.grid');if(!g)return;
-    const S=document.getElementById('scroll');
-    const gTop=g.getBoundingClientRect().top-S.getBoundingClientRect().top+S.scrollTop;
-    S.scrollTop=gTop+timeMap(g.dataset.date).y(relMin)-S.clientHeight*0.25;};
-  const pick=cy=>{
-    const bs=[...R.querySelectorAll('b')];if(!bs.length)return;
-    const rr=R.getBoundingClientRect(),ratio=Math.max(0,Math.min(1,(cy-rr.top)/rr.height));
-    const idx=Math.round(ratio*(bs.length-1)),best=bs[idx];
-    const dialY=Math.max(42,Math.min(rr.height-42,cy-rr.top));
-    clearTimeout(hideTimer);R.classList.add('active');R.style.setProperty('--dial-y',dialY+'px');
-    bs.forEach((b,i)=>{
-      const delta=i-idx,near=Math.abs(delta)===1;
-      b.classList.toggle('hot',delta===0);b.classList.toggle('near',near);
-      if(Math.abs(delta)<=1)b.style.top=(dialY+delta*25)+'px';});
-    goTo(+best.dataset.r);};
-  const rest=()=>{clearTimeout(hideTimer);hideTimer=setTimeout(()=>{
-    R.classList.remove('active');R.querySelectorAll('b').forEach(b=>b.classList.remove('hot','near'));},700);};
-  R.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
-  R.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();pick(e.touches[0].clientY);},{passive:false});
-  R.addEventListener('touchend',rest);R.addEventListener('touchcancel',rest);
-  R.addEventListener('click',e=>{pick(e.clientY);rest();});
-}
-
-/* ═════ 7. 헤더 ═════ */
+/* ═════ 6. 헤더 ═════ */
 function themeIcon(){
   const t=DB.s.theme||'sys';
   if(t==='light')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.6"/><path d="M12 1.8v2.4M12 19.8v2.4M22.2 12h-2.4M4.2 12H1.8M19.2 4.8l-1.7 1.7M6.5 17.5l-1.7 1.7M19.2 19.2l-1.7-1.7M6.5 6.5L4.8 4.8"/></svg>';
@@ -694,7 +633,7 @@ function themeIcon(){
 }
 function topHTML(){
   const th='<button class="ib" onclick="cycleTheme()">'+themeIcon()+'</button>'+
-    '<button class="ib" onclick="dataSheet()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
+    '<button class="ib" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
     const d=parseD(TODAY());
     return '<div class="hrow"><div class="h1"><small>'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DOW[d.getDay()]+'요일</small>오늘</div><div class="hbtns">'+
@@ -710,7 +649,7 @@ function cycleTheme(){
   toast({sys:'시스템 설정 따름',light:'라이트 모드',dark:'다크 모드'}[DB.s.theme]);
 }
 
-/* ═════ 8. 달력 ═════ */
+/* ═════ 7. 달력 ═════ */
 function calHTML(){
   const y=calM.getFullYear(),m=calM.getMonth();
   const first=new Date(y,m,1),start=new Date(first);start.setDate(1-first.getDay());
@@ -760,7 +699,7 @@ function popMove(n){openDay(addDays(popDate,n));}
 function popToggle24(){const ds=popDate,cur=is24(ds),wd=parseD(ds).getDay(),def=(wd===0||wd===6);
   if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];save();openDay(ds);}
 
-/* ═════ 9. 과목 ═════ */
+/* ═════ 8. 과목 ═════ */
 function ddHTML(s,d,editable){
   const n=dcount(d.date),cl=n<0?'past':(n<=7?'':'far');
   const lab=n===0?'D-DAY':(n>0?'D-'+n:'D+'+(-n)),dt=parseD(d.date);
@@ -790,15 +729,12 @@ function subjHTML(){
   return h;
 }
 
-/* ═════ 10. paint ═════ */
+/* ═════ 9. paint ═════ */
 function paint(){
   materializeWindow();
   $('#topin').innerHTML=topHTML();
   $('#view').innerHTML=({today:todayHTML,cal:calHTML,subj:subjHTML}[tab])();
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
-  const R=$('#rail');
-  if(tab==='today'){R.innerHTML=railHTML();R.classList.add('on');bindRail();}
-  else R.classList.remove('on');
   placeThumb();attachDockDrag();
   if(tab==='today')bindGrid($('#view'));
   if(tab==='subj')bindGoalDrag();
@@ -857,7 +793,8 @@ function toggle24(){
 function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
 function refresh(){
   if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody')){
-    $('#popbody').innerHTML=renderDay(popDate);$('#popbody')._b=false;bindGrid($('#popbody'));
+    // #popbody 는 그대로 두고 안쪽만 다시 그린다. 제스처는 위임이라 다시 붙일 필요가 없다.
+    $('#popbody').innerHTML=renderDay(popDate);
     $('#topin').innerHTML=topHTML();
   }else paint();
 }
@@ -872,7 +809,7 @@ $('#scroll').addEventListener('click',e=>{
   SEL=null;refresh();
 });
 
-/* ═════ 11. 스와이프 ═════ */
+/* ═════ 10. 스와이프 ═════ */
 (function(){
   const S=$('#scroll');let x0=null,y0=null,decided=false,horiz=false;
   S.addEventListener('touchstart',e=>{if(_anim||GD.on){x0=null;return;}
@@ -894,7 +831,7 @@ $('#scroll').addEventListener('click',e=>{
   S.addEventListener('touchend',end);S.addEventListener('touchcancel',end);
 })();
 
-/* ═════ 12. 그리드 조작 — 이동 / 크기 / 경계 / 미배정 끌어놓기 ═════ */
+/* ═════ 11. 그리드 조작 — 이동 / 크기 / 경계 / 미배정 끌어놓기 ═════ */
 const GD={on:false,endedAt:0};
 /* 제스처 (롱프레스 없음)
    · 탭            → 선택. 위아래 손잡이가 나온다
@@ -903,13 +840,18 @@ const GD={on:false,endedAt:0};
    · 손잡이 끌기    → 길이 조절 (뒤엣것과 맞닿아 있으면 경계를 함께 민다)
    · 미배정 바로 끌어올리면 → 미배정으로 되돌린다                         */
 function bindGrid(root){
+  // 한 노드에 딱 한 번만 붙인다. _b 를 되돌려 다시 부르면 같은 노드에 리스너가 겹쳐
+  // 완료 토글이 짝수 번 실행되고(= 아무 일도 안 일어난다) 리스너가 배로 불어난다.
   if(!root||root._b)return;root._b=true;
   const grid=()=>root.querySelector('.grid');
   const unbar=()=>root.querySelector('.unbar');
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
   const scroller=()=>root.closest('#sheet')||document.getElementById('scroll');
   const tag=document.getElementById('ptag');
-  const map=timeMap(dateOf());
+  // 화면을 그린 timeMap 과 손가락 좌표가 갈라지지 않게 제스처가 시작될 때마다 다시 잡는다.
+  // 짧은 일정이 하나 생기면 그 아래 구간의 배율이 통째로 바뀌므로 바인딩 시점 값을 붙들면 안 된다.
+  // 한 번의 드래그 안에서는 다시 그리지 않으니 제스처 도중에는 그대로 쓴다.
+  let map=timeMap(dateOf());
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
 
@@ -974,6 +916,7 @@ function bindGrid(root){
     if(v)S.scrollTop+=v;};
 
   root.addEventListener('touchstart',e=>{
+    map=timeMap(dateOf());
     const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;virtualDoneId=null;
     if(e.target.closest('.evck,.uck')){
       blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
@@ -1149,7 +1092,7 @@ function bindGoalDrag(){
     list.addEventListener('touchend',end);list.addEventListener('touchcancel',end);});
 }
 
-/* ═════ 13. 시트 ═════ */
+/* ═════ 12. 시트 ═════ */
 function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
   $('#scrim').classList.add('on');$('#sheet').classList.add('on');
   $('#popfab').classList.remove('on');}
@@ -1216,16 +1159,7 @@ function taskSheet(){
 function readTitle(){const i=$('#f_title');if(i)_ed.title=i.value;
   const rs=$('#r_s'),re=$('#r_e');if(_ed.rep){if(rs)_ed.rep.start=rs.value;if(re)_ed.rep.end=re.value;}}
 function toggleAdv(){readTitle();_adv=!_adv;taskSheet();}
-function setMin(m){readTitle();_ed.min=m;if(m==null)_ed.dur=null;taskSheet();}
 function setSubj(s){readTitle();_ed.subj=s;taskSheet();}
-function curEnd(){const e=_ed;return e.min+(e.dur!=null?e.dur:taskDur({min:e.min,dur:null},e.date));}
-function bumpStart(d){readTitle();const e=_ed;if(e.min==null)return;
-  const en=curEnd();let s=snap(e.min+d);
-  if(s>=en)s=en-SNAP;if(s<0)s=0;
-  e.min=s;e.dur=en-s;taskSheet();}
-function bumpEnd(d){readTitle();const e=_ed;if(e.min==null)return;
-  let en=snap(curEnd()+d);if(en<=e.min)en=e.min+SNAP;if(en>e.min+1440)en=e.min+1440;
-  e.dur=en-e.min;taskSheet();}
 function setRep(f){readTitle();
   if(!f)_ed.rep=null;
   else _ed.rep={freq:f,weekdays:[parseD(_ed.date).getDay()],interval:2,start:_ed.date,end:''};
@@ -1282,7 +1216,7 @@ function delTask(all){
   toast(all?'반복 전체를 지웠다':'지웠다');
 }
 
-/* ═════ 14. 과목·디데이·목표 ═════ */
+/* ═════ 13. 과목·디데이·목표 ═════ */
 let _sj={};
 function editSubject(id){const s=id?subjOf(id):null;
   _sj=s?{id:s.id,name:s.name,color:s.color}:{id:null,name:'',color:PALETTE[DB.subjects.length%PALETTE.length]};
@@ -1349,7 +1283,19 @@ function saveGoal(){
 function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!==_gl.id);
   save();closeSheet();paint();}
 
-/* ═════ 15. 데이터 ═════ */
+/* ═════ 14. 데이터 ═════ */
+let _bakArm=false;                       // 되돌리기는 두 번 눌러야 실행된다
+function openData(){_bakArm=false;dataSheet();}
+function armRestore(){_bakArm=true;dataSheet();}
+function bakHTML(){
+  const b=bakInfo();
+  if(!b)return '<div class="empty" style="padding:14px">백업이 없다</div>';
+  return '<div style="font-size:13px;font-weight:650;color:var(--ink3);line-height:1.6;margin-bottom:9px">'+
+    '타임그리드로 바꾸기 전 원본 · 할일 <b>'+b.tasks+'</b>개 · 과목 <b>'+b.subjects+'</b>개 · 반복 <b>'+b.repeats+'</b>개</div>'+
+    (_bakArm
+      ?'<div class="row2" style="margin-top:0"><button class="btn d" onclick="restoreBackup()">정말 되돌린다 — 지금 데이터는 사라진다</button></div>'
+      :'<div class="row2" style="margin-top:0"><button class="btn s" onclick="armRestore()">백업으로 되돌리기</button></div>');
+}
 function dataSheet(){
   openSheet('<div class="sh2">데이터</div>'+
     '<div style="font-size:14px;font-weight:650;color:var(--ink2);line-height:1.7">'+
@@ -1357,6 +1303,7 @@ function dataSheet(){
     '<span style="color:var(--ink3);font-size:13px">파일로 내보내서 다른 기기에서 가져오면 그대로 옮겨진다.</span></div>'+
     '<div class="row2"><button class="btn p" onclick="doExport()">내보내기</button>'+
     '<button class="btn s" onclick="document.getElementById(\'fileIn\').click()">가져오기</button></div>'+
+    '<div class="fl">백업</div>'+bakHTML()+
     '<div class="fl">반복 규칙</div>'+
     (DB.repeats.length?DB.repeats.map(r=>'<div class="dd" style="border-top:1px solid var(--line2)">'+
       '<div style="flex:1;min-width:0"><div class="ddn">'+esc(r.title)+'</div>'+
@@ -1391,10 +1338,10 @@ function doImport(inp){
 function delRule(id){
   DB.repeats=DB.repeats.filter(r=>r.id!==id);
   DB.tasks=DB.tasks.filter(t=>t.repId!==id);
-  save();dataSheet();paint();toast('반복을 지웠다');
+  save();paint();openData();toast('반복을 지웠다');
 }
 
-/* ═════ 16. 부팅 ═════ */
+/* ═════ 15. 부팅 ═════ */
 firstPaint();
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
