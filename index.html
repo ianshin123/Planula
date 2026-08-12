@@ -176,9 +176,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   pointer-events:none;opacity:0;transition:opacity .16s}
 .evh.t{top:-14px}
 .evh.b{bottom:-14px}
-.evh::after{content:'';width:54px;height:7px;border-radius:4px;background:var(--ac);
-  box-shadow:0 2px 5px rgba(75,48,34,.2)}
-.ev.sel .evh,.ev.act .evh{pointer-events:auto;opacity:1}
+.evh i{display:block;width:58px;height:9px;border-radius:5px;background:var(--ac);
+  box-shadow:0 2px 5px rgba(75,48,34,.2);pointer-events:none}
+.ev.sel .evh,.ev.act .evh{opacity:1}
+.ev.sel .evh i,.ev.act .evh i{pointer-events:auto}
 .evtime{position:absolute;right:8px;bottom:3px;font-size:11px;font-weight:850;color:var(--ac);
   font-variant-numeric:tabular-nums;opacity:0;transition:opacity .14s;pointer-events:none;
   background:var(--bg2);padding:0 4px;border-radius:5px}
@@ -616,12 +617,12 @@ function evHTML(it,map){
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
   return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
     'style="top:'+map.y(it.s)+'px;height:'+h+'px;left:3px;right:3px">'+
-    '<div class="evh t"></div>'+
+    '<div class="evh t"><i></i></div>'+
     '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
     (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
     '<div class="evm">'+hhmm(t.min)+'~'+hhmm(end)+' \u00b7 '+durTxt(it.e-it.s)+(t.repId?' \u00b7 반복':'')+'</div></div>'+
     '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+
-    '<div class="evh b"></div></div>';
+    '<div class="evh b"><i></i></div></div>';
 }
 function renderDay(ds){
   const map=timeMap(ds),H=map.height;
@@ -994,7 +995,8 @@ function bindGrid(root){
       blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
       return;}
     blocked=false;
-    const handle=e.target.closest('.evh');
+    // 보이는 주황 막대 자체를 잡았을 때만 크기를 조절한다.
+    const handle=e.target.closest('.evh i')?.parentElement||null;
     let ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
 
@@ -1033,9 +1035,9 @@ function bindGrid(root){
       el=ev;tid=task.id;
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
       prevBand=bandAt(ds,task.min);
-      if(SEL===task.id){                      // 이미 선택돼 있으면 바로 끌 수 있다
-        mode='move';armed=true;
-        if(e.cancelable)e.preventDefault();}
+      // 주황 손잡이와 완료 버튼을 뺀 카드 전체는 선택 여부와 관계없이 이동 영역이다.
+      // 짧은 탭은 아래 click에서 선택/편집하고, 7px 넘게 움직였을 때만 실제 이동한다.
+      mode='move';armed=true;
     }
   },{passive:false});
 
@@ -1222,7 +1224,8 @@ function taskSheet(){
     h+=detailHTML();
     if(!e.id)h+='<div class="fl"><span></span><button onclick="toggleAdv()">간단히 ▴</button></div>';
   }
-  h+='<div class="row2"><button class="btn p" onclick="saveTask()">'+(e.id?'저장':'추가')+'</button></div>';
+  h+='<div class="row2">'+(e.id?'<button class="btn s" onclick="copyTask()">미배정으로 복사</button>':'')+
+    '<button class="btn p" onclick="saveTask()">'+(e.id?'저장':'추가')+'</button></div>';
   if(e.id)h+='<div class="row2"><button class="btn d" onclick="delTask(false)">'+(e.repId?'이것만 삭제':'삭제')+'</button>'+
     (e.repId?'<button class="btn d" onclick="delTask(true)">반복 전체 삭제</button>':'')+'</div>';
   openSheet(h);
@@ -1239,6 +1242,16 @@ function setRep(f){readTitle();
 function togDow(i){readTitle();const d=_ed.rep.weekdays,k=d.indexOf(i);
   if(k>=0){if(d.length>1)d.splice(k,1);}else d.push(i);taskSheet();}
 function bumpN(x){readTitle();_ed.rep.interval=Math.max(1,Math.min(60,_ed.rep.interval+x));taskSheet();}
+function copyTask(){
+  readTitle();const e=_ed;if(!e.id)return;
+  const title=e.title.trim();if(!title){toast('할일 이름을 적어줘');return;}
+  const keepPop=popDate,date=e.date||TODAY();
+  const ord=DB.tasks.filter(x=>x.date===date&&x.min==null).length;
+  DB.tasks.push({id:uid(),title,date,min:null,dur:null,ord,done:false,subj:e.subj||null,repId:null});
+  save();closeSheet();popDate=keepPop;
+  if(keepPop)openDay(keepPop);else paint();
+  toast('미배정에 복사했다');
+}
 function saveTask(){
   readTitle();const e=_ed;
   if(!e.title.trim()){toast('할일 이름을 적어줘');return;}
