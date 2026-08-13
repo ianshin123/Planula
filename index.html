@@ -98,6 +98,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
+.uchip.sel{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);background:var(--ac-s)}
 .uchip.dragging{opacity:.25}
 .uchip.done{background:var(--done-bg)}
 .uchip.done .ut{opacity:.56}
@@ -293,6 +294,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   transform:translateY(110%);transition:transform .36s cubic-bezier(.32,.72,0,1);
   padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;overflow-y:auto}
 #sheet.on{transform:translateY(0)}
+#subscrim{position:fixed;inset:0;z-index:120;background:rgba(30,22,14,.28);opacity:0;pointer-events:none;transition:opacity .24s;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#subscrim.on{opacity:1;pointer-events:auto}
+#subsheet{position:fixed;left:10px;right:10px;bottom:0;z-index:121;max-width:720px;margin:0 auto;
+  background:var(--blur-strong);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  transform:translateY(110%);transition:transform .32s cubic-bezier(.32,.72,0,1);
+  padding:10px 20px calc(var(--sb) + 22px);max-height:84vh;max-height:84dvh;overflow-y:auto}
+#subsheet.on{transform:translateY(0)}
 .grab{width:42px;height:5px;border-radius:3px;background:var(--ink3);opacity:.45;margin:0 auto 14px}
 .sh2{font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:16px}
 .fl{font-size:11.5px;font-weight:800;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase;margin:18px 0 8px;
@@ -360,6 +370,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div id="scrim" onclick="closeSheet()"></div>
 <div id="sheet"></div>
 <button id="popfab" class="fab" onclick="newTask(popDate,null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
+<div id="subscrim" onclick="closeSubSheet()"></div>
+<div id="subsheet"></div>
 <div id="toast"></div>
 <input type="file" id="fileIn" accept="application/json,.json" style="display:none" onchange="doImport(this)">
 
@@ -582,6 +594,23 @@ function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
     t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-t.min):each;
     t.ord=i;});
 }
+function sameBand(a,b){return !!(a&&b&&a.s===b.s&&a.e===b.e);}
+function resizeLinked(task,mode,baseS,baseD,curS,curD,neighbor,neighborBase){
+  if(!task||!neighbor)return false;
+  if(mode==='rt'){
+    const delta=curS-baseS;
+    task.min=abs(curS);task.dur=Math.max(SNAP,curD);
+    neighbor.dur=Math.max(SNAP,neighborBase+delta);
+    return true;
+  }
+  if(mode==='rb'){
+    const delta=(curS+curD)-(baseS+baseD);
+    task.dur=Math.max(SNAP,curD);
+    neighbor.min=abs(rel(neighbor.min)+delta);neighbor.dur=Math.max(SNAP,neighborBase-delta);
+    return true;
+  }
+  return false;
+}
 function gridItems(ds){
   return tasksOf(ds).filter(t=>t.min!=null).map(t=>{
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
@@ -644,7 +673,7 @@ function renderDay(ds){
   gridItems(ds).forEach(it=>{h+=evHTML(it,map);});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">미배정'+(un.length?' '+un.length:'')+'</div>'+
-    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip'+(t.done?' done':'')+'" data-id="'+t.id+'">'+
+    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip'+(t.done?' done':'')+(SEL===t.id?' sel':'')+'" data-id="'+t.id+'">'+
       '<button class="uck'+(t.done?' on':'')+'" aria-label="완료 표시"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
       '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i>'+esc(sj.name)+'</span>':'')+'</div>'+
       '<div class="gr"><b></b><b></b><b></b></div></div>';}).join(''):'끌어와서<br>미배정')+'</div></div></div>';
@@ -737,7 +766,7 @@ function fitCalendar(){
   if(hh>150)g.style.height=Math.min(hh,430)+'px';
 }
 function openDay(ds){
-  popDate=ds;
+  popDate=ds;SEL=null;closeSubSheet();
   const d=parseD(ds),isT=ds===TODAY();
   const h='<div class="popnav">'+
     '<button class="ib" onclick="popMove(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'+
@@ -836,7 +865,11 @@ function attachDockDrag(){
   bar.addEventListener('touchcancel',()=>{on=false;th.classList.remove('drag');placeThumb();},{passive:true});
 }
 function go(t){
-  if(t===tab){if(t==='today')focusToday('smooth');else $('#scroll').scrollTo({top:0,behavior:'smooth'});return;}
+  if(t===tab){
+    if(t==='today')focusToday('smooth');
+    else if(t==='cal'){calM=new Date();$('#scroll').scrollTop=0;paint();toast('이번 달로 돌아왔다');}
+    else $('#scroll').scrollTo({top:0,behavior:'smooth'});
+    return;}
   const order=['today','cal','subj'],dir=order.indexOf(t)>order.indexOf(tab)?1:-1;
   _anim=true;const v=$('#view');
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
@@ -889,6 +922,11 @@ $('#scroll').addEventListener('click',e=>{
   if(e.target.closest('.ev,.uchip,button,input,textarea,select,.cell,.sj,.dd,.gl'))return;
   SEL=null;refresh();
 });
+$('#sheet').addEventListener('click',e=>{
+  if(!popDate||subSheetOn()||!SEL)return;
+  if(e.target.closest('.ev,.uchip,button,input,textarea,select,.popnav'))return;
+  SEL=null;refresh();
+});
 
 /* ═════ 10. 스와이프 ═════ */
 (function(){
@@ -934,7 +972,7 @@ function bindGrid(root){
   // 한 번의 드래그 안에서는 다시 그리지 않으니 제스처 도중에는 그대로 쓴다.
   let map=timeMap(dateOf());
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,virtualDoneId=null,ghost=null;
-  let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
+  let baseS=0,baseD=0,prevT=null,prevBase=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -983,7 +1021,7 @@ function bindGrid(root){
     if(ghost){ghost.remove();ghost=null;}
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
+    mode=null;el=null;tid=null;prevT=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
     GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
@@ -1019,20 +1057,23 @@ function bindGrid(root){
           if(e.cancelable)e.preventDefault();
           return;}}}
 
-    if(uc){                                   // 미배정 칩은 바로 끌린다
-      el=uc;tid=uc.dataset.id;mode='new';armed=true;prevBand=null;
+    if(uc){                                   // 미배정도 먼저 선택한 뒤에만 끌린다
+      el=uc;tid=uc.dataset.id;prevBand=null;
       const task=DB.tasks.find(x=>x.id===tid);
       baseD=task&&task.dur?task.dur:60;curD=baseD;
-      if(e.cancelable)e.preventDefault();
+      if(SEL===tid){mode='new';armed=true;if(e.cancelable)e.preventDefault();}
       return;}
 
-    if(handle&&ev){                           // 손잡이 = 길이 조절
+    if(handle&&ev&&SEL===ev.dataset.id){       // 선택된 일정의 손잡이만 길이 조절
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
       el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
-      if(mode==='rb'){
+      if(mode==='rt'){
+        prevT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&Math.abs(rel(x.min)+taskDur(x,ds)-baseS)<.5)||null;
+        if(prevT)prevBase=Math.max(SNAP,taskDur(prevT,ds));
+      }else{
         const endR=baseS+baseD;
-        nextT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&Math.abs(rel(x.min)-endR)<1)||null;
+        nextT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&Math.abs(rel(x.min)-endR)<.5)||null;
         if(nextT)nextBase=Math.max(SNAP,taskDur(nextT,ds));}
       GD.on=true;el.classList.add('act');
       if(e.cancelable)e.preventDefault();
@@ -1043,9 +1084,8 @@ function bindGrid(root){
       el=ev;tid=task.id;
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
       prevBand=bandAt(ds,task.min);
-      // 주황 손잡이와 완료 버튼을 뺀 카드 전체는 선택 여부와 관계없이 이동 영역이다.
-      // 짧은 탭은 아래 click에서 선택/편집하고, 7px 넘게 움직였을 때만 실제 이동한다.
-      mode='move';armed=true;
+      // 첫 탭은 선택만 한다. 선택된 카드의 본문만 이동 영역으로 활성화한다.
+      if(SEL===task.id){mode='move';armed=true;}
     }
   },{passive:false});
 
@@ -1081,9 +1121,10 @@ function bindGrid(root){
     }else{
       autoScroll(t.clientY);
       if(mode==='rt'){
-        let sM=snap(r);sM=Math.max(0,Math.min(baseS+baseD-SNAP,sM));
+        const minS=prevT?baseS-prevBase+SNAP:0;
+        let sM=snap(r);sM=Math.max(minS,Math.min(baseS+baseD-SNAP,sM));
         curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
-        showTag(hhmm(abs(curS))+' 시작 \u00b7 '+durTxt(curD),t.clientY);
+        showTag((prevT?'경계 ':'')+hhmm(abs(curS))+' 시작 \u00b7 '+durTxt(curD),t.clientY);
       }else{
         const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
         let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
@@ -1105,26 +1146,31 @@ function bindGrid(root){
           if(wasSel){GD.endedAt=Date.now();openTask(id);}   // 선택된 걸 또 탭 → 수정
           else{SEL=id;buzz(8);refresh();}                   // 처음 탭 → 선택
           return;}
-        if(isUnassigned){clearAll();GD.endedAt=Date.now();openTask(id);return;}}
+        if(isUnassigned){const wasSel=(SEL===id);clearAll();
+          if(wasSel){GD.endedAt=Date.now();openTask(id);}
+          else{SEL=id;buzz(8);refresh();}
+          return;}}
       clearAll();return;}
     const ds=dateOf(),task=DB.tasks.find(x=>x.id===tid);
     const leftBand=prevBand;
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
         task.min=null;task.dur=null;if(SEL===task.id)SEL=null;
+      }else if(mode==='rt'&&prevT){
+        resizeLinked(task,mode,baseS,baseD,curS,curD,prevT,prevBase);
       }else if(mode==='rb'&&nextT){
-        const delta=(curS+curD)-(baseS+baseD);
-        task.dur=curD;
-        nextT.min=abs(rel(nextT.min)+delta);nextT.dur=Math.max(SNAP,nextBase-delta);
+        resizeLinked(task,mode,baseS,baseD,curS,curD,nextT,nextBase);
       }else{
         task.min=abs(curS);task.dur=Math.max(SNAP,curD);
         const b=bandAt(ds,task.min);
         if(b&&(mode==='move'||mode==='new'))splitBand(ds,b,false,task.id,dropIndex);
         else resolveOverlaps(ds,task.id);
         SEL=task.id;}
-      // 원래 있던 칸에서 빠져나갔으면 남은 것들이 그 칸을 다시 채운다
-      if(leftBand&&(task.min==null||task.min<leftBand.s||task.min>=leftBand.e))
-        splitBand(ds,leftBand,true);
+      // 원래 칸을 떠나면 남은 일정이 반드시 칸 전체를 다시 채운다.
+      // 동적 새벽 1시간 슬롯도 s/e로 비교해야 같은 큰 gap id에 속한 다른 시간을 구분할 수 있다.
+      if((mode==='move'||mode==='new')&&leftBand){
+        const landed=task.min==null?null:bandAt(ds,task.min);
+        if(!sameBand(leftBand,landed))splitBand(ds,leftBand,true);}
       save();buzz(11);}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
@@ -1140,7 +1186,7 @@ function bindGrid(root){
     if(ev&&!ev.classList.contains('dropghost')){
       const id=ev.dataset.id;
       if(SEL===id)openTask(id);else{SEL=id;buzz(8);refresh();}return;}
-    if(uc){openTask(uc.dataset.id);return;}
+    if(uc){const id=uc.dataset.id;if(SEL===id)openTask(id);else{SEL=id;buzz(8);refresh();}return;}
     if(SEL){SEL=null;refresh();}          // 일정이 없는 곳을 누르면 어디든 선택 해제
   });
 }
@@ -1176,10 +1222,35 @@ function bindGoalDrag(){
 
 /* ═════ 12. 시트 ═════ */
 function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
+  closeSubSheet();
   $('#scrim').classList.add('on');$('#sheet').classList.add('on');
   $('#popfab').classList.remove('on');}
-function closeSheet(){$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
+function closeSheet(){closeSubSheet();$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
   $('#popfab').classList.remove('on');popDate=null;}
+let _popScroll=0;
+function subSheetOn(){return $('#subsheet').classList.contains('on');}
+function openSubSheet(html){
+  if(!subSheetOn())_popScroll=$('#sheet').scrollTop;
+  $('#subsheet').innerHTML='<div class="grab"></div>'+html;
+  $('#subscrim').classList.add('on');$('#subsheet').classList.add('on');$('#popfab').classList.remove('on');
+}
+function closeSubSheet(){
+  const sub=$('#subsheet');if(!sub)return;
+  $('#subscrim').classList.remove('on');sub.classList.remove('on');
+  if(popDate&&$('#sheet').classList.contains('on')){
+    $('#popfab').classList.add('on');requestAnimationFrame(()=>{$('#sheet').scrollTop=_popScroll;});}
+}
+function openTaskSheet(html){
+  if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody'))openSubSheet(html);else openSheet(html);
+}
+function finishTaskSheet(){
+  SEL=null;
+  if(subSheetOn()){
+    closeSubSheet();
+    if(popDate&&$('#popbody')){$('#popbody').innerHTML=renderDay(popDate);
+      requestAnimationFrame(()=>{$('#sheet').scrollTop=_popScroll;});}
+  }else{closeSheet();paint();}
+}
 let _ed={},_adv=false;
 function newTask(ds,min){
   _ed={id:null,title:'',date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,rep:null,repId:null};
@@ -1236,7 +1307,7 @@ function taskSheet(){
     '<button class="btn p" onclick="saveTask()">'+(e.id?'저장':'추가')+'</button></div>';
   if(e.id)h+='<div class="row2"><button class="btn d" onclick="delTask(false)">'+(e.repId?'이것만 삭제':'삭제')+'</button>'+
     (e.repId?'<button class="btn d" onclick="delTask(true)">반복 전체 삭제</button>':'')+'</div>';
-  openSheet(h);
+  openTaskSheet(h);
   setTimeout(()=>{if(!e.id&&$('#f_title'))$('#f_title').focus();},380);
 }
 function readTitle(){const i=$('#f_title');if(i)_ed.title=i.value;
@@ -1253,17 +1324,15 @@ function bumpN(x){readTitle();_ed.rep.interval=Math.max(1,Math.min(60,_ed.rep.in
 function copyTask(){
   readTitle();const e=_ed;if(!e.id)return;
   const title=e.title.trim();if(!title){toast('할일 이름을 적어줘');return;}
-  const keepPop=popDate,date=e.date||TODAY();
+  const date=e.date||TODAY();
   const ord=DB.tasks.filter(x=>x.date===date&&x.min==null).length;
   DB.tasks.push({id:uid(),title,date,min:null,dur:null,ord,done:false,subj:e.subj||null,repId:null});
-  save();closeSheet();popDate=keepPop;
-  if(keepPop)openDay(keepPop);else paint();
+  save();finishTaskSheet();
   toast('미배정에 복사했다');
 }
 function saveTask(){
   readTitle();const e=_ed;
   if(!e.title.trim()){toast('할일 이름을 적어줘');return;}
-  const keepPop=popDate;
   const mkRule=()=>({id:e.repId||uid(),title:e.title.trim(),freq:e.rep.freq,
     weekdays:e.rep.weekdays.slice(),interval:e.rep.interval,
     start:e.rep.start||e.date,end:e.rep.end||'',min:e.min,dur:e.dur,subj:e.subj,
@@ -1287,14 +1356,11 @@ function saveTask(){
       DB.tasks.push({id:uid(),title:e.title.trim(),date:e.date,min:e.min,
         dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),
         ord:sibs.length,done:false,subj:e.subj,repId:null});}}
-  materializeWindow();save();closeSheet();
-  popDate=keepPop;                       // closeSheet 가 지운 걸 되살린다
-  if(keepPop)openDay(keepPop);else paint();
+  materializeWindow();save();finishTaskSheet();
   toast(e.id?'수정했다':'추가했다');
 }
 function delTask(all){
   const t=DB.tasks.find(x=>x.id===_ed.id);if(!t)return;
-  const keepPop=popDate;
   if(all&&t.repId){
     DB.repeats=DB.repeats.filter(r=>r.id!==t.repId);
     DB.tasks=DB.tasks.filter(x=>x.repId!==t.repId);
@@ -1303,8 +1369,7 @@ function delTask(all){
     const b=t.min!=null?bandAt(t.date,t.min):null;
     DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
     if(b)splitBand(t.date,b,true);}
-  save();closeSheet();popDate=keepPop;
-  if(keepPop)openDay(keepPop);else paint();
+  save();finishTaskSheet();
   toast(all?'반복 전체를 지웠다':'지웠다');
 }
 
