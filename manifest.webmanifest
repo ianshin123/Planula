@@ -1,7 +1,7 @@
 {
-  "name": "JellyPlan",
-  "short_name": "JellyPlan",
-  "description": "요일별 시간표와 24시간 보기를 자유롭게 쓰는 JellyPlan.",
+  "name": "Planula",
+  "short_name": "Planula",
+  "description": "요일별 시간표와 24시간 보기를 자유롭게 쓰는 Planula.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
