@@ -7,11 +7,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Planner">
-<meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=36">
+<meta name="apple-mobile-web-app-title" content="JellyPlan">
+<meta name="application-name" content="JellyPlan">
+<link rel="manifest" href="manifest.webmanifest?v=37">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Planner</title>
+<title>JellyPlan</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -1736,7 +1736,7 @@ function playHomeMascot(){
   },MASCOT_CYCLE_MS+80);
 }
 const TOUR_STEPS=[
-  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 Planner 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
+  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 JellyPlan 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
   {scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:4,title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
   {scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:4,title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
   {scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',title:'이름·요일·시간대를 정해',text:'이름을 붙이고 적용 요일을 고른 뒤 시간대를 추가해. 평일을 한 번에 고를 수도 있고, 요일을 모두 해제한 채 보관할 수도 있어. 나중에도 같은 메뉴에서 수정할 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
@@ -1752,7 +1752,7 @@ const TOUR_STEPS=[
   {scene:'calendar',selector:'.cell.today',advance:'target',nextTo:15,title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
   {scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
   {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',finishOnSkip:true,title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
-  {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planner 시작하기'}
+  {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'JellyPlan 시작하기'}
 ];
 let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null,_tourTrackTimer=null,_tourTrackFrame=null;
 const TOUR_MOVING_SCENES=new Set(['schedule-list','schedule-editor','subject-editor','task-editor','day','data']);
@@ -1853,13 +1853,13 @@ function openTutorial(i){
 function renderTutorial(){
   if(!_tourActive||_tourLanding)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
   const installed=_tourStep===0&&standaloneMode();
-  const s=installed?Object.assign({},base,{title:'Planner 앱으로 잘 열렸어',text:'홈 화면의 Planner 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',next:'계속'}):base;
+  const s=installed?Object.assign({},base,{title:'JellyPlan 앱으로 잘 열렸어',text:'홈 화면의 JellyPlan 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',next:'계속'}):base;
   cancelTourTracking();setTourSceneSpace(s.scene);prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace(s.scene);startTourTracking(s.scene);
   const next=s.next||(s.advance==='target'?'건너뛰기':(last?'시작하기':'다음')),guide=$('#tour .tourguide');
   clearTimeout(_tourCopyTimer);guide.classList.add('changing');
   _tourCopyTimer=setTimeout(()=>{
     if(!_tourActive||_tourLanding)return;
-    guide.querySelector('.tourmark').textContent='PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length;
+    guide.querySelector('.tourmark').textContent='JELLYPLAN GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length;
     guide.querySelector('h2').textContent=s.title;guide.querySelector('p').innerHTML=s.text;
     const hint=guide.querySelector('.tourhint');hint.textContent=s.advance==='target'?'주황빛으로 표시된 곳을 눌러 주세요':s.signal?'저장하면 다음 안내로 자연스럽게 이어져요':'';hint.style.display=hint.textContent?'block':'none';
     const back=guide.querySelector('.tourback');back.style.visibility=_tourStep?'visible':'hidden';
@@ -1961,7 +1961,7 @@ function dataSheet(){
 function doExport(){
   const blob=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='planner-'+TODAY()+'.json';
+  a.href=URL.createObjectURL(blob);a.download='jellyplan-'+TODAY()+'.json';
   document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
   toast('내보냈다');
@@ -1994,7 +1994,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=36').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=37').catch(()=>{});
 </script>
 </body>
 </html>
