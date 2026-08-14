@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="JellyPlan">
 <meta name="application-name" content="JellyPlan">
-<link rel="manifest" href="manifest.webmanifest?v=37">
+<link rel="manifest" href="manifest.webmanifest?v=38">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>JellyPlan</title>
 <style>
@@ -1755,6 +1755,9 @@ const TOUR_STEPS=[
   {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'JellyPlan 시작하기'}
 ];
 let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null,_tourTrackTimer=null,_tourTrackFrame=null;
+// 끝내기 착지는 여러 프레임에 걸쳐 진행된다. 그 사이에 튜토리얼을 다시 열면 세대 번호가 올라가고
+// 옛 착지 절차는 새 화면을 건드리지 않고 조용히 물러난다.
+let _tourLandGen=0,_tourLandTimer=null;
 const TOUR_MOVING_SCENES=new Set(['schedule-list','schedule-editor','subject-editor','task-editor','day','data']);
 function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function setTourTab(t){
@@ -1846,6 +1849,9 @@ function ensureTourDOM(){
 }
 function openTutorial(i){
   _tourReturnStep=null;cancelTourTracking();closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
+  // 끝내기 착지가 아직 진행 중이면 예약된 정리를 무효로 만든다.
+  // 취소하지 않으면 뒤늦게 터진 타이머가 방금 연 튜토리얼의 #tour를 통째로 비운다.
+  _tourLandGen++;clearTimeout(_tourLandTimer);_tourLandTimer=null;
   _tourActive=true;_tourLanding=false;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
   const root=$('#tour');root.innerHTML='';root.className='on';ensureTourDOM();
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
@@ -1896,16 +1902,20 @@ function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.leng
 function tourSignal(name){if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.signal===name)setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},120);}
 function finishTutorial(){
   if(!_tourActive||_tourLanding)return;_tourLanding=true;_tourReturnStep=null;DB.s.tutorialSeen=true;save();
+  const gen=++_tourLandGen;
   cancelTourTracking();document.body.classList.remove('tour-sheet-space');clearTimeout(_tourCopyTimer);clearTimeout(_tourPlaceTimer);const root=$('#tour'),guide=root.querySelector('.tourguide'),fly=root.querySelector('.tourfly'),spot=root.querySelector('.tourspot');
   if(guide)guide.classList.add('leaving');if(spot)spot.style.opacity='0';setTourTab('today');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const home=$('#mascotHome');if(!fly||!home){completeTutorialLanding();return;}
+    if(gen!==_tourLandGen)return;               // 착지 도중 튜토리얼을 다시 열었다 — 새 화면을 건드리지 않는다
+    const home=$('#mascotHome');if(!fly||!home){completeTutorialLanding(gen);return;}
     home.classList.add('tour-away');const r=home.getBoundingClientRect(),fw=fly.offsetWidth,fh=fly.offsetHeight,scale=Math.min(r.width/fw,r.height/fh);
     fly.classList.add('landing');fly.style.transform='translate3d('+Math.round(r.left+(r.width-fw)/2)+'px,'+Math.round(r.top+(r.height-fh)/2)+'px,0) scale('+scale+')';
-    setTimeout(completeTutorialLanding,820);
+    clearTimeout(_tourLandTimer);_tourLandTimer=setTimeout(()=>completeTutorialLanding(gen),820);
   }));
 }
-function completeTutorialLanding(){
+function completeTutorialLanding(gen){
+  if(gen!=null&&gen!==_tourLandGen)return;      // 옛 착지 타이머가 새로 연 튜토리얼을 지우지 못하게 한다
+  clearTimeout(_tourLandTimer);_tourLandTimer=null;
   cancelTourTracking();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
   const home=$('#mascotHome');if(home){home.classList.remove('tour-away');home.classList.add('arrived');setTimeout(()=>home.classList.remove('arrived'),520);}
 }
@@ -1994,7 +2004,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=37').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=38').catch(()=>{});
 </script>
 </body>
 </html>
