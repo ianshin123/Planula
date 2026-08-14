@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=35">
+<link rel="manifest" href="manifest.webmanifest?v=36">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -1427,12 +1427,15 @@ function openSubSheet(html){
   if(!subSheetOn())_popScroll=$('#sheet').scrollTop;
   $('#subsheet').innerHTML='<div class="grab"></div>'+html;
   $('#subscrim').classList.add('on');$('#subsheet').classList.add('on');$('#popfab').classList.remove('on');
+  tourRelayout();
 }
 function closeSubSheet(){
   const sub=$('#subsheet');if(!sub)return;
+  const was=sub.classList.contains('on');
   $('#subscrim').classList.remove('on');sub.classList.remove('on');
   if(popDate&&$('#sheet').classList.contains('on')){
     $('#popfab').classList.add('on');requestAnimationFrame(()=>{$('#sheet').scrollTop=_popScroll;});}
+  if(was)tourRelayout();
 }
 function openTaskSheet(html){
   if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody'))openSubSheet(html);else openSheet(html);
@@ -1747,7 +1750,7 @@ const TOUR_STEPS=[
   {scene:'today',target:'grid',title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 선택하고 시간표로 끌면 10분 간격으로 배치돼. 이미 놓인 일도 먼저 선택해야 이동할 수 있고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
   {scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:15,title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
   {scene:'calendar',selector:'.cell.today',advance:'target',nextTo:15,title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
-  {scene:'day',selector:'#popfab.on',title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
+  {scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
   {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',finishOnSkip:true,title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
   {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planner 시작하기'}
 ];
@@ -1773,7 +1776,12 @@ function prepareTourScene(scene){
 function getTourTarget(s){
   if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar .unrow');
   if(s.target==='grid')return document.querySelector('#gridwrap .grid');
-  return s.selector?document.querySelector(s.selector):null;
+  if(!s.selector)return null;
+  // 목표를 여러 개 적으면 지금 화면에 실제로 있는 첫 번째를 쓴다.
+  // 시트가 한 층 더 뜨면 강조 박스가 사라진 버튼에 남지 않고 새 입력창으로 옮겨간다.
+  const list=Array.isArray(s.selector)?s.selector:[s.selector];
+  for(let i=0;i<list.length;i++){const t=document.querySelector(list[i]);if(t)return t;}
+  return null;
 }
 function cancelTourTracking(){
   clearTimeout(_tourTrackTimer);_tourTrackTimer=null;
@@ -1821,6 +1829,13 @@ function startTourTracking(scene){
     };
     _tourTrackFrame=requestAnimationFrame(tick);
   },70);
+}
+/* 단계는 그대로인데 화면 층이 바뀐 경우(시트가 한 층 더 뜨거나 닫힌 경우) 강조 박스만 다시 잡는다.
+   올라오는 애니메이션 동안 목표의 실제 사각형을 따라가고 마지막 위치를 한 번 더 확정한다. */
+function tourRelayout(){
+  if(!_tourActive||_tourLanding)return;
+  startTourTracking(TOUR_STEPS[_tourStep].scene);
+  clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
 }
 function ensureTourDOM(){
   const root=$('#tour');if(root.querySelector('.tourguide'))return;
@@ -1976,9 +1991,10 @@ function delRule(id){
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
 if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
-window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
+window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
+  if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=35').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=36').catch(()=>{});
 </script>
 </body>
 </html>
