@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=34">
+<link rel="manifest" href="manifest.webmanifest?v=35">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -1588,7 +1588,7 @@ function saveSubject(){
   if(!_sj.name.trim()){toast('과목 이름을 적어줘');return;}
   if(_sj.id){const s=subjOf(_sj.id);s.name=_sj.name.trim();s.color=_sj.color;}
   else DB.subjects.push({id:uid(),name:_sj.name.trim(),color:_sj.color,ddays:[],goals:[]});
-  save();closeSheet();paint();}
+  save();closeSheet();paint();tourSignal('subject-saved');}
 function delSubject(){
   DB.subjects=DB.subjects.filter(s=>s.id!==_sj.id);
   DB.tasks.forEach(t=>{if(t.subj===_sj.id)t.subj=null;});
@@ -1632,7 +1632,7 @@ function saveGoal(){
   else s.goals.push({id:uid(),text:v});
   save();closeSheet();paint();}
 function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!==_gl.id);
-  save();closeSheet();paint();tourSignal('subject-saved');}
+  save();closeSheet();paint();}
 
 /* ═════ 14. 요일별 시간표 ═════ */
 function profileDays(id){return DOW.map((_,i)=>DB.s.dayProfiles[String(i)]===id?i:null).filter(i=>i!=null);}
@@ -1978,7 +1978,7 @@ firstPaint();
 if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=34').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=35').catch(()=>{});
 </script>
 </body>
 </html>
