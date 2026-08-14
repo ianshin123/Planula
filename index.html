@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=29">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -343,6 +344,33 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .btn.p{background:var(--ac);color:#fff;box-shadow:0 4px 12px rgba(164,79,43,.2)}
 .btn.s{background:var(--muted);color:var(--ink2)}
 .btn.d{background:var(--gd-s);color:var(--gd)}
+.sheetlead{margin:-6px 0 16px;color:var(--ink2);font-size:13.5px;font-weight:650;line-height:1.65}
+.schedsum{width:100%;display:flex;align-items:center;gap:11px;padding:14px 15px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:8px;text-align:left}
+.schedsum>div{flex:1;min-width:0}.schedsum b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.schedsum span{display:block;margin-top:3px;color:var(--ink3);font-size:11.5px;font-weight:700;line-height:1.4}
+.schedbadge{flex:none;padding:6px 9px;border-radius:9px;background:var(--ac-s);color:var(--ac);font-size:11px;font-weight:850}
+.schedempty{padding:20px 15px;border:1.5px dashed var(--line);border-radius:var(--r3);text-align:center;color:var(--ink3);font-size:13px;font-weight:650;line-height:1.6}
+.blockrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1.15fr) 38px;gap:7px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:8px}
+.blockrow label{display:block;font-size:10.5px;font-weight:800;color:var(--ink3);margin-bottom:4px}
+.blockrow .fi{padding:11px 10px;font-size:13px;background:var(--solid)}
+.blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
+.blockdel{width:38px;height:42px;border-radius:10px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:20px;font-weight:500}
+.fullnote{padding:12px 14px;border-radius:var(--r3);background:var(--ac-s);color:var(--ink2);font-size:12.5px;font-weight:700;line-height:1.55}
+#tour{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:22px;opacity:0;pointer-events:none;transition:opacity .24s;background:rgba(30,22,14,.38);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#tour.on{opacity:1;pointer-events:auto}
+.tourcard{width:min(100%,440px);min-height:410px;padding:22px;border-radius:24px;background:var(--solid);border:1px solid var(--line);box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
+.tourtop{display:flex;align-items:center;justify-content:space-between;gap:10px}.tourmark{font-size:11px;font-weight:850;letter-spacing:.08em;color:var(--ac)}
+.tourskip{padding:8px 4px;color:var(--ink3);font-size:12px;font-weight:800}.tourbody{flex:1;padding:30px 2px 22px}
+.touricon{width:54px;height:54px;border-radius:17px;background:var(--ac-s);color:var(--ac);display:grid;place-items:center;margin-bottom:18px}.touricon svg{width:27px;height:27px}
+.tourbody h2{font-size:25px;line-height:1.2;letter-spacing:-.04em;margin-bottom:10px}.tourbody p{font-size:14px;font-weight:650;color:var(--ink2);line-height:1.75;white-space:pre-line}
+.tourcta{display:block;width:100%;margin-top:17px;padding:13px;border-radius:var(--r3);background:var(--ac-s);color:var(--ac);font-size:13px;font-weight:850}
+.tourfoot{display:flex;align-items:center;gap:10px}.tourdots{display:flex;gap:5px;flex:1}.tourdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}.tourdots i.on{width:18px;border-radius:4px;background:var(--ac)}
+.tourbtn{min-width:90px;padding:14px 17px;border-radius:var(--r3);background:var(--ac);color:#fff;font-size:14px;font-weight:850}.tourback{padding:13px 6px;color:var(--ink3);font-size:13px;font-weight:800}
+@media(max-width:620px){
+  .blockrow{grid-template-columns:minmax(0,1fr) 38px}
+  .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1/3;grid-row:2}
+  .blockrow .blockdel{grid-column:2;grid-row:1;align-self:end}
+}
 .popnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .popt{text-align:center}
 .popt .p1{font-size:19px;font-weight:800;letter-spacing:-.03em}
@@ -374,6 +402,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <button id="popfab" class="fab" onclick="newTask(popDate,null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
 <div id="subscrim" onclick="closeSubSheet()"></div>
 <div id="subsheet"></div>
+<div id="tour"></div>
 <div id="toast"></div>
 <input type="file" id="fileIn" accept="application/json,.json" style="display:none" onchange="doImport(this)">
 
@@ -386,7 +415,7 @@ const PPM=1.4;              // 기본 1분당 픽셀
 const MIN_EVENT_PX=20;      // 짧은 일정 카드의 최소 터치 높이
 const SNAP=5;               // 길이 조절과 자동 분할은 5분 단위
 const PLACE_SNAP=10;        // 일정을 직접 배치할 때는 10분 단위
-const CLASSES=[
+const LEGACY_CLASSES=[
   ['roll', M(6,50), M(7,15), '점호'],
   ['hr',   M(8,10), M(8,20), '아침조례'],
   ['p1',   M(8,30), M(9,20), '1교시'],
@@ -400,29 +429,38 @@ const CLASSES=[
   ['ja1',  M(19,10),M(21,0), '야자 1차시'],
   ['ja2',  M(21,15),M(23,30),'야자 2차시'],
 ];
-function schoolBlocks(){
+const LEGACY_PROFILE_ID='default-school';
+function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:'학교',blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
+function gapName(s,e){
+  if(s===M(12,20))return '점심시간';
+  if(s===M(18,0))return '저녁시간';
+  if(e<=M(6,50))return '새벽';
+  if(s>=M(23,30))return '취침 전';
+  if(s===M(7,15))return '아침 시간';
+  return (e-s)>=25?'빈 시간':'쉬는시간';
+}
+function buildScheduleBlocks(profile){
   const out=[];let cur=0;
-  const nameGap=(s,e)=>{
-    if(s===M(12,20))return '점심시간';
-    if(s===M(18,0))return '저녁시간';
-    if(e<=M(6,50))return '새벽';
-    if(s>=M(23,30))return '취침 전';
-    if(s===M(7,15))return '아침 시간';
-    return (e-s)>=25?'빈 시간':'쉬는시간';};
-  for(const [id,s,e,name] of CLASSES){
-    if(s>cur)out.push({id:'g'+cur,s:cur,e:s,name:nameGap(cur,s),cls:false});
-    out.push({id,s,e,name,cls:true});cur=e;}
-  if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:nameGap(cur,1440),cls:false});
+  const blocks=(profile&&profile.blocks||[]).slice().sort((a,b)=>a.s-b.s);
+  blocks.forEach(b=>{
+    if(b.s>cur)out.push({id:'g'+cur,s:cur,e:b.s,name:gapName(cur,b.s),cls:false});
+    out.push({id:b.id,s:b.s,e:b.e,name:b.name,cls:true});cur=b.e;});
+  if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:gapName(cur,1440),cls:false});
   return out;
 }
-const SCHOOL=schoolBlocks();
+function scheduleProfile(ds){
+  const id=DB.s.dayProfiles&&DB.s.dayProfiles[String(parseD(ds).getDay())];
+  return (DB.s.scheduleProfiles||[]).find(p=>p.id===id)||null;
+}
+function scheduleBlocks(ds){const p=scheduleProfile(ds);return p?buildScheduleBlocks(p):[];}
+function default24(ds){return !scheduleProfile(ds);}
 function is24(ds){
-  const wd=new Date(ds+'T00:00:00').getDay(),f=DB.s.force24[ds];
-  return f!==undefined?f:(wd===0||wd===6);
+  const f=DB.s.force24[ds];
+  return f!==undefined?f:default24(ds);
 }
 function bandAt(ds,min){
   if(is24(ds))return null;
-  const b=SCHOOL.find(x=>min>=x.s&&min<x.e)||null;
+  const b=scheduleBlocks(ds).find(x=>min>=x.s&&min<x.e)||null;
   if(!b||b.cls||b.e-b.s<=120)return b;
   // 자정~등교 전처럼 긴 빈 구간은 통째로 채우지 않고 손가락이 놓인 1시간만 사용한다.
   const s=Math.max(b.s,Math.floor(min/60)*60);
@@ -443,29 +481,54 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
-let DB={v:4,tasks:[],subjects:[],repeats:[],s:{force24:{},theme:'sys'}};
+function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},tutorialSeen:false};}
+function normalizeProfile(p){
+  const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
+    id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||'시간대'),
+    s:Math.max(0,Math.min(1435,Math.round(Number(b.s)||0))),
+    e:Math.max(5,Math.min(1440,Math.round(Number(b.e)||0)))
+  })).filter(b=>b.e>b.s).sort((a,b)=>a.s-b.s);
+  return {id:String(p&&p.id||('sch-'+Date.now().toString(36))),name:String(p&&p.name||'시간표'),blocks};
+}
+function legacyDuration(min){
+  const b=buildScheduleBlocks(legacyProfile()).find(x=>min>=x.s&&min<x.e)||null;
+  if(!b)return 60;if(!b.cls&&b.e-b.s>120)return Math.min(60,b.e-Math.floor(min/60)*60);
+  return b.e-b.s;
+}
+function normalizeDB(d,legacy){
+  d=d&&typeof d==='object'?d:{};const raw=d.s&&typeof d.s==='object'?d.s:{};
+  const hasSchedules=Array.isArray(raw.scheduleProfiles)&&raw.dayProfiles&&typeof raw.dayProfiles==='object';
+  const s=freshSettings();s.force24=raw.force24&&typeof raw.force24==='object'?Object.assign({},raw.force24):{};
+  s.theme=['sys','light','dark'].includes(raw.theme)?raw.theme:'sys';s.tutorialSeen=raw.tutorialSeen===true;
+  if(hasSchedules){
+    s.scheduleProfiles=raw.scheduleProfiles.map(normalizeProfile);
+    const ids=new Set(s.scheduleProfiles.map(p=>p.id));
+    Object.keys(raw.dayProfiles).forEach(k=>{const id=String(raw.dayProfiles[k]||'');if(/^[0-6]$/.test(k)&&ids.has(id))s.dayProfiles[k]=id;});
+  }else if(legacy){
+    const p=legacyProfile();s.scheduleProfiles=[p];
+    ['1','2','3','4','5'].forEach(k=>s.dayProfiles[k]=p.id);
+    Object.keys(s.force24).forEach(ds=>{if(s.force24[ds]===false){const wd=String(new Date(ds+'T00:00:00').getDay());s.dayProfiles[wd]=p.id;}});
+  }
+  const out={v:5,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  out.tasks.forEach(t=>{
+    if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
+    if(t.min!=null)t.min=((Math.round(Number(t.min)||0)%1440)+1440)%1440;
+    if(t.dur!=null)t.dur=Math.max(5,Math.round(Number(t.dur)||5));
+    if(t.dur==null&&t.min!=null)t.dur=legacy?legacyDuration(t.min):60;
+    if(t.ord==null)t.ord=0;if(t.repId===undefined)t.repId=null;if(t.autoSlot===undefined)t.autoSlot=null;
+    if(t.autoSlot!=null){t.autoSlot=Math.round(t.autoSlot);if(t.autoSlot<0||t.autoSlot>1380)t.autoSlot=null;}
+  });
+  return out;
+}
+let DB=normalizeDB(null,false);
 const BAK=KEY+'_bak_grid';
+const IMPORT_BAK=KEY+'_bak_import';
 function load(){try{
   const r=localStorage.getItem(KEY);
   if(!r)return;
   // 타임그리드로 바뀌기 직전 원본을 딱 한 번 백업해 둔다 (되돌릴 수 있게)
   if(!localStorage.getItem(BAK)){try{localStorage.setItem(BAK,r);}catch(e){}}
-  const d=JSON.parse(r);
-  DB={v:4,tasks:d.tasks||[],subjects:d.subjects||[],repeats:d.repeats||[],
-      s:Object.assign({force24:{},theme:'sys'},d.s||{})};
-  // 옛 데이터 방어: 필수 필드 보정 (없던 값 때문에 화면에서 사라지는 일이 없게)
-  DB.tasks.forEach(t=>{
-    if(t.min===undefined)t.min=null;
-    if(t.dur===undefined)t.dur=null;
-    if(t.min!=null){t.min=((Math.round(t.min)%1440)+1440)%1440;}
-    if(t.dur!=null)t.dur=Math.max(5,Math.round(t.dur));
-    // 길이를 확정해 둔다. 안 그러면 24시간 보기로 바꿀 때 110분짜리가 60분으로 쪼그라든다.
-    if(t.dur==null&&t.min!=null)t.dur=bandLen(t.date,t.min);
-    if(t.ord==null)t.ord=0;
-    if(t.repId===undefined)t.repId=null;
-    if(t.autoSlot===undefined)t.autoSlot=null;
-    if(t.autoSlot!=null){t.autoSlot=Math.round(t.autoSlot);if(t.autoSlot<0||t.autoSlot>1380)t.autoSlot=null;}
-  });
+  DB=normalizeDB(JSON.parse(r),true);save();
 }catch(e){}}
 /** 백업에 뭐가 들어있는지 — 되돌리기 전에 보여준다 */
 function bakInfo(){
@@ -478,8 +541,7 @@ function restoreBackup(){
   const r=localStorage.getItem(BAK);
   if(!r){toast('백업이 없다');return;}
   try{const d=JSON.parse(r);
-    DB={v:4,tasks:d.tasks||[],subjects:d.subjects||[],repeats:d.repeats||[],
-        s:Object.assign({force24:{},theme:'sys'},d.s||{})};
+    DB=normalizeDB(d,true);
     save();applyTheme();closeSheet();paint();
     toast('백업으로 되돌렸다 — 할일 '+DB.tasks.length+'개');
   }catch(e){toast('백업을 읽지 못했다');}
@@ -720,8 +782,8 @@ function renderDay(ds){
   const map=timeMap(ds),H=map.height;
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
   let h='<div class="daylayout"><div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
-  // 학교 시간표 밴드
-  if(!is24(ds))SCHOOL.forEach(b=>relParts(b.s,b.e).forEach(([s,e])=>{
+  // 이 요일에 지정된 시간표 밴드
+  if(!is24(ds))scheduleBlocks(ds).forEach(b=>relParts(b.s,b.e).forEach(([s,e])=>{
     const top=map.y(s),hh=map.y(e)-top;
     h+='<div class="band'+(b.cls?'':' gap')+'" style="top:'+top+'px;height:'+hh+'px">'+
        (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';}));
@@ -779,12 +841,13 @@ function themeIcon(){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor" stroke="none"/></svg>';
 }
 function topHTML(){
-  const th='<button class="ib" onclick="cycleTheme()">'+themeIcon()+'</button>'+
-    '<button class="ib" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
+  const th='<button class="ib" aria-label="시간표 설정" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/></svg></button>'+
+    '<button class="ib" aria-label="테마 변경" onclick="cycleTheme()">'+themeIcon()+'</button>'+
+    '<button class="ib" aria-label="데이터 관리" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
     const d=parseD(TODAY());
     return '<div class="hrow"><div class="h1"><small>'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DOW[d.getDay()]+'요일</small>오늘</div><div class="hbtns">'+
-      '<button class="ib'+(is24(TODAY())?' on':'')+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
+      '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="24시간 보기 전환" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
   if(tab==='cal')return '<div class="hrow"><div class="h1"><small>날짜를 누르면 그날 계획이 열린다</small>달력</div><div class="hbtns">'+th+'</div></div>';
   return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div><div class="hbtns">'+
@@ -835,7 +898,7 @@ function openDay(ds){
     '<button class="ib" onclick="popMove(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'+
     '<div class="popt"><div class="p1">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+DOW[d.getDay()]+')</div>'+(isT?'<div class="p2">오늘</div>':'')+'</div>'+
     '<div style="display:flex;gap:6px">'+
-      '<button class="ib'+(is24(ds)?' on':'')+'" onclick="popToggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+
+      '<button class="ib'+(is24(ds)?' on':'')+'" aria-label="24시간 보기 전환" onclick="popToggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+
       '<button class="ib" onclick="popMove(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button></div></div>'+
     '<div id="popbody">'+renderDay(ds)+'</div>';
   openSheet(h);
@@ -843,8 +906,11 @@ function openDay(ds){
   setTimeout(()=>{bindGrid($('#popbody'));$('#sheet').scrollTop=0;},60);
 }
 function popMove(n){openDay(addDays(popDate,n));}
-function popToggle24(){const ds=popDate,cur=is24(ds),wd=parseD(ds).getDay(),def=(wd===0||wd===6);
-  if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];save();openDay(ds);}
+function setDateViewMode(ds){
+  if(!scheduleProfile(ds)){closeSheet();openScheduleSettings();toast(DOW[parseD(ds).getDay()]+'요일 시간표를 먼저 만들어줘');return false;}
+  const cur=is24(ds),def=default24(ds);if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];save();return true;
+}
+function popToggle24(){const ds=popDate;if(setDateViewMode(ds))openDay(ds);}
 
 /* ═════ 8. 과목 ═════ */
 function ddHTML(s,d,editable){
@@ -945,11 +1011,7 @@ function go(t){
   buzz(8);
 }
 function moveMonth(n){calM=new Date(calM.getFullYear(),calM.getMonth()+n,1);paint();}
-function toggle24(){
-  const ds=TODAY(),cur=is24(ds),wd=parseD(ds).getDay(),def=(wd===0||wd===6);
-  if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];
-  save();paint();toast(is24(ds)?'24시간 보기':'학교 시간표 표시');
-}
+function toggle24(){const ds=TODAY();if(setDateViewMode(ds)){paint();toast(is24(ds)?'24시간 보기':'시간표 표시');}}
 function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
 function carryAction(id,action){
   const prev=addDays(TODAY(),-1),t=DB.tasks.find(x=>x.id===id&&x.date===prev&&!x.done);if(!t)return;
@@ -1528,7 +1590,106 @@ function saveGoal(){
 function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!==_gl.id);
   save();closeSheet();paint();}
 
-/* ═════ 14. 데이터 ═════ */
+/* ═════ 14. 요일별 시간표 ═════ */
+function profileDays(id){return DOW.map((_,i)=>DB.s.dayProfiles[String(i)]===id?i:null).filter(i=>i!=null);}
+function daysText(days){
+  const a=days.slice().sort((a,b)=>a-b);
+  if(a.length===7)return '매일';if(a.length===5&&[1,2,3,4,5].every(x=>a.includes(x)))return '평일';
+  if(a.length===2&&a.includes(0)&&a.includes(6))return '주말';return a.length?a.map(i=>DOW[i]).join(' · '):'적용 요일 없음';
+}
+function openScheduleSettings(){
+  const profiles=DB.s.scheduleProfiles||[],free=DOW.map((d,i)=>DB.s.dayProfiles[String(i)]?null:d).filter(d=>d!=null);
+  let list=profiles.length?profiles.map(p=>{
+    const days=profileDays(p.id);return '<button class="schedsum" onclick="editSchedule(\''+p.id+'\')"><div><b>'+esc(p.name)+'</b><span>'+esc(daysText(days))+' · 시간대 '+p.blocks.length+'개</span></div><i class="schedbadge">수정</i></button>';
+  }).join(''):'<div class="schedempty">아직 만든 시간표가 없다.<br>모든 요일을 24시간으로 보여준다.</div>';
+  openSheet('<div class="sh2">시간표 설정</div><div class="sheetlead">이름을 붙인 시간표를 만들고 적용할 요일을 고르면 된다. 요일마다 따로 만들 수도 있고 평일처럼 묶을 수도 있다.</div>'+list+
+    '<div class="fullnote">24시간 보기: '+(free.length?free.join(' · '):'없음')+'<br>시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.</div>'+
+    '<div class="row2"><button class="btn p" onclick="editSchedule(null)">새 시간표</button></div>'+
+    '<div class="row2"><button class="btn s" onclick="openTutorial(0)">사용법 다시 보기</button></div>');
+}
+let _sched={};
+function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.split(':').map(Number),m=a[0]*60+a[1];return end&&m===0?1440:m;}
+function editSchedule(id){
+  const p=id?(DB.s.scheduleProfiles||[]).find(x=>x.id===id):null;
+  _sched=p?{id:p.id,name:p.name,days:profileDays(p.id),blocks:p.blocks.map(b=>Object.assign({},b)),deleteArmed:false}:
+    {id:null,name:'',days:[1,2,3,4,5],blocks:[{id:uid(),name:'첫 시간대',s:M(9,0),e:M(10,0)}],deleteArmed:false};
+  scheduleEditor();
+}
+function syncScheduleForm(){
+  const n=$('#schName');if(n)_sched.name=n.value;
+  document.querySelectorAll('.blockrow[data-bi]').forEach(row=>{const b=_sched.blocks[Number(row.dataset.bi)];if(!b)return;
+    b.name=row.querySelector('.bname').value;b.s=parseTime(row.querySelector('.bstart').value,false);b.e=parseTime(row.querySelector('.bend').value,true);});
+}
+function scheduleEditor(){
+  const h='<div class="sh2">'+(_sched.id?'시간표 수정':'새 시간표')+'</div>'+
+    '<div class="fl">시간표 이름</div><input class="fi" id="schName" placeholder="예: 학교, 토요일 학원" value="'+esc(_sched.name)+'">'+
+    '<div class="fl"><span>적용 요일 · 비워두면 24시간</span><span><button onclick="setScheduleDays(\'weekday\')">평일</button> · <button onclick="setScheduleDays(\'none\')">모두 해제</button></span></div>'+
+    '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
+    '<div class="fl"><span>시간대</span><button onclick="loadScheduleExample()">학교 예시 불러오기</button></div>'+
+    _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>이름</label><input class="fi bname" value="'+esc(b.name)+'" placeholder="예: 1교시"></div>'+
+      '<div class="blocktimes"><div><label>시작</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
+      '<div><label>끝</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
+      '<button class="blockdel" aria-label="시간대 삭제" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
+    '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">+ 시간대 추가</button>'+
+    '<div class="row2"><button class="btn p" onclick="saveSchedule()">저장</button></div>'+
+    (_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedule()">'+(_sched.deleteArmed?'정말 삭제하기':'시간표 삭제')+'</button></div>':'');
+  openSheet(h);
+}
+function toggleScheduleDay(i){syncScheduleForm();const p=_sched.days.indexOf(i);if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);scheduleEditor();}
+function setScheduleDays(kind){syncScheduleForm();_sched.days=kind==='weekday'?[1,2,3,4,5]:[];scheduleEditor();}
+function addScheduleBlock(){
+  syncScheduleForm();const last=_sched.blocks.slice().sort((a,b)=>a.e-b.e).pop(),s=last&&Number.isFinite(last.e)?Math.min(1380,last.e+10):M(9,0);
+  _sched.blocks.push({id:uid(),name:'새 시간대',s,e:Math.min(1440,s+60)});scheduleEditor();
+}
+function removeScheduleBlock(i){syncScheduleForm();_sched.blocks.splice(i,1);scheduleEditor();}
+function loadScheduleExample(){syncScheduleForm();_sched.blocks=legacyProfile().blocks.map(b=>Object.assign({},b,{id:uid()}));scheduleEditor();}
+function saveSchedule(){
+  syncScheduleForm();const name=_sched.name.trim(),days=[...new Set(_sched.days)].sort((a,b)=>a-b);
+  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)})).sort((a,b)=>a.s-b.s);
+  if(!name){toast('시간표 이름을 적어줘');return;}if(!blocks.length){toast('시간대를 하나 이상 만들어줘');return;}
+  for(let i=0;i<blocks.length;i++){
+    const b=blocks[i];if(!b.name){toast('시간대 이름을 모두 적어줘');return;}
+    if(!Number.isFinite(b.s)||!Number.isFinite(b.e)||b.s<0||b.e>1440||b.e<=b.s){toast('시작·끝 시간을 확인해줘');return;}
+    if(i&&b.s<blocks[i-1].e){toast('겹치는 시간대가 있어');return;}
+  }
+  const id=_sched.id||uid(),p={id,name,blocks};const at=DB.s.scheduleProfiles.findIndex(x=>x.id===id);
+  if(at>=0)DB.s.scheduleProfiles[at]=p;else DB.s.scheduleProfiles.push(p);
+  Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
+  days.forEach(i=>DB.s.dayProfiles[String(i)]=id);save();paint();openScheduleSettings();toast('시간표를 저장했다');
+}
+function deleteSchedule(){
+  if(!_sched.deleteArmed){syncScheduleForm();_sched.deleteArmed=true;scheduleEditor();return;}
+  const id=_sched.id,days=profileDays(id);DB.s.scheduleProfiles=DB.s.scheduleProfiles.filter(p=>p.id!==id);
+  Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
+  Object.keys(DB.s.force24).forEach(ds=>{if(days.includes(parseD(ds).getDay())&&DB.s.force24[ds]===false)delete DB.s.force24[ds];});
+  save();paint();openScheduleSettings();toast('시간표만 삭제했다 · 할일은 그대로다');
+}
+
+/* ═════ 15. 사용법 ═════ */
+const TOUR_STEPS=[
+  {title:'Planner에 온 걸 환영해',text:'하루의 할 일을 시간 위에 직접 놓고, 짧게 쪼개고, 완료까지 한 화면에서 관리한다.',icon:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/>'},
+  {title:'먼저 시간표를 정해',text:'학교·학원처럼 이름을 붙이고 시간대를 만든 뒤 적용할 요일을 고른다.\n시간표가 없는 요일은 자동으로 24시간 보기다.',icon:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/>',cta:'시간표 설정 열기'},
+  {title:'과목과 디데이를 모아',text:'과목 탭에서 색이 있는 과목을 만들고 디데이와 하위 목표를 넣을 수 있다. 할 일에도 과목을 연결할 수 있다.',icon:'<path d="M4 5.2A1.6 1.6 0 0 1 5.6 3.6H19v16.8H5.6A1.6 1.6 0 0 1 4 18.8z"/><path d="M4 16.6h15"/>'},
+  {title:'오늘은 지금부터 시작해',text:'오늘 탭을 열면 현재 시간으로 바로 이동한다. 오른쪽 미배정 칸에는 아직 시간을 정하지 않은 일을 모아둔다.',icon:'<path d="M5 12h14M12 5v14"/><circle cx="12" cy="12" r="9"/>'},
+  {title:'끌어서 시간을 배정해',text:'미배정 일을 먼저 한 번 선택하고 시간표로 끌어 놓는다. 배치할 때는 10분 간격으로 맞춰져 어긋남을 줄인다.',icon:'<path d="M8 4v10M5 7l3-3 3 3M16 20V10M13 17l3 3 3-3"/>'},
+  {title:'선택한 뒤 수정해',text:'할 일을 한 번 눌러 선택한 뒤 다시 누르면 수정한다. 선택한 일정만 이동·길이 조절할 수 있고 체크 버튼은 바로 완료 처리한다.',icon:'<path d="M4.5 12.5l5 5 10-11"/><rect x="2.8" y="2.8" width="18.4" height="18.4" rx="5"/>'},
+  {title:'달력과 파일도 준비됐어',text:'달력에서 날짜를 눌러 그날 계획을 편집한다. 데이터 메뉴에서 내보내면 할 일·과목·반복·시간표까지 함께 저장된다.',icon:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>'}
+];
+let _tourStep=0;
+function openTutorial(i){closeSheet();_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,i||0));renderTutorial();$('#tour').classList.add('on');}
+function renderTutorial(){
+  const s=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
+  $('#tour').innerHTML='<div class="tourcard"><div class="tourtop"><span class="tourmark">PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length+'</span><button class="tourskip" onclick="finishTutorial()">건너뛰기</button></div>'+
+    '<div class="tourbody"><div class="touricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+s.icon+'</svg></div><h2>'+s.title+'</h2><p>'+s.text+'</p>'+
+    (s.cta?'<button class="tourcta" onclick="tutorialSchedules()">'+s.cta+'</button>':'')+'</div>'+
+    '<div class="tourfoot">'+(_tourStep?'<button class="tourback" onclick="tourMove(-1)">이전</button>':'')+'<div class="tourdots">'+TOUR_STEPS.map((_,i)=>'<i class="'+(i===_tourStep?'on':'')+'"></i>').join('')+'</div><button class="tourbtn" onclick="'+(last?'finishTutorial()':'tourMove(1)')+'">'+(last?'시작하기':'다음')+'</button></div></div>';
+}
+function tourMove(n){_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
+function finishTutorial(){DB.s.tutorialSeen=true;save();$('#tour').classList.remove('on');}
+function tutorialSchedules(){finishTutorial();setTimeout(openScheduleSettings,120);}
+
+/* ═════ 16. 데이터 ═════ */
 let _bakArm=false;                       // 되돌리기는 두 번 눌러야 실행된다
 function openData(){_bakArm=false;dataSheet();}
 function armRestore(){_bakArm=true;dataSheet();}
@@ -1541,13 +1702,24 @@ function bakHTML(){
       ?'<div class="row2" style="margin-top:0"><button class="btn d" onclick="restoreBackup()">정말 되돌린다 — 지금 데이터는 사라진다</button></div>'
       :'<div class="row2" style="margin-top:0"><button class="btn s" onclick="armRestore()">백업으로 되돌리기</button></div>');
 }
+function importBakInfo(){
+  const r=localStorage.getItem(IMPORT_BAK);if(!r)return null;
+  try{const d=JSON.parse(r);return {tasks:(d.tasks||[]).length,schedules:(d.s&&d.s.scheduleProfiles||[]).length};}catch(e){return null;}
+}
+function restoreImportBackup(){
+  const r=localStorage.getItem(IMPORT_BAK);if(!r){toast('가져오기 전 백업이 없다');return;}
+  try{DB=normalizeDB(JSON.parse(r),true);save();applyTheme();closeSheet();paint();toast('가져오기 전 상태로 되돌렸다');}
+  catch(e){toast('백업을 읽지 못했다');}
+}
 function dataSheet(){
+  const ib=importBakInfo();
   openSheet('<div class="sh2">데이터</div>'+
     '<div style="font-size:14px;font-weight:650;color:var(--ink2);line-height:1.7">'+
-    '할일 <b>'+DB.tasks.length+'</b>개 · 과목 <b>'+DB.subjects.length+'</b>개 · 반복 규칙 <b>'+DB.repeats.length+'</b>개<br>'+
-    '<span style="color:var(--ink3);font-size:13px">파일로 내보내서 다른 기기에서 가져오면 그대로 옮겨진다.</span></div>'+
+    '할일 <b>'+DB.tasks.length+'</b>개 · 과목 <b>'+DB.subjects.length+'</b>개 · 반복 <b>'+DB.repeats.length+'</b>개 · 시간표 <b>'+DB.s.scheduleProfiles.length+'</b>개<br>'+
+    '<span style="color:var(--ink3);font-size:13px">내보내기 파일에는 시간표 설정까지 모두 들어간다.</span></div>'+
     '<div class="row2"><button class="btn p" onclick="doExport()">내보내기</button>'+
     '<button class="btn s" onclick="document.getElementById(\'fileIn\').click()">가져오기</button></div>'+
+    (ib?'<div class="row2"><button class="btn s" onclick="restoreImportBackup()">가져오기 전 상태로 되돌리기 · 할일 '+ib.tasks+'개</button></div>':'')+
     '<div class="fl">백업</div>'+bakHTML()+
     '<div class="fl">반복 규칙</div>'+
     (DB.repeats.length?DB.repeats.map(r=>'<div class="dd" style="border-top:1px solid var(--line2)">'+
@@ -1559,7 +1731,7 @@ function dataSheet(){
 function doExport(){
   const blob=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='plan-'+TODAY()+'.json';
+  a.href=URL.createObjectURL(blob);a.download='planner-'+TODAY()+'.json';
   document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
   toast('내보냈다');
@@ -1571,8 +1743,8 @@ function doImport(inp){
     try{
       const d=JSON.parse(rd.result);
       if(!d||typeof d!=='object'||!Array.isArray(d.tasks))throw 0;
-      DB={v:4,tasks:d.tasks||[],subjects:d.subjects||[],repeats:d.repeats||[],
-          s:Object.assign({force24:{},theme:'sys'},d.s||{})};
+      try{localStorage.setItem(IMPORT_BAK,JSON.stringify(DB));}catch(e){}
+      DB=normalizeDB(d,true);
       save();applyTheme();closeSheet();paint();
       toast('가져왔다 — 할일 '+DB.tasks.length+'개');
     }catch(err){toast('파일을 읽지 못했다');}
@@ -1588,9 +1760,10 @@ function delRule(id){
 
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
+if(!DB.s.tutorialSeen)setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=29').catch(()=>{});
 </script>
 </body>
 </html>

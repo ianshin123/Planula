@@ -1,7 +1,8 @@
 {
   "name": "Planner",
   "short_name": "Planner",
-  "description": "학교 시간표 기반 Planner. 로컬 저장 · 오프라인 작동.",
+  "description": "요일별 시간표와 24시간 보기를 자유롭게 쓰는 Planner.",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
