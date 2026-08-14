@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=30">
+<link rel="manifest" href="manifest.webmanifest?v=32">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -356,17 +356,25 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
 .blockdel{width:38px;height:42px;border-radius:10px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:20px;font-weight:500}
 .fullnote{padding:12px 14px;border-radius:var(--r3);background:var(--ac-s);color:var(--ink2);font-size:12.5px;font-weight:700;line-height:1.55}
-#tour{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:22px;opacity:0;pointer-events:none;transition:opacity .24s;background:rgba(30,22,14,.38);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-#tour.on{opacity:1;pointer-events:auto}
-.tourcard{width:min(100%,440px);min-height:410px;padding:22px;border-radius:24px;background:var(--solid);border:1px solid var(--line);box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
-.tourtop{display:flex;align-items:center;justify-content:space-between;gap:10px}.tourmark{font-size:11px;font-weight:850;letter-spacing:.08em;color:var(--ac)}
-.tourskip{padding:8px 4px;color:var(--ink3);font-size:12px;font-weight:800}.tourbody{flex:1;padding:30px 2px 22px}
-.touricon{width:54px;height:54px;border-radius:17px;background:var(--ac-s);color:var(--ac);display:grid;place-items:center;margin-bottom:18px}.touricon svg{width:27px;height:27px}
-.tourbody h2{font-size:25px;line-height:1.2;letter-spacing:-.04em;margin-bottom:10px}.tourbody p{font-size:14px;font-weight:650;color:var(--ink2);line-height:1.75;white-space:pre-line}
-.tourbody p strong{white-space:nowrap;color:var(--ink);font-weight:850}
-.tourcta{display:block;width:100%;margin-top:17px;padding:13px;border-radius:var(--r3);background:var(--ac-s);color:var(--ac);font-size:13px;font-weight:850}
-.tourfoot{display:flex;align-items:center;gap:10px}.tourdots{display:flex;gap:5px;flex:1}.tourdots i{width:6px;height:6px;border-radius:50%;background:var(--line)}.tourdots i.on{width:18px;border-radius:4px;background:var(--ac)}
-.tourbtn{min-width:90px;padding:14px 17px;border-radius:var(--r3);background:var(--ac);color:#fff;font-size:14px;font-weight:850}.tourback{padding:13px 6px;color:var(--ink3);font-size:13px;font-weight:800}
+#tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
+#tour.on{opacity:1}.tourveil{position:fixed;inset:0;background:rgba(30,22,14,.48);pointer-events:auto}
+.tourspot{position:fixed;border:3px solid var(--ac);border-radius:16px;box-shadow:0 0 0 9999px rgba(30,22,14,.58),0 0 0 7px rgba(224,122,79,.2);pointer-events:none;transition:inset .2s,border-radius .2s}
+.tourguard{position:fixed;pointer-events:auto;background:transparent}
+#tour.free .tourguard{pointer-events:none}
+#tour.free .tourcard{max-height:260px;padding:14px 16px}#tour.free .tourhead{display:none}#tour.free .tourbody{padding:4px 0 8px}
+#tour.free .tourbody h2{margin:3px 0 5px;font-size:18px}#tour.free .tourbody p{font-size:12.5px;line-height:1.5}#tour.free .tourhint{margin-top:5px;padding:7px 9px}
+.tourcard{position:fixed;z-index:2;width:min(calc(100vw - 28px),370px);max-height:min(52dvh,430px);overflow-y:auto;padding:18px;border-radius:22px;background:var(--solid);border:1px solid var(--line);box-shadow:var(--shadow-lg);pointer-events:auto;display:flex;flex-direction:column}
+#tour.modal .tourcard{left:50%;top:50%;transform:translate(-50%,-50%);width:min(calc(100vw - 36px),440px);max-height:min(82dvh,620px);padding:22px}
+.tourtop{display:flex;align-items:center;justify-content:space-between;gap:10px}.tourmark{font-size:10.5px;font-weight:850;letter-spacing:.07em;color:var(--ac)}
+.tourskip{padding:8px 4px;color:var(--ink3);font-size:12px;font-weight:800}.tourbody{flex:1;padding:17px 1px 15px}
+.tourhead{display:flex;align-items:flex-start;gap:12px}.touricon{width:46px;height:46px;flex:none;border-radius:15px;background:var(--ac-s);color:var(--ac);display:grid;place-items:center}.touricon svg{width:24px;height:24px}
+.tourmascot{display:none;width:58px;height:58px;flex:none}.tourmascot img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.tourmascot.has-asset{display:block}.tourmascot.has-asset+.touricon{display:none}.mascot-home{display:none}.mascot-home.has-asset{display:block;width:64px;height:64px;flex:none}.mascot-home img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.tourbody h2{font-size:21px;line-height:1.22;letter-spacing:-.035em;margin:9px 0 7px}.tourbody p{font-size:13.5px;font-weight:650;color:var(--ink2);line-height:1.65;white-space:pre-line}
+.tourbody p strong{color:var(--ink);font-weight:850}.tourhint{margin-top:10px;padding:9px 11px;border-radius:12px;background:var(--ac-s);color:var(--ac);font-size:12px;font-weight:800}
+.tourfoot{display:flex;align-items:center;gap:9px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:800}.tourbtn{min-width:88px;padding:12px 15px;border-radius:var(--r3);background:var(--ac);color:#fff;font-size:13px;font-weight:850}.tourback{padding:12px 5px;color:var(--ink3);font-size:12px;font-weight:800}
+.tourspot.nudge{animation:tournudge .42s ease}@keyframes tournudge{40%{transform:scale(1.04)}75%{transform:scale(.985)}}
+@media(max-height:620px){.tourcard{max-height:48dvh}.tourbody{padding:10px 1px}.tourbody p{line-height:1.5}}
 @media(max-width:620px){
   .blockrow{grid-template-columns:minmax(0,1fr) 38px}
   .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1/3;grid-row:2}
@@ -395,10 +403,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
     <button class="nb" data-t="cal" onclick="go('cal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3.4"/><path d="M3 9.4h18M8 2.6v3.8M16 2.6v3.8"/></svg><span class="lb">달력</span></button>
     <button class="nb" data-t="subj" onclick="go('subj')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.2A1.6 1.6 0 0 1 5.6 3.6H19v16.8H5.6A1.6 1.6 0 0 1 4 18.8z"/><path d="M4 16.6h15"/></svg><span class="lb">과목</span></button>
   </div>
-  <button class="fab" onclick="quickAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
+  <button class="fab" id="mainFab" aria-label="할일 추가" onclick="quickAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
 </div>
 <div id="ptag"></div>
-<div id="scrim" onclick="closeSheet()"></div>
+<div id="scrim" onclick="closeSheet(true)"></div>
 <div id="sheet"></div>
 <button id="popfab" class="fab" onclick="newTask(popDate,null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
 <div id="subscrim" onclick="closeSubSheet()"></div>
@@ -499,17 +507,23 @@ function legacyDuration(min){
 function normalizeDB(d,legacy){
   d=d&&typeof d==='object'?d:{};const raw=d.s&&typeof d.s==='object'?d.s:{};
   const hasSchedules=Array.isArray(raw.scheduleProfiles)&&raw.dayProfiles&&typeof raw.dayProfiles==='object';
+  const hasPlannerData=(Array.isArray(d.tasks)&&d.tasks.length)||(Array.isArray(d.subjects)&&d.subjects.length)||(Array.isArray(d.repeats)&&d.repeats.length);
   const s=freshSettings();s.force24=raw.force24&&typeof raw.force24==='object'?Object.assign({},raw.force24):{};
   s.theme=['sys','light','dark'].includes(raw.theme)?raw.theme:'sys';s.tutorialSeen=raw.tutorialSeen===true;
   if(hasSchedules){
     s.scheduleProfiles=raw.scheduleProfiles.map(normalizeProfile);
     const ids=new Set(s.scheduleProfiles.map(p=>p.id));
     Object.keys(raw.dayProfiles).forEach(k=>{const id=String(raw.dayProfiles[k]||'');if(/^[0-6]$/.test(k)&&ids.has(id))s.dayProfiles[k]=id;});
-  }else if(legacy){
+  }else if(legacy&&hasPlannerData){
     const p=legacyProfile();s.scheduleProfiles=[p];
     ['1','2','3','4','5'].forEach(k=>s.dayProfiles[k]=p.id);
     Object.keys(s.force24).forEach(ds=>{if(s.force24[ds]===false){const wd=String(new Date(ds+'T00:00:00').getDay());s.dayProfiles[wd]=p.id;}});
   }
+  // 내용 없는 구버전 저장값에 과거 마이그레이션이 자동으로 넣은 학교 예시는 빈 기본값으로 되돌린다.
+  const onlyAutoSchool=!hasPlannerData&&s.scheduleProfiles.length===1&&s.scheduleProfiles[0].id===LEGACY_PROFILE_ID&&
+    Object.keys(s.dayProfiles).sort().join('')==='12345'&&Object.values(s.dayProfiles).every(id=>id===LEGACY_PROFILE_ID)&&
+    !Object.keys(s.force24).length;
+  if(onlyAutoSchool){s.scheduleProfiles=[];s.dayProfiles={};}
   const out={v:5,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
@@ -548,6 +562,12 @@ function restoreBackup(){
   }catch(e){toast('백업을 읽지 못했다');}
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast('저장 실패');}}
+function plannerUntouched(){
+  const s=DB.s||{};
+  return !DB.tasks.length&&!DB.subjects.length&&!DB.repeats.length&&
+    !(s.scheduleProfiles||[]).length&&!Object.keys(s.dayProfiles||{}).length&&
+    !Object.keys(s.force24||{}).length&&(s.theme||'sys')==='sys';
+}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const $=s=>document.querySelector(s);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');
@@ -847,12 +867,12 @@ function topHTML(){
     '<button class="ib" aria-label="데이터 관리" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
     const d=parseD(TODAY());
-    return '<div class="hrow"><div class="h1"><small>'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DOW[d.getDay()]+'요일</small>오늘</div><div class="hbtns">'+
+    return '<div class="hrow"><div class="h1"><small>'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DOW[d.getDay()]+'요일</small>오늘</div>'+mascotHTML('home')+'<div class="hbtns">'+
       '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="24시간 보기 전환" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
   if(tab==='cal')return '<div class="hrow"><div class="h1"><small>날짜를 누르면 그날 계획이 열린다</small>달력</div><div class="hbtns">'+th+'</div></div>';
   return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div><div class="hbtns">'+
-    '<button class="ib" onclick="editSubject(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>'+th+'</div></div>';
+    '<button class="ib" aria-label="과목 추가" onclick="editSubject(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>'+th+'</div></div>';
 }
 function cycleTheme(){
   const o=['sys','light','dark'],i=o.indexOf(DB.s.theme||'sys');
@@ -1376,11 +1396,12 @@ function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
   closeSubSheet();
   $('#scrim').classList.add('on');$('#sheet').classList.add('on');
   $('#popfab').classList.remove('on');}
-function closeSheet(){
+function closeSheet(fromScrim){
   const resume=_tourReturnStep;_tourReturnStep=null;
   closeSubSheet();$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
   $('#popfab').classList.remove('on');popDate=null;
   if(resume!=null)setTimeout(()=>openTutorial(resume),90);
+  else if(fromScrim&&_tourActive)setTimeout(()=>tourMove(-1),90);
 }
 let _popScroll=0;
 function subSheetOn(){return $('#subsheet').classList.contains('on');}
@@ -1512,7 +1533,7 @@ function saveTask(){
         dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),
         ord:sibs.length,done:false,subj:e.subj,repId:null});}}
   materializeWindow();save();finishTaskSheet();
-  toast(e.id?'수정했다':'추가했다');
+  toast(e.id?'수정했다':'추가했다');tourSignal('task-saved');
 }
 function delTask(all){
   const t=DB.tasks.find(x=>x.id===_ed.id);if(!t)return;
@@ -1593,7 +1614,7 @@ function saveGoal(){
   else s.goals.push({id:uid(),text:v});
   save();closeSheet();paint();}
 function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!==_gl.id);
-  save();closeSheet();paint();}
+  save();closeSheet();paint();tourSignal('subject-saved');}
 
 /* ═════ 14. 요일별 시간표 ═════ */
 function profileDays(id){return DOW.map((_,i)=>DB.s.dayProfiles[String(i)]===id?i:null).filter(i=>i!=null);}
@@ -1610,7 +1631,7 @@ function openScheduleSettings(){
   openSheet('<div class="sh2">시간표 설정</div><div class="sheetlead">이름을 붙인 시간표를 만들고 적용할 요일을 고르면 된다. 요일마다 따로 만들 수도 있고 평일처럼 묶을 수도 있다.</div>'+list+
     '<div class="fullnote">24시간 보기: '+(free.length?free.join(' · '):'없음')+'<br>시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.</div>'+
     '<div class="row2"><button class="btn p" onclick="editSchedule(null)">새 시간표</button></div>'+
-    '<div class="row2"><button class="btn s" onclick="openTutorial(0)">사용법 다시 보기</button></div>');
+    '<div class="row2"><button class="btn s tutorial-replay" onclick="openTutorial(0)">사용법 다시 보기</button></div>');
 }
 let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
@@ -1662,6 +1683,7 @@ function saveSchedule(){
   if(at>=0)DB.s.scheduleProfiles[at]=p;else DB.s.scheduleProfiles.push(p);
   Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
   days.forEach(i=>DB.s.dayProfiles[String(i)]=id);save();paint();openScheduleSettings();toast('시간표를 저장했다');
+  tourSignal('schedule-saved');
 }
 function deleteSchedule(){
   if(!_sched.deleteArmed){syncScheduleForm();_sched.deleteArmed=true;scheduleEditor();return;}
@@ -1671,32 +1693,106 @@ function deleteSchedule(){
   save();paint();openScheduleSettings();toast('시간표만 삭제했다 · 할일은 그대로다');
 }
 
-/* ═════ 15. 사용법 ═════ */
-const TOUR_STEPS=[
-  {title:'먼저 홈 화면에 추가해',text:'브라우저 오른쪽 위에서 <strong>공유 → 더보기 → 홈 화면에 추가</strong>를 선택해.\n추가가 끝나면 홈 화면에 생긴 Planner 아이콘으로 다시 열어서 튜토리얼을 계속해. 앱처럼 전체 화면으로 쓰려면 꼭 필요한 단계야.',icon:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4"/><path d="M5 11.5v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>'},
-  {title:'Planner에 온 걸 환영해',text:'하루의 할 일을 시간 위에 직접 놓고, 짧게 쪼개고, 완료까지 한 화면에서 관리한다.',icon:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/>'},
-  {title:'먼저 시간표를 정해',text:'학교·학원처럼 이름을 붙이고 시간대를 만든 뒤 적용할 요일을 고른다.\n시간표가 없는 요일은 자동으로 24시간 보기다.',icon:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/>',cta:'시간표 설정 열기'},
-  {title:'과목과 디데이를 모아',text:'과목 탭에서 색이 있는 과목을 만들고 디데이와 하위 목표를 넣을 수 있다. 할 일에도 과목을 연결할 수 있다.',icon:'<path d="M4 5.2A1.6 1.6 0 0 1 5.6 3.6H19v16.8H5.6A1.6 1.6 0 0 1 4 18.8z"/><path d="M4 16.6h15"/>'},
-  {title:'오늘은 지금부터 시작해',text:'오늘 탭을 열면 현재 시간으로 바로 이동한다. 오른쪽 미배정 칸에는 아직 시간을 정하지 않은 일을 모아둔다.',icon:'<path d="M5 12h14M12 5v14"/><circle cx="12" cy="12" r="9"/>'},
-  {title:'끌어서 시간을 배정해',text:'미배정 일을 먼저 한 번 선택하고 시간표로 끌어 놓는다. 배치할 때는 10분 간격으로 맞춰져 어긋남을 줄인다.',icon:'<path d="M8 4v10M5 7l3-3 3 3M16 20V10M13 17l3 3 3-3"/>'},
-  {title:'선택한 뒤 수정해',text:'할 일을 한 번 눌러 선택한 뒤 다시 누르면 수정한다. 선택한 일정만 이동·길이 조절할 수 있고 체크 버튼은 바로 완료 처리한다.',icon:'<path d="M4.5 12.5l5 5 10-11"/><rect x="2.8" y="2.8" width="18.4" height="18.4" rx="5"/>'},
-  {title:'달력과 파일도 준비됐어',text:'달력에서 날짜를 눌러 그날 계획을 편집한다. 데이터 메뉴에서 내보내면 할 일·과목·반복·시간표까지 함께 저장된다.',icon:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>'}
-];
-let _tourStep=0,_tourReturnStep=null;
-function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
-function openTutorial(i){_tourReturnStep=null;closeSheet();_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,i||0));renderTutorial();$('#tour').classList.add('on');}
-function renderTutorial(){
-  const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1,installed=_tourStep===0&&standaloneMode();
-  const s=installed?Object.assign({},base,{title:'Planner 앱으로 잘 열렸어',text:'홈 화면의 Planner 아이콘으로 열렸어. 이제 브라우저 주소창 없이 앱처럼 사용할 수 있다.\n다음을 눌러 Planner 사용법을 이어가자.'}):base;
-  const next=last?'시작하기':(_tourStep===0?(installed?'계속':'추가했으면 계속'):'다음');
-  $('#tour').innerHTML='<div class="tourcard"><div class="tourtop"><span class="tourmark">PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length+'</span><button class="tourskip" onclick="finishTutorial()">건너뛰기</button></div>'+
-    '<div class="tourbody"><div class="touricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+s.icon+'</svg></div><h2>'+s.title+'</h2><p>'+s.text+'</p>'+
-    (s.cta?'<button class="tourcta" onclick="tutorialSchedules()">'+s.cta+'</button>':'')+'</div>'+
-    '<div class="tourfoot">'+(_tourStep?'<button class="tourback" onclick="tourMove(-1)">이전</button>':'')+'<div class="tourdots">'+TOUR_STEPS.map((_,i)=>'<i class="'+(i===_tourStep?'on':'')+'"></i>').join('')+'</div><button class="tourbtn" onclick="'+(last?'finishTutorial()':'tourMove(1)')+'">'+next+'</button></div></div>';
+/* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
+const MASCOT_GIF=''; // 사용자가 승인한 GIF를 받기 전까지 비워 둔다.
+function mascotHTML(place){
+  const home=place==='home',cl=home?'mascot-home':'tourmascot';
+  return '<div class="'+cl+(MASCOT_GIF?' has-asset':'')+'" data-mascot-slot="'+place+'" aria-hidden="true">'+
+    (MASCOT_GIF?'<img src="'+MASCOT_GIF+'" alt="">':'')+'</div>';
 }
-function tourMove(n){_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
-function finishTutorial(){_tourReturnStep=null;DB.s.tutorialSeen=true;save();$('#tour').classList.remove('on');}
-function tutorialSchedules(){_tourReturnStep=_tourStep;$('#tour').classList.remove('on');openScheduleSettings();}
+const TOUR_ICON={
+  install:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4"/><path d="M5 11.5v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
+  schedule:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3"/>',
+  subject:'<path d="M4 5.2A1.6 1.6 0 0 1 5.6 3.6H19v16.8H5.6A1.6 1.6 0 0 1 4 18.8z"/><path d="M4 16.6h15"/>',
+  add:'<path d="M5 12h14M12 5v14"/><circle cx="12" cy="12" r="9"/>',
+  move:'<path d="M8 4v10M5 7l3-3 3 3M16 20V10M13 17l3 3 3-3"/>',
+  calendar:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3"/>',
+  data:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>'
+};
+const TOUR_STEPS=[
+  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'브라우저에서 <strong>공유 → 더보기 → 홈 화면에 추가</strong>를 눌러 줘.\n추가한 뒤 홈 화면의 Planner 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
+  {scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:4,title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
+  {scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:4,title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
+  {scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',title:'이름·요일·시간대를 정해',text:'이름을 붙이고 적용 요일을 고른 뒤 시간대를 추가해. 평일을 한 번에 고를 수도 있고, 요일을 모두 해제한 채 보관할 수도 있어. 나중에도 같은 메뉴에서 수정할 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
+  {scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:7,title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
+  {scene:'subject',selector:'button[aria-label="과목 추가"]',advance:'target',nextTo:7,title:'과목은 여기서 추가해',text:'오른쪽 위 +를 누르면 과목 이름과 색을 정할 수 있어.',icon:'subject'},
+  {scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',title:'과목을 만든 뒤 더 채울 수 있어',text:'이름과 색을 정해 저장해. 저장한 과목 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 과목을 연결할 수 있어.',icon:'subject',next:'지금은 건너뛰기'},
+  {scene:'subject',selector:'.nb[data-t="today"]',advance:'target',title:'이제 오늘로 돌아가자',text:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.',icon:'add'},
+  {scene:'today',selector:'#mainFab',advance:'target',nextTo:10,title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
+  {scene:'task-editor',selector:'#f_title',signal:'task-saved',title:'이름을 쓰고 저장해',text:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 과목과 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',icon:'add',next:'지금은 건너뛰기'},
+  {scene:'today',target:'unassigned',title:'미배정은 대기 공간이야',text:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어.',icon:'move'},
+  {scene:'today',selector:'#gridwrap .grid',title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 선택하고 시간표로 끌면 10분 간격으로 배치돼. 이미 놓인 일도 먼저 선택해야 이동할 수 있고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
+  {scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:15,title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
+  {scene:'calendar',selector:'.cell.today',advance:'target',nextTo:15,title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
+  {scene:'day',selector:'#popfab.on',title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
+  {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
+  {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planner 시작하기'}
+];
+let _tourStep=0,_tourActive=false,_tourReturnStep=null,_tourPlaceTimer=null;
+function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
+function setTourTab(t){
+  closeSheet();if(tab!==t){tab=t;$('#scroll').scrollTop=0;paint();}
+  else paint();if(t==='today')requestAnimationFrame(()=>focusToday());
+}
+function prepareTourScene(scene){
+  if(scene==='modal')return;
+  if(scene==='today')setTourTab('today');
+  else if(scene==='subject')setTourTab('subj');
+  else if(scene==='calendar')setTourTab('cal');
+  else if(scene==='schedule-list')openScheduleSettings();
+  else if(scene==='schedule-editor'){if(!$('#schName'))editSchedule(null);}
+  else if(scene==='subject-editor'){if(!$('#f_sname'))editSubject(null);}
+  else if(scene==='task-editor'){if(!$('#f_title'))newTask(TODAY(),null);}
+  else if(scene==='day'){if(!popDate||!$('#popbody')){setTourTab('cal');openDay(TODAY());}}
+  else if(scene==='data')openData();
+}
+function getTourTarget(s){
+  if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar');
+  return s.selector?document.querySelector(s.selector):null;
+}
+function openTutorial(i){
+  _tourReturnStep=null;closeSheet();_tourActive=true;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));renderTutorial();
+}
+function renderTutorial(){
+  if(!_tourActive)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
+  const installed=_tourStep===0&&standaloneMode();
+  const s=installed?Object.assign({},base,{title:'Planner 앱으로 잘 열렸어',text:'홈 화면의 Planner 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',next:'계속'}):base;
+  prepareTourScene(s.scene);
+  const modal=s.scene==='modal',next=s.next||(s.advance==='target'?'건너뛰기':(last?'시작하기':'다음'));
+  const guides=modal?'<div class="tourveil" onclick="tourNudge()"></div>':'<div class="tourspot"></div><i class="tourguard g1" onclick="tourNudge()"></i><i class="tourguard g2" onclick="tourNudge()"></i><i class="tourguard g3" onclick="tourNudge()"></i><i class="tourguard g4" onclick="tourNudge()"></i>';
+  const ico=TOUR_ICON[s.icon]||TOUR_ICON.add;
+  $('#tour').className='on'+(modal?' modal':'')+(s.signal?' free':'');
+  $('#tour').innerHTML=guides+'<div class="tourcard"><div class="tourtop"><span class="tourmark">PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length+'</span><button class="tourskip" onclick="finishTutorial()">끝내기</button></div>'+
+    '<div class="tourbody"><div class="tourhead">'+mascotHTML('tour')+'<div class="touricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ico+'</svg></div></div><h2>'+s.title+'</h2><p>'+s.text+'</p>'+
+    (s.advance==='target'?'<div class="tourhint">주황색으로 표시된 곳을 눌러 주세요</div>':s.signal?'<div class="tourhint">저장하면 자동으로 다음 안내로 넘어가요</div>':'')+'</div>'+
+    '<div class="tourfoot">'+(_tourStep?'<button class="tourback" onclick="tourMove(-1)">이전</button>':'')+'<div class="tourprog">'+(_tourStep+1)+' / '+TOUR_STEPS.length+'</div><button class="tourbtn" onclick="tourNext()">'+next+'</button></div></div>';
+  clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,40);
+}
+function placeTutorial(){
+  if(!_tourActive)return;const s=TOUR_STEPS[_tourStep],t=getTourTarget(s),card=$('#tour .tourcard');if(!t||!card||s.scene==='modal')return;
+  const raw=t.getBoundingClientRect();if(raw.bottom<8||raw.top>innerHeight-8){t.scrollIntoView({block:'center'});_tourPlaceTimer=setTimeout(placeTutorial,180);return;}
+  const p=7,r={left:Math.max(6,raw.left-p),top:Math.max(6,raw.top-p),right:Math.min(innerWidth-6,raw.right+p),bottom:Math.min(innerHeight-6,raw.bottom+p)};
+  const spot=$('#tour .tourspot');spot.style.left=r.left+'px';spot.style.top=r.top+'px';spot.style.width=(r.right-r.left)+'px';spot.style.height=(r.bottom-r.top)+'px';
+  const gs=[...document.querySelectorAll('#tour .tourguard')];
+  [[0,0,innerWidth,r.top],[0,r.top,r.left,r.bottom-r.top],[r.right,r.top,innerWidth-r.right,r.bottom-r.top],[0,r.bottom,innerWidth,innerHeight-r.bottom]].forEach((a,i)=>{const g=gs[i];if(!g)return;g.style.left=a[0]+'px';g.style.top=a[1]+'px';g.style.width=Math.max(0,a[2])+'px';g.style.height=Math.max(0,a[3])+'px';});
+  const cw=card.offsetWidth,ch=card.offsetHeight,gap=13;let top=s.signal?10:r.bottom+gap;
+  if(top+ch>innerHeight-10)top=r.top-ch-gap;if(top<10)top=Math.max(10,innerHeight-ch-10);
+  let left=Math.max(10,Math.min(innerWidth-cw-10,(r.left+r.right-cw)/2));card.style.left=left+'px';card.style.top=top+'px';card.style.transform='none';
+}
+function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
+function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}_tourStep=Number.isInteger(s.nextTo)?s.nextTo:_tourStep+1;renderTutorial();}
+function tourNudge(){
+  const scene=TOUR_STEPS[_tourStep]&&TOUR_STEPS[_tourStep].scene;
+  if(['schedule-list','schedule-editor','subject-editor','task-editor','day','data'].includes(scene)){tourMove(-1);return;}
+  const s=$('#tour .tourspot');if(!s)return;s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge');
+}
+function tourSignal(name){if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.signal===name)setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},120);}
+function finishTutorial(){_tourReturnStep=null;_tourActive=false;DB.s.tutorialSeen=true;save();$('#tour').className='';}
+document.addEventListener('click',e=>{
+  if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.advance!=='target')return;
+  const t=getTourTarget(s);if(t&&(t===e.target||t.contains(e.target)))setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},230);
+},true);
+document.addEventListener('scroll',()=>{if(_tourActive){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);}},true);
 
 /* ═════ 16. 데이터 ═════ */
 let _bakArm=false;                       // 되돌리기는 두 번 눌러야 실행된다
@@ -1728,6 +1824,7 @@ function dataSheet(){
     '<span style="color:var(--ink3);font-size:13px">내보내기 파일에는 시간표 설정까지 모두 들어간다.</span></div>'+
     '<div class="row2"><button class="btn p" onclick="doExport()">내보내기</button>'+
     '<button class="btn s" onclick="document.getElementById(\'fileIn\').click()">가져오기</button></div>'+
+    '<div class="row2"><button class="btn s tutorial-replay" onclick="openTutorial(0)">튜토리얼 다시 보기</button></div>'+
     (ib?'<div class="row2"><button class="btn s" onclick="restoreImportBackup()">가져오기 전 상태로 되돌리기 · 할일 '+ib.tasks+'개</button></div>':'')+
     '<div class="fl">백업</div>'+bakHTML()+
     '<div class="fl">반복 규칙</div>'+
@@ -1769,10 +1866,10 @@ function delRule(id){
 
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
-if(!DB.s.tutorialSeen)setTimeout(()=>openTutorial(0),420);
+if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=30').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=32').catch(()=>{});
 </script>
 </body>
 </html>
