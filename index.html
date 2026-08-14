@@ -6,9 +6,11 @@
 <meta name="theme-color" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<meta name="application-name" content="Planner">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>플랜</title>
+<title>Planner</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -381,8 +383,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 const M=(h,m)=>h*60+m;
 const DAY0=M(2,0);          // 하루의 시작 = 새벽 2시
 const PPM=1.4;              // 기본 1분당 픽셀
-const MIN_EVENT_PX=20;      // 짧은 일정이 있는 구간만 이 높이까지 부분 확대
-const SNAP=5;               // 5분 단위
+const MIN_EVENT_PX=20;      // 짧은 일정 카드의 최소 터치 높이
+const SNAP=5;               // 길이 조절과 자동 분할은 5분 단위
+const PLACE_SNAP=10;        // 일정을 직접 배치할 때는 10분 단위
 const CLASSES=[
   ['roll', M(6,50), M(7,15), '점호'],
   ['hr',   M(8,10), M(8,20), '아침조례'],
@@ -434,7 +437,9 @@ function durTxt(d){return d>=60?(d%60?Math.floor(d/60)+'시간 '+(d%60)+'분':Ma
 /** 절대 분 → 하루 안에서의 상대 위치(0=02:00) */
 const rel=m=>((m-DAY0)%1440+1440)%1440;
 const abs=r=>((Math.round(r)+DAY0)%1440+1440)%1440;
-const snap=m=>Math.round(m/SNAP)*SNAP;
+const snapTo=(m,step)=>Math.round(m/step)*step;
+const snap=m=>snapTo(m,SNAP);
+const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
@@ -458,6 +463,8 @@ function load(){try{
     if(t.dur==null&&t.min!=null)t.dur=bandLen(t.date,t.min);
     if(t.ord==null)t.ord=0;
     if(t.repId===undefined)t.repId=null;
+    if(t.autoSlot===undefined)t.autoSlot=null;
+    if(t.autoSlot!=null){t.autoSlot=Math.round(t.autoSlot);if(t.autoSlot<0||t.autoSlot>1380)t.autoSlot=null;}
   });
 }catch(e){}}
 /** 백업에 뭐가 들어있는지 — 되돌리기 전에 보여준다 */
@@ -594,6 +601,58 @@ function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
     t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-t.min):each;
     t.ord=i;});
 }
+/** 주말 24시간 보기에서 기본 1시간 일정들이 공유하는 상대 시간 슬롯 */
+function autoSlotBand(task){
+  if(!task||task.autoSlot==null)return null;
+  const s=Math.max(0,Math.min(1380,Math.round(task.autoSlot)));
+  return {id:'auto'+s,s,e:s+60,auto:true};
+}
+function autoSlotMembers(ds,band){
+  return DB.tasks.filter(t=>{
+    if(t.date!==ds||t.min==null)return false;
+    if(t.autoSlot===band.s)return true;
+    // 기능 추가 전부터 있던, 손대지 않은 1시간 일정도 첫 합류 때 슬롯으로 승격한다.
+    return t.autoSlot==null&&rel(t.min)===band.s&&taskDur(t,ds)===60;
+  });
+}
+function autoSlotClean(ds,band,movingId){
+  const ids=new Set(autoSlotMembers(ds,band).map(t=>t.id));
+  return DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.id!==movingId).every(t=>{
+    const s=rel(t.min),e=s+taskDur(t,ds);
+    return e<=band.s||s>=band.e||ids.has(t.id);
+  });
+}
+function weekendSlotAt(ds,at,movingId){
+  if(!is24(ds))return null;
+  const starts=[];
+  DB.tasks.forEach(t=>{
+    if(t.date!==ds||t.min==null||t.id===movingId)return;
+    const s=t.autoSlot!=null?t.autoSlot:(taskDur(t,ds)===60?rel(t.min):null);
+    if(s!=null&&s>=0&&s<=1380&&!starts.includes(s))starts.push(s);
+  });
+  return starts.map(s=>({id:'auto'+s,s,e:s+60,auto:true}))
+    .filter(b=>at>=b.s&&at<b.e&&autoSlotClean(ds,b,movingId))
+    .sort((a,b)=>Math.abs(at-(a.s+30))-Math.abs(at-(b.s+30)))[0]||null;
+}
+function splitAutoSlot(ds,band,fillEvenIfOne,movingId,insertAt){
+  let inB=autoSlotMembers(ds,band).sort((a,b)=>rel(a.min)-rel(b.min)||(a.ord||0)-(b.ord||0));
+  if(movingId&&insertAt!=null){
+    const mv=inB.find(t=>t.id===movingId);
+    if(mv){inB=inB.filter(t=>t.id!==movingId);
+      inB.splice(Math.max(0,Math.min(inB.length,insertAt)),0,mv);}}
+  if(!inB.length)return;
+  inB.forEach(t=>{t.autoSlot=band.s;});
+  if(inB.length<2&&!fillEvenIfOne){
+    inB[0].min=abs(band.s);inB[0].dur=60;inB[0].ord=0;return;}
+  const each=Math.max(SNAP,Math.floor(((band.e-band.s)/inB.length)/SNAP)*SNAP);
+  inB.forEach((t,i)=>{
+    const s=Math.min(band.e-SNAP,band.s+each*i);
+    t.min=abs(s);t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-s):each;t.ord=i;});
+}
+function clearAutoSlot(ds,band){
+  if(!band||!band.auto)return;
+  DB.tasks.forEach(t=>{if(t.date===ds&&t.autoSlot===band.s)t.autoSlot=null;});
+}
 function sameBand(a,b){return !!(a&&b&&a.s===b.s&&a.e===b.e);}
 function resizeLinked(task,mode,baseS,baseD,curS,curD,neighbor,neighborBase){
   if(!task||!neighbor)return false;
@@ -616,10 +675,14 @@ function gridItems(ds){
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
     return {t,s,e:Math.min(1440,s+d)};});
 }
-/* 기본 시간축은 작게 유지하고, 짧은 일정이 놓인 분 구간만 늘린다. */
+/* 짧은 카드는 빈 공간 위로 20px까지 그린다. 다음 일정과 부딪힐 때만 실제 시간축을 늘린다. */
 function timeMap(ds){
-  const spans=gridItems(ds).filter(it=>it.e>it.s&&(it.e-it.s)*PPM<MIN_EVENT_PX)
-    .map(it=>({s:it.s,e:it.e,scale:MIN_EVENT_PX/(it.e-it.s)}));
+  const items=gridItems(ds).sort((a,b)=>a.s-b.s||a.e-b.e);
+  const spans=items.filter((it,i)=>{
+    const d=it.e-it.s;if(d<=0||d*PPM>=MIN_EVENT_PX)return false;
+    const next=items.slice(i+1).find(x=>x.t.id!==it.t.id),roomEnd=next?next.s:1440;
+    return (roomEnd-it.s)*PPM<MIN_EVENT_PX;
+  }).map(it=>({s:it.s,e:it.e,scale:MIN_EVENT_PX/(it.e-it.s)}));
   const cuts=[0,1440];spans.forEach(x=>{cuts.push(x.s,x.e);});
   cuts.sort((a,b)=>a-b);
   const uniq=cuts.filter((x,i)=>!i||x!==cuts[i-1]),segs=[];let total=0;
@@ -639,7 +702,7 @@ function timeMap(ds){
   return {height:total,y,min};
 }
 function evHTML(it,map){
-  const t=it.t,h=map.y(it.e)-map.y(it.s),sm=h<40;
+  const t=it.t,h=Math.max(MIN_EVENT_PX,map.y(it.e)-map.y(it.s)),sm=h<40;
   const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
   const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
   const ck='<button class="evck'+(t.done?' on':'')+'">'+
@@ -893,14 +956,14 @@ function carryAction(id,action){
   if(action==='done'){
     t.done=true;
   }else if(action==='delete'||action==='move'){
-    const oldDate=t.date,oldBand=t.min!=null?bandAt(t.date,t.min):null;
+    const oldDate=t.date,oldBand=t.min!=null?(autoSlotBand(t)||bandAt(t.date,t.min)):null;
     addRepException(t);
     if(action==='delete')DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
     else{
       const ord=DB.tasks.filter(x=>x.date===TODAY()&&x.min==null).length;
-      Object.assign(t,{date:TODAY(),min:null,dur:null,ord,done:false,repId:null});
+      Object.assign(t,{date:TODAY(),min:null,dur:null,autoSlot:null,ord,done:false,repId:null});
     }
-    if(oldBand)splitBand(oldDate,oldBand,true);
+    if(oldBand){if(oldBand.auto)splitAutoSlot(oldDate,oldBand,true);else splitBand(oldDate,oldBand,true);}
   }else return;
   SEL=null;save();buzz(10);paint();
   toast(action==='done'?'어제 할 일을 완료했다':action==='delete'?'어제 할 일을 지웠다':'오늘 미배정으로 옮겼다');
@@ -972,7 +1035,7 @@ function bindGrid(root){
   // 한 번의 드래그 안에서는 다시 그리지 않으니 제스처 도중에는 그대로 쓴다.
   let map=timeMap(dateOf());
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,armed=false,blocked=false,virtualDoneId=null,ghost=null;
-  let baseS=0,baseD=0,prevT=null,prevBase=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropIndex=null;
+  let baseS=0,baseD=0,prevT=null,prevBase=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1021,7 +1084,7 @@ function bindGrid(root){
     if(ghost){ghost.remove();ghost=null;}
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;prevT=null;nextT=null;overUn=false;armed=false;prevBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
+    mode=null;el=null;tid=null;prevT=null;nextT=null;overUn=false;armed=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
     GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
@@ -1067,6 +1130,7 @@ function bindGrid(root){
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
       el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
+      prevBand=autoSlotBand(task);
       if(mode==='rt'){
         prevT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&Math.abs(rel(x.min)+taskDur(x,ds)-baseS)<.5)||null;
         if(prevT)prevBase=Math.max(SNAP,taskDur(prevT,ds));
@@ -1082,7 +1146,7 @@ function bindGrid(root){
       const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
       el=ev;tid=task.id;
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
-      prevBand=bandAt(ds,task.min);
+      prevBand=autoSlotBand(task)||bandAt(ds,task.min);
       // 첫 탭은 선택만 한다. 선택된 카드의 본문만 이동 영역으로 활성화한다.
       if(SEL===task.id){mode='move';armed=true;}
     }
@@ -1102,16 +1166,33 @@ function bindGrid(root){
       const u=unbar();if(u)u.classList.toggle('tgt',overUn);
       autoScroll(t.clientY);
       if(overUn){if(ghost){ghost.remove();ghost=null;}showTag('미배정으로',t.clientY);return;}
-      let d=baseD,sM=snap(r-d/2);
-      const b=bandAt(ds,abs(snap(r)));        // 학교 시간표면 쉬는시간까지 모든 칸에 맞춘다
+      const task=DB.tasks.find(x=>x.id===tid),point=placeSnap(r);
+      let d=(task&&task.autoSlot!=null)?60:baseD,sM=placeSnap(r-d/2);
+      dropBand=null;
+      const b=bandAt(ds,abs(point));           // 학교 시간표면 쉬는시간까지 모든 칸에 맞춘다
       if(b){
         const others=DB.tasks.filter(x=>x.date===ds&&x.id!==tid&&x.min!=null&&x.min>=b.s&&x.min<b.e)
           .sort((a,c)=>a.min-c.min||(a.ord||0)-(c.ord||0));
-        const raw=abs(snap(r)),n=others.length+1;
+        const raw=abs(point),n=others.length+1;
         dropIndex=Math.max(0,Math.min(others.length,Math.floor(((raw-b.s)/(b.e-b.s))*n)));
         const each=Math.max(SNAP,snap((b.e-b.s)/n));
         const sAbs=Math.min(b.e-SNAP,b.s+each*dropIndex);
         sM=rel(sAbs);d=dropIndex===n-1?Math.max(SNAP,b.e-sAbs):each;
+      }else if(is24(ds)&&(baseD===60||(task&&task.autoSlot!=null))){
+        let slot=weekendSlotAt(ds,point,tid);
+        if(!slot){const ss=Math.max(0,Math.min(1380,placeSnap(r-30)));
+          const candidate={id:'auto'+ss,s:ss,e:ss+60,auto:true};
+          if(autoSlotClean(ds,candidate,tid))slot=candidate;}
+        if(slot){
+          dropBand=slot;
+          const others=autoSlotMembers(ds,slot).filter(x=>x.id!==tid)
+            .sort((a,c)=>rel(a.min)-rel(c.min)||(a.ord||0)-(c.ord||0));
+          const n=others.length+1;
+          dropIndex=Math.max(0,Math.min(others.length,Math.floor(((point-slot.s)/60)*n)));
+          const each=Math.max(SNAP,Math.floor((60/n)/SNAP)*SNAP);
+          sM=Math.min(slot.e-SNAP,slot.s+each*dropIndex);
+          d=dropIndex===n-1?Math.max(SNAP,slot.e-sM):each;
+        }else dropIndex=null;
       }else dropIndex=null;
       sM=Math.max(0,Math.min(1440-d,sM));curS=sM;curD=d;
       if(mode==='move')paintEl(sM,d);
@@ -1154,22 +1235,30 @@ function bindGrid(root){
     const leftBand=prevBand;
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
-        task.min=null;task.dur=null;if(SEL===task.id)SEL=null;
+        task.min=null;task.dur=null;task.autoSlot=null;if(SEL===task.id)SEL=null;
       }else if(mode==='rt'&&prevT){
+        clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(prevT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,prevT,prevBase);
       }else if(mode==='rb'&&nextT){
+        clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(nextT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,nextT,nextBase);
       }else{
+        if(mode==='rt'||mode==='rb')clearAutoSlot(ds,leftBand);
         task.min=abs(curS);task.dur=Math.max(SNAP,curD);
         const b=bandAt(ds,task.min);
-        if(b&&(mode==='move'||mode==='new'))splitBand(ds,b,false,task.id,dropIndex);
-        else resolveOverlaps(ds,task.id);
+        if(dropBand&&(mode==='move'||mode==='new')){
+          task.autoSlot=dropBand.s;splitAutoSlot(ds,dropBand,false,task.id,dropIndex);
+        }else if(b&&(mode==='move'||mode==='new')){
+          task.autoSlot=null;splitBand(ds,b,false,task.id,dropIndex);
+        }else{task.autoSlot=null;resolveOverlaps(ds,task.id);}
         SEL=task.id;}
       // 원래 칸을 떠나면 남은 일정이 반드시 칸 전체를 다시 채운다.
       // 동적 새벽 1시간 슬롯도 s/e로 비교해야 같은 큰 gap id에 속한 다른 시간을 구분할 수 있다.
       if((mode==='move'||mode==='new')&&leftBand){
-        const landed=task.min==null?null:bandAt(ds,task.min);
-        if(!sameBand(leftBand,landed))splitBand(ds,leftBand,true);}
+        const landed=task.min==null?null:(autoSlotBand(task)||bandAt(ds,task.min));
+        if(!sameBand(leftBand,landed)){
+          if(leftBand.auto)splitAutoSlot(ds,leftBand,true);
+          else splitBand(ds,leftBand,true);}}
       save();buzz(11);}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
@@ -1365,9 +1454,9 @@ function delTask(all){
     DB.tasks=DB.tasks.filter(x=>x.repId!==t.repId);
   }else{
     addRepException(t);
-    const b=t.min!=null?bandAt(t.date,t.min):null;
+    const b=t.min!=null?(autoSlotBand(t)||bandAt(t.date,t.min)):null;
     DB.tasks=DB.tasks.filter(x=>x.id!==t.id);
-    if(b)splitBand(t.date,b,true);}
+    if(b){if(b.auto)splitAutoSlot(t.date,b,true);else splitBand(t.date,b,true);}}
   save();finishTaskSheet();
   toast(all?'반복 전체를 지웠다':'지웠다');
 }

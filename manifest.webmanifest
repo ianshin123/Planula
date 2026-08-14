@@ -1,7 +1,7 @@
 {
-  "name": "플랜",
-  "short_name": "플랜",
-  "description": "학교 시간표 기반 플래너. 로컬 저장 · 오프라인 작동.",
+  "name": "Planner",
+  "short_name": "Planner",
+  "description": "학교 시간표 기반 Planner. 로컬 저장 · 오프라인 작동.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
