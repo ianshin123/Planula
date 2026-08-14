@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=32">
+<link rel="manifest" href="manifest.webmanifest?v=33">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -56,7 +56,7 @@
   --shadow-sm:0 1px 2px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.16);
   --shadow-md:0 12px 30px rgba(0,0,0,.34); --shadow-lg:0 20px 56px rgba(0,0,0,.48);
 }
-html,body{height:100%;overscroll-behavior:none}
+html,body{height:100%;overscroll-behavior:none;touch-action:pan-x pan-y}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;
   background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;letter-spacing:-.011em;
   -webkit-font-smoothing:antialiased;position:fixed;inset:0;overflow:hidden}
@@ -356,25 +356,28 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
 .blockdel{width:38px;height:42px;border-radius:10px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:20px;font-weight:500}
 .fullnote{padding:12px 14px;border-radius:var(--r3);background:var(--ac-s);color:var(--ink2);font-size:12.5px;font-weight:700;line-height:1.55}
-#tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
-#tour.on{opacity:1}.tourveil{position:fixed;inset:0;background:rgba(30,22,14,.48);pointer-events:auto}
-.tourspot{position:fixed;border:3px solid var(--ac);border-radius:16px;box-shadow:0 0 0 9999px rgba(30,22,14,.58),0 0 0 7px rgba(224,122,79,.2);pointer-events:none;transition:inset .2s,border-radius .2s}
-.tourguard{position:fixed;pointer-events:auto;background:transparent}
-#tour.free .tourguard{pointer-events:none}
-#tour.free .tourcard{max-height:260px;padding:14px 16px}#tour.free .tourhead{display:none}#tour.free .tourbody{padding:4px 0 8px}
-#tour.free .tourbody h2{margin:3px 0 5px;font-size:18px}#tour.free .tourbody p{font-size:12.5px;line-height:1.5}#tour.free .tourhint{margin-top:5px;padding:7px 9px}
-.tourcard{position:fixed;z-index:2;width:min(calc(100vw - 28px),370px);max-height:min(52dvh,430px);overflow-y:auto;padding:18px;border-radius:22px;background:var(--solid);border:1px solid var(--line);box-shadow:var(--shadow-lg);pointer-events:auto;display:flex;flex-direction:column}
-#tour.modal .tourcard{left:50%;top:50%;transform:translate(-50%,-50%);width:min(calc(100vw - 36px),440px);max-height:min(82dvh,620px);padding:22px}
-.tourtop{display:flex;align-items:center;justify-content:space-between;gap:10px}.tourmark{font-size:10.5px;font-weight:850;letter-spacing:.07em;color:var(--ac)}
-.tourskip{padding:8px 4px;color:var(--ink3);font-size:12px;font-weight:800}.tourbody{flex:1;padding:17px 1px 15px}
-.tourhead{display:flex;align-items:flex-start;gap:12px}.touricon{width:46px;height:46px;flex:none;border-radius:15px;background:var(--ac-s);color:var(--ac);display:grid;place-items:center}.touricon svg{width:24px;height:24px}
-.tourmascot{display:none;width:58px;height:58px;flex:none}.tourmascot img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-.tourmascot.has-asset{display:block}.tourmascot.has-asset+.touricon{display:none}.mascot-home{display:none}.mascot-home.has-asset{display:block;width:64px;height:64px;flex:none}.mascot-home img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-.tourbody h2{font-size:21px;line-height:1.22;letter-spacing:-.035em;margin:9px 0 7px}.tourbody p{font-size:13.5px;font-weight:650;color:var(--ink2);line-height:1.65;white-space:pre-line}
-.tourbody p strong{color:var(--ink);font-weight:850}.tourhint{margin-top:10px;padding:9px 11px;border-radius:12px;background:var(--ac-s);color:var(--ac);font-size:12px;font-weight:800}
-.tourfoot{display:flex;align-items:center;gap:9px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:800}.tourbtn{min-width:88px;padding:12px 15px;border-radius:var(--r3);background:var(--ac);color:#fff;font-size:13px;font-weight:850}.tourback{padding:12px 5px;color:var(--ink3);font-size:12px;font-weight:800}
-.tourspot.nudge{animation:tournudge .42s ease}@keyframes tournudge{40%{transform:scale(1.04)}75%{transform:scale(.985)}}
-@media(max-height:620px){.tourcard{max-height:48dvh}.tourbody{padding:10px 1px}.tourbody p{line-height:1.5}}
+#tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#tour.on{opacity:1}#tour:not(.on),#tour:not(.on) *{pointer-events:none!important}
+.tourspot{position:fixed;z-index:1;border:2px solid var(--ac);border-radius:15px;box-shadow:0 0 10px rgba(224,122,79,.78),0 0 24px rgba(224,122,79,.34);pointer-events:none;opacity:.94;transition:left .52s cubic-bezier(.22,1,.36,1),top .52s cubic-bezier(.22,1,.36,1),width .52s cubic-bezier(.22,1,.36,1),height .52s cubic-bezier(.22,1,.36,1),opacity .25s}
+.tourguide{position:fixed;left:0;top:0;z-index:2;width:min(calc(100vw - 28px),350px);pointer-events:none;color:var(--ink);transform:translate3d(18px,420px,0);transition:transform .58s cubic-bezier(.22,1,.36,1),opacity .24s ease,filter .24s ease;will-change:transform}
+.tourguide.changing{opacity:.18;filter:blur(3px)}.tourguide.leaving{opacity:0;filter:blur(5px)}.tourguide.leaving,.tourguide.leaving *{pointer-events:none!important}
+.tourmark{font-size:10.5px;font-weight:900;letter-spacing:.08em;color:var(--ac);text-shadow:0 0 7px var(--bg),0 0 15px var(--bg),0 0 10px rgba(224,122,79,.55)}
+.tourskip{position:absolute;right:0;top:-10px;padding:10px 2px;color:var(--ink2);font-size:12px;font-weight:850;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg)}
+.tourbody h2{font-size:23px;line-height:1.2;letter-spacing:-.04em;margin:9px 0 7px;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 20px var(--bg),0 2px 3px var(--bg)}
+.tourbody p{font-size:14px;font-weight:720;color:var(--ink2);line-height:1.62;white-space:pre-line;text-shadow:0 0 5px var(--bg),0 0 10px var(--bg),0 0 17px var(--bg)}
+.tourbody p strong{color:var(--ac);font-weight:900;text-shadow:0 0 6px var(--bg),0 0 13px rgba(224,122,79,.5)}
+.tourhint{margin-top:8px;color:var(--ac);font-size:12px;font-weight:900;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 10px rgba(224,122,79,.6)}
+.tourfoot{display:flex;align-items:center;gap:10px;margin-top:8px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:850;text-shadow:0 0 6px var(--bg),0 0 12px var(--bg)}
+.tourbtn,.tourback{padding:9px 2px;font-size:13px;font-weight:900;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 13px var(--bg)}.tourbtn{min-width:78px;color:var(--ac);text-align:right}.tourback{color:var(--ink2)}
+.tourguide button:focus-visible{outline:none;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg),0 0 12px rgba(224,122,79,.75)}
+.tourfly{position:fixed;left:0;top:0;z-index:3;width:88px;height:119px;pointer-events:none;transform:translate3d(calc(50vw - 44px),80px,0);transition:transform .72s cubic-bezier(.22,1,.36,1),opacity .28s ease;will-change:transform}
+.tourfly img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 8px 10px rgba(65,34,18,.22));animation:mascotHover 2.4s ease-in-out infinite alternate;transform-origin:50% 45%}
+.tourfly.landing{transition-duration:.78s}.tourfly.landing img{animation:none}.tourfly.leaving{opacity:0}
+@keyframes mascotHover{0%{transform:translateY(-3px) rotate(-1.2deg)}100%{transform:translateY(4px) rotate(1.2deg)}}
+.mascot-home{display:block;width:54px;height:70px;flex:none;padding:0;opacity:1;transition:opacity .28s ease,transform .45s cubic-bezier(.22,1.6,.36,1);touch-action:manipulation}.mascot-home.tour-away{opacity:0;pointer-events:none}.mascot-home.arrived{animation:mascotArrive .5s cubic-bezier(.22,1.6,.36,1)}
+.mascot-home img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 5px 7px rgba(65,34,18,.18))}.mascot-home:active{transform:scale(.92)}.mascot-home.playing img{filter:drop-shadow(0 6px 10px rgba(224,122,79,.34))}
+@keyframes mascotArrive{0%{transform:scale(.72);opacity:.2}100%{transform:scale(1);opacity:1}}
+@media(max-height:620px){.tourguide{width:min(calc(100vw - 24px),330px)}.tourbody h2{font-size:20px}.tourbody p{font-size:12.5px;line-height:1.5}.tourfly{width:72px;height:97px}}
 @media(max-width:620px){
   .blockrow{grid-template-columns:minmax(0,1fr) 38px}
   .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1/3;grid-row:2}
@@ -1694,21 +1697,26 @@ function deleteSchedule(){
 }
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
-const MASCOT_GIF=''; // 사용자가 승인한 GIF를 받기 전까지 비워 둔다.
+const MASCOT_IDLE='assets/planner-mascot-idle.png';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif';
+const MASCOT_ONCE='assets/planner-mascot-once.gif';
+const MASCOT_CYCLE_MS=5040;
+let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
-  const home=place==='home',cl=home?'mascot-home':'tourmascot';
-  return '<div class="'+cl+(MASCOT_GIF?' has-asset':'')+'" data-mascot-slot="'+place+'" aria-hidden="true">'+
-    (MASCOT_GIF?'<img src="'+MASCOT_GIF+'" alt="">':'')+'</div>';
+  if(place!=='home')return '';
+  const playing=_homeMascotUntil>Date.now();
+  return '<button id="mascotHome" class="mascot-home'+(playing?' playing':'')+(_tourActive?' tour-away':'')+'" data-mascot-slot="home" aria-label="캐릭터 움직이기" onclick="playHomeMascot()">'+
+    '<img id="mascotHomeImg" src="'+(playing?MASCOT_ONCE:MASCOT_IDLE)+'" alt="주황 해파리 캐릭터"></button>';
 }
-const TOUR_ICON={
-  install:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4"/><path d="M5 11.5v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
-  schedule:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3"/>',
-  subject:'<path d="M4 5.2A1.6 1.6 0 0 1 5.6 3.6H19v16.8H5.6A1.6 1.6 0 0 1 4 18.8z"/><path d="M4 16.6h15"/>',
-  add:'<path d="M5 12h14M12 5v14"/><circle cx="12" cy="12" r="9"/>',
-  move:'<path d="M8 4v10M5 7l3-3 3 3M16 20V10M13 17l3 3 3-3"/>',
-  calendar:'<rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3"/>',
-  data:'<path d="M12 15.5V3.5M8 7.5L12 3.5l4 4M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>'
-};
+function playHomeMascot(){
+  if(_tourActive)return;const home=$('#mascotHome'),img=$('#mascotHomeImg');if(!home||!img)return;
+  const token=++_homeMascotToken;_homeMascotUntil=Date.now()+MASCOT_CYCLE_MS;
+  clearTimeout(_homeMascotTimer);home.classList.add('playing');img.src=MASCOT_IDLE;
+  requestAnimationFrame(()=>{if(token===_homeMascotToken&&document.contains(img))img.src=MASCOT_ONCE;});
+  _homeMascotTimer=setTimeout(()=>{if(token!==_homeMascotToken)return;_homeMascotUntil=0;
+    const now=$('#mascotHomeImg'),btn=$('#mascotHome');if(now)now.src=MASCOT_IDLE;if(btn)btn.classList.remove('playing');
+  },MASCOT_CYCLE_MS+80);
+}
 const TOUR_STEPS=[
   {scene:'modal',title:'먼저 홈 화면에 추가해',text:'브라우저에서 <strong>공유 → 더보기 → 홈 화면에 추가</strong>를 눌러 줘.\n추가한 뒤 홈 화면의 Planner 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
   {scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:4,title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
@@ -1728,7 +1736,7 @@ const TOUR_STEPS=[
   {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
   {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planner 시작하기'}
 ];
-let _tourStep=0,_tourActive=false,_tourReturnStep=null,_tourPlaceTimer=null;
+let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null;
 function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function setTourTab(t){
   closeSheet();if(tab!==t){tab=t;$('#scroll').scrollTop=0;paint();}
@@ -1750,49 +1758,80 @@ function getTourTarget(s){
   if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar');
   return s.selector?document.querySelector(s.selector):null;
 }
+function ensureTourDOM(){
+  const root=$('#tour');if(root.querySelector('.tourguide'))return;
+  root.innerHTML='<div class="tourspot"></div><div class="tourguide"><div class="tourmark"></div><button class="tourskip" onclick="finishTutorial()">끝내기</button>'+
+    '<div class="tourbody"><h2></h2><p></p><div class="tourhint"></div></div><div class="tourfoot"><button class="tourback" onclick="tourMove(-1)">이전</button>'+
+    '<div class="tourprog"></div><button class="tourbtn" onclick="tourNext()"></button></div></div>'+
+    '<div class="tourfly"><img src="'+MASCOT_LOOP+'" alt="주황 해파리 캐릭터"></div>';
+}
 function openTutorial(i){
-  _tourReturnStep=null;closeSheet();_tourActive=true;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));renderTutorial();
+  _tourReturnStep=null;closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
+  _tourActive=true;_tourLanding=false;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
+  const root=$('#tour');root.innerHTML='';root.className='on';ensureTourDOM();
+  const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
 }
 function renderTutorial(){
-  if(!_tourActive)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
+  if(!_tourActive||_tourLanding)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
   const installed=_tourStep===0&&standaloneMode();
   const s=installed?Object.assign({},base,{title:'Planner 앱으로 잘 열렸어',text:'홈 화면의 Planner 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',next:'계속'}):base;
-  prepareTourScene(s.scene);
-  const modal=s.scene==='modal',next=s.next||(s.advance==='target'?'건너뛰기':(last?'시작하기':'다음'));
-  const guides=modal?'<div class="tourveil" onclick="tourNudge()"></div>':'<div class="tourspot"></div><i class="tourguard g1" onclick="tourNudge()"></i><i class="tourguard g2" onclick="tourNudge()"></i><i class="tourguard g3" onclick="tourNudge()"></i><i class="tourguard g4" onclick="tourNudge()"></i>';
-  const ico=TOUR_ICON[s.icon]||TOUR_ICON.add;
-  $('#tour').className='on'+(modal?' modal':'')+(s.signal?' free':'');
-  $('#tour').innerHTML=guides+'<div class="tourcard"><div class="tourtop"><span class="tourmark">PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length+'</span><button class="tourskip" onclick="finishTutorial()">끝내기</button></div>'+
-    '<div class="tourbody"><div class="tourhead">'+mascotHTML('tour')+'<div class="touricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ico+'</svg></div></div><h2>'+s.title+'</h2><p>'+s.text+'</p>'+
-    (s.advance==='target'?'<div class="tourhint">주황색으로 표시된 곳을 눌러 주세요</div>':s.signal?'<div class="tourhint">저장하면 자동으로 다음 안내로 넘어가요</div>':'')+'</div>'+
-    '<div class="tourfoot">'+(_tourStep?'<button class="tourback" onclick="tourMove(-1)">이전</button>':'')+'<div class="tourprog">'+(_tourStep+1)+' / '+TOUR_STEPS.length+'</div><button class="tourbtn" onclick="tourNext()">'+next+'</button></div></div>';
-  clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,40);
+  prepareTourScene(s.scene);ensureTourDOM();
+  const next=s.next||(s.advance==='target'?'건너뛰기':(last?'시작하기':'다음')),guide=$('#tour .tourguide');
+  clearTimeout(_tourCopyTimer);guide.classList.add('changing');
+  _tourCopyTimer=setTimeout(()=>{
+    if(!_tourActive||_tourLanding)return;
+    guide.querySelector('.tourmark').textContent='PLANNER GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length;
+    guide.querySelector('h2').textContent=s.title;guide.querySelector('p').innerHTML=s.text;
+    const hint=guide.querySelector('.tourhint');hint.textContent=s.advance==='target'?'주황빛으로 표시된 곳을 눌러 주세요':s.signal?'저장하면 다음 안내로 자연스럽게 이어져요':'';hint.style.display=hint.textContent?'block':'none';
+    const back=guide.querySelector('.tourback');back.style.visibility=_tourStep?'visible':'hidden';
+    guide.querySelector('.tourprog').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;guide.querySelector('.tourbtn').textContent=next;
+    guide.classList.remove('changing');clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
+  },90);
+  clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,35);
 }
 function placeTutorial(){
-  if(!_tourActive)return;const s=TOUR_STEPS[_tourStep],t=getTourTarget(s),card=$('#tour .tourcard');if(!t||!card||s.scene==='modal')return;
-  const raw=t.getBoundingClientRect();if(raw.bottom<8||raw.top>innerHeight-8){t.scrollIntoView({block:'center'});_tourPlaceTimer=setTimeout(placeTutorial,180);return;}
-  const p=7,r={left:Math.max(6,raw.left-p),top:Math.max(6,raw.top-p),right:Math.min(innerWidth-6,raw.right+p),bottom:Math.min(innerHeight-6,raw.bottom+p)};
-  const spot=$('#tour .tourspot');spot.style.left=r.left+'px';spot.style.top=r.top+'px';spot.style.width=(r.right-r.left)+'px';spot.style.height=(r.bottom-r.top)+'px';
-  const gs=[...document.querySelectorAll('#tour .tourguard')];
-  [[0,0,innerWidth,r.top],[0,r.top,r.left,r.bottom-r.top],[r.right,r.top,innerWidth-r.right,r.bottom-r.top],[0,r.bottom,innerWidth,innerHeight-r.bottom]].forEach((a,i)=>{const g=gs[i];if(!g)return;g.style.left=a[0]+'px';g.style.top=a[1]+'px';g.style.width=Math.max(0,a[2])+'px';g.style.height=Math.max(0,a[3])+'px';});
-  const cw=card.offsetWidth,ch=card.offsetHeight,gap=13;let top=s.signal?10:r.bottom+gap;
-  if(top+ch>innerHeight-10)top=r.top-ch-gap;if(top<10)top=Math.max(10,innerHeight-ch-10);
-  let left=Math.max(10,Math.min(innerWidth-cw-10,(r.left+r.right-cw)/2));card.style.left=left+'px';card.style.top=top+'px';card.style.transform='none';
+  if(!_tourActive||_tourLanding)return;const s=TOUR_STEPS[_tourStep],t=getTourTarget(s),guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot');
+  if(!guide||!fly||!spot)return;const gw=guide.offsetWidth,gh=guide.offsetHeight,fw=fly.offsetWidth,fh=fly.offsetHeight,safe=14;
+  let gx=Math.max(safe,(innerWidth-gw)/2),gy=Math.max(245,innerHeight*.53),mx=(innerWidth-fw)/2,my=Math.max(24,gy-fh-18);
+  if(s.scene==='modal'||!t){spot.style.opacity='0';gy=Math.min(innerHeight-gh-34,Math.max(245,innerHeight*.54));my=Math.max(30,gy-fh-22);}
+  else{
+    const raw=t.getBoundingClientRect();if((raw.bottom<4||raw.top>innerHeight-4)&&raw.height<innerHeight*.7){t.scrollIntoView({block:'center'});_tourPlaceTimer=setTimeout(placeTutorial,190);return;}
+    let left=Math.max(7,raw.left-7),right=Math.min(innerWidth-7,raw.right+7),top=Math.max(7,raw.top-7),bottom=Math.min(innerHeight-7,raw.bottom+7);
+    if(raw.height>innerHeight*.55){top=Math.max(90,innerHeight*.4);bottom=Math.min(innerHeight-90,top+78);}
+    spot.style.opacity='.94';spot.style.left=left+'px';spot.style.top=top+'px';spot.style.width=Math.max(20,right-left)+'px';spot.style.height=Math.max(20,bottom-top)+'px';
+    const below=bottom+18,above=top-gh-18;gy=below+gh<innerHeight-safe?below:(above>safe?above:Math.max(safe,innerHeight-gh-safe));
+    gx=Math.max(safe,Math.min(innerWidth-gw-safe,(left+right-gw)/2));
+    my=gy>fh+32?gy-fh-14:Math.min(innerHeight-fh-18,gy+gh+10);mx=Math.max(12,Math.min(innerWidth-fw-12,gx+gw-fw-8));
+  }
+  guide.style.transform='translate3d('+Math.round(gx)+'px,'+Math.round(gy)+'px,0)';
+  fly.style.transform='translate3d('+Math.round(mx)+'px,'+Math.round(my)+'px,0)';
 }
 function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
 function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}_tourStep=Number.isInteger(s.nextTo)?s.nextTo:_tourStep+1;renderTutorial();}
-function tourNudge(){
-  const scene=TOUR_STEPS[_tourStep]&&TOUR_STEPS[_tourStep].scene;
-  if(['schedule-list','schedule-editor','subject-editor','task-editor','day','data'].includes(scene)){tourMove(-1);return;}
-  const s=$('#tour .tourspot');if(!s)return;s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge');
-}
 function tourSignal(name){if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.signal===name)setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},120);}
-function finishTutorial(){_tourReturnStep=null;_tourActive=false;DB.s.tutorialSeen=true;save();$('#tour').className='';}
+function finishTutorial(){
+  if(!_tourActive||_tourLanding)return;_tourLanding=true;_tourReturnStep=null;DB.s.tutorialSeen=true;save();
+  clearTimeout(_tourCopyTimer);clearTimeout(_tourPlaceTimer);const root=$('#tour'),guide=root.querySelector('.tourguide'),fly=root.querySelector('.tourfly'),spot=root.querySelector('.tourspot');
+  if(guide)guide.classList.add('leaving');if(spot)spot.style.opacity='0';setTourTab('today');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const home=$('#mascotHome');if(!fly||!home){completeTutorialLanding();return;}
+    home.classList.add('tour-away');const r=home.getBoundingClientRect(),fw=fly.offsetWidth,fh=fly.offsetHeight,scale=Math.min(r.width/fw,r.height/fh);
+    fly.classList.add('landing');fly.style.transform='translate3d('+Math.round(r.left+(r.width-fw)/2)+'px,'+Math.round(r.top+(r.height-fh)/2)+'px,0) scale('+scale+')';
+    setTimeout(completeTutorialLanding,820);
+  }));
+}
+function completeTutorialLanding(){
+  _tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
+  const home=$('#mascotHome');if(home){home.classList.remove('tour-away');home.classList.add('arrived');setTimeout(()=>home.classList.remove('arrived'),520);}
+}
 document.addEventListener('click',e=>{
-  if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.advance!=='target')return;
+  if(!_tourActive||_tourLanding)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.advance!=='target')return;
   const t=getTourTarget(s);if(t&&(t===e.target||t.contains(e.target)))setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},230);
 },true);
-document.addEventListener('scroll',()=>{if(_tourActive){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);}},true);
+document.addEventListener('scroll',()=>{if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);}},true);
+// 설치형 앱처럼 사용한다. iOS의 두 손가락 확대와 데스크톱 트랙패드 확대를 모두 막는다.
+['gesturestart','gesturechange','gestureend'].forEach(name=>document.addEventListener(name,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
 
 /* ═════ 16. 데이터 ═════ */
 let _bakArm=false;                       // 되돌리기는 두 번 눌러야 실행된다
@@ -1869,7 +1908,7 @@ firstPaint();
 if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=32').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=33').catch(()=>{});
 </script>
 </body>
 </html>

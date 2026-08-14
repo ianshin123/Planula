@@ -1,8 +1,11 @@
 /* 플래너 서비스워커.
    HTML은 network-first → 배포 즉시 최신본이 보인다(캐시 갇힘 없음).
    정적 자산은 cache-first. */
-const CACHE = 'planner-v32';
-const ASSETS = ['./', './index.html', './manifest.webmanifest?v=32', './icon-192.png', './icon-512.png'];
+const CACHE = 'planner-v33';
+const ASSETS = [
+  './', './index.html', './manifest.webmanifest?v=33', './icon-192.png', './icon-512.png',
+  './assets/planner-mascot-idle.png', './assets/planner-mascot-loop.gif', './assets/planner-mascot-once.gif'
+];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
