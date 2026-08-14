@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planner">
 <meta name="application-name" content="Planner">
-<link rel="manifest" href="manifest.webmanifest?v=33">
+<link rel="manifest" href="manifest.webmanifest?v=34">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planner</title>
 <style>
@@ -297,6 +297,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   transform:translateY(110%);transition:transform .36s cubic-bezier(.32,.72,0,1);
   padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;overflow-y:auto}
 #sheet.on{transform:translateY(0)}
+body.tour-sheet-space #sheet{max-height:56vh;max-height:56dvh}
 #subscrim{position:fixed;inset:0;z-index:120;background:rgba(30,22,14,.28);opacity:0;pointer-events:none;transition:opacity .24s;
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 #subscrim.on{opacity:1;pointer-events:auto}
@@ -306,6 +307,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   transform:translateY(110%);transition:transform .32s cubic-bezier(.32,.72,0,1);
   padding:10px 20px calc(var(--sb) + 22px);max-height:84vh;max-height:84dvh;overflow-y:auto}
 #subsheet.on{transform:translateY(0)}
+body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .grab{width:42px;height:5px;border-radius:3px;background:var(--ink3);opacity:.45;margin:0 auto 14px}
 .sh2{font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:16px}
 .fl{font-size:11.5px;font-weight:800;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase;margin:18px 0 8px;
@@ -359,7 +361,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 #tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .28s ease}
 #tour.on{opacity:1}#tour:not(.on),#tour:not(.on) *{pointer-events:none!important}
 .tourspot{position:fixed;z-index:1;border:2px solid var(--ac);border-radius:15px;box-shadow:0 0 10px rgba(224,122,79,.78),0 0 24px rgba(224,122,79,.34);pointer-events:none;opacity:.94;transition:left .52s cubic-bezier(.22,1,.36,1),top .52s cubic-bezier(.22,1,.36,1),width .52s cubic-bezier(.22,1,.36,1),height .52s cubic-bezier(.22,1,.36,1),opacity .25s}
+.tourspot.tracking{transition:none}
 .tourguide{position:fixed;left:0;top:0;z-index:2;width:min(calc(100vw - 28px),350px);pointer-events:none;color:var(--ink);transform:translate3d(18px,420px,0);transition:transform .58s cubic-bezier(.22,1,.36,1),opacity .24s ease,filter .24s ease;will-change:transform}
+.tourguide.sheet-space{width:min(calc(100vw - 112px),300px)}
 .tourguide.changing{opacity:.18;filter:blur(3px)}.tourguide.leaving{opacity:0;filter:blur(5px)}.tourguide.leaving,.tourguide.leaving *{pointer-events:none!important}
 .tourmark{font-size:10.5px;font-weight:900;letter-spacing:.08em;color:var(--ac);text-shadow:0 0 7px var(--bg),0 0 15px var(--bg),0 0 10px rgba(224,122,79,.55)}
 .tourskip{position:absolute;right:0;top:-10px;padding:10px 2px;color:var(--ink2);font-size:12px;font-weight:850;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg)}
@@ -761,12 +765,23 @@ function gridItems(ds){
     const s=rel(t.min),d=Math.max(SNAP,taskDur(t,ds));
     return {t,s,e:Math.min(1440,s+d)};});
 }
-/* 짧은 카드는 빈 공간 위로 20px까지 그린다. 다음 일정과 부딪힐 때만 실제 시간축을 늘린다. */
+/* 짧은 카드가 머무는 칸의 끝. 시간표에서는 해당 밴드, 24시간 보기에서는 다음 정각이다. */
+function visualCellEnd(ds,it){
+  let end=Math.min(1440,Math.floor(it.s/60)*60+60);
+  if(!is24(ds)){
+    const b=bandAt(ds,abs(Math.min(1439,it.s)));
+    if(b){const rs=rel(b.s),re=Math.min(1440,rs+(b.e-b.s));
+      if(it.s>=rs&&it.s<re)end=re;}
+  }
+  return Math.max(it.e,end);
+}
+/* 짧은 카드는 같은 칸의 남은 빈 공간을 먼저 쓴다. 다음 일정이나 칸 끝에 부딪힐 때만 시간축을 늘린다. */
 function timeMap(ds){
   const items=gridItems(ds).sort((a,b)=>a.s-b.s||a.e-b.e);
   const spans=items.filter((it,i)=>{
     const d=it.e-it.s;if(d<=0||d*PPM>=MIN_EVENT_PX)return false;
-    const next=items.slice(i+1).find(x=>x.t.id!==it.t.id),roomEnd=next?next.s:1440;
+    const next=items.slice(i+1).find(x=>x.t.id!==it.t.id);
+    const roomEnd=Math.max(it.e,Math.min(visualCellEnd(ds,it),next?next.s:1440));
     return (roomEnd-it.s)*PPM<MIN_EVENT_PX;
   }).map(it=>({s:it.s,e:it.e,scale:MIN_EVENT_PX/(it.e-it.s)}));
   const cuts=[0,1440];spans.forEach(x=>{cuts.push(x.s,x.e);});
@@ -1718,25 +1733,26 @@ function playHomeMascot(){
   },MASCOT_CYCLE_MS+80);
 }
 const TOUR_STEPS=[
-  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'브라우저에서 <strong>공유 → 더보기 → 홈 화면에 추가</strong>를 눌러 줘.\n추가한 뒤 홈 화면의 Planner 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
+  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 Planner 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
   {scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:4,title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
   {scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:4,title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
   {scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',title:'이름·요일·시간대를 정해',text:'이름을 붙이고 적용 요일을 고른 뒤 시간대를 추가해. 평일을 한 번에 고를 수도 있고, 요일을 모두 해제한 채 보관할 수도 있어. 나중에도 같은 메뉴에서 수정할 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
-  {scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:7,title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
+  {scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:8,title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
   {scene:'subject',selector:'button[aria-label="과목 추가"]',advance:'target',nextTo:7,title:'과목은 여기서 추가해',text:'오른쪽 위 +를 누르면 과목 이름과 색을 정할 수 있어.',icon:'subject'},
   {scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',title:'과목을 만든 뒤 더 채울 수 있어',text:'이름과 색을 정해 저장해. 저장한 과목 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 과목을 연결할 수 있어.',icon:'subject',next:'지금은 건너뛰기'},
   {scene:'subject',selector:'.nb[data-t="today"]',advance:'target',title:'이제 오늘로 돌아가자',text:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.',icon:'add'},
-  {scene:'today',selector:'#mainFab',advance:'target',nextTo:10,title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
+  {scene:'today',selector:'#mainFab',advance:'target',nextTo:12,title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
   {scene:'task-editor',selector:'#f_title',signal:'task-saved',title:'이름을 쓰고 저장해',text:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 과목과 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',icon:'add',next:'지금은 건너뛰기'},
   {scene:'today',target:'unassigned',title:'미배정은 대기 공간이야',text:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어.',icon:'move'},
-  {scene:'today',selector:'#gridwrap .grid',title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 선택하고 시간표로 끌면 10분 간격으로 배치돼. 이미 놓인 일도 먼저 선택해야 이동할 수 있고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
+  {scene:'today',target:'grid',title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 선택하고 시간표로 끌면 10분 간격으로 배치돼. 이미 놓인 일도 먼저 선택해야 이동할 수 있고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
   {scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:15,title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
   {scene:'calendar',selector:'.cell.today',advance:'target',nextTo:15,title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
   {scene:'day',selector:'#popfab.on',title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
-  {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
+  {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',finishOnSkip:true,title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
   {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planner 시작하기'}
 ];
-let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null;
+let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null,_tourTrackTimer=null,_tourTrackFrame=null;
+const TOUR_MOVING_SCENES=new Set(['schedule-list','schedule-editor','subject-editor','task-editor','day','data']);
 function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function setTourTab(t){
   closeSheet();if(tab!==t){tab=t;$('#scroll').scrollTop=0;paint();}
@@ -1755,8 +1771,56 @@ function prepareTourScene(scene){
   else if(scene==='data')openData();
 }
 function getTourTarget(s){
-  if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar');
+  if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar .unrow');
+  if(s.target==='grid')return document.querySelector('#gridwrap .grid');
   return s.selector?document.querySelector(s.selector):null;
+}
+function cancelTourTracking(){
+  clearTimeout(_tourTrackTimer);_tourTrackTimer=null;
+  if(_tourTrackFrame!=null)cancelAnimationFrame(_tourTrackFrame);_tourTrackFrame=null;
+  const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');
+}
+function setTourSceneSpace(scene){
+  const on=TOUR_MOVING_SCENES.has(scene);document.body.classList.toggle('tour-sheet-space',on);
+  const guide=$('#tour .tourguide');if(guide)guide.classList.toggle('sheet-space',on);
+}
+function tourTargetRect(s,t,allowScroll){
+  const raw=t.getBoundingClientRect();
+  if(allowScroll&&(raw.bottom<4||raw.top>innerHeight-4)&&raw.height<innerHeight*.7){
+    t.scrollIntoView({block:'center'});clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,190);return null;}
+  let left=Math.max(7,raw.left-7),right=Math.min(innerWidth-7,raw.right+7);
+  let top=Math.max(7,raw.top-7),bottom=Math.min(innerHeight-7,raw.bottom+7);
+  if(s.target==='grid'){
+    const scroll=$('#scroll'),sr=scroll?scroll.getBoundingClientRect():{top:80,bottom:innerHeight-90};
+    const visibleTop=Math.max(raw.top+5,sr.top+8,82),visibleBottom=Math.min(raw.bottom-5,sr.bottom-12,innerHeight-92);
+    const cy=Math.max(visibleTop+38,Math.min(visibleBottom-38,innerHeight*.43));
+    top=Math.max(visibleTop,cy-38);bottom=Math.min(visibleBottom,top+76);
+    if(bottom-top<42){top=Math.max(7,visibleTop);bottom=Math.min(innerHeight-7,Math.max(top+42,visibleBottom));}
+    left=Math.max(7,raw.left+3);right=Math.min(innerWidth-7,raw.right-3);
+  }else if(raw.height>innerHeight*.55){
+    top=Math.max(90,innerHeight*.4);bottom=Math.min(innerHeight-90,top+78);
+  }
+  return {left,right,top,bottom};
+}
+function applyTourSpot(rect,tracking){
+  const spot=$('#tour .tourspot');if(!spot||!rect)return;
+  spot.classList.toggle('tracking',!!tracking);spot.style.opacity='.94';
+  spot.style.left=rect.left+'px';spot.style.top=rect.top+'px';
+  spot.style.width=Math.max(20,rect.right-rect.left)+'px';spot.style.height=Math.max(20,rect.bottom-rect.top)+'px';
+}
+function startTourTracking(scene){
+  cancelTourTracking();if(!TOUR_MOVING_SCENES.has(scene))return;
+  const step=_tourStep;
+  _tourTrackTimer=setTimeout(()=>{
+    const until=performance.now()+560;
+    const tick=now=>{
+      if(!_tourActive||_tourLanding||_tourStep!==step){cancelTourTracking();return;}
+      const s=TOUR_STEPS[step],t=getTourTarget(s);if(t)applyTourSpot(tourTargetRect(s,t,false),true);
+      if(now<until)_tourTrackFrame=requestAnimationFrame(tick);
+      else{_tourTrackFrame=null;const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');placeTutorial();}
+    };
+    _tourTrackFrame=requestAnimationFrame(tick);
+  },70);
 }
 function ensureTourDOM(){
   const root=$('#tour');if(root.querySelector('.tourguide'))return;
@@ -1766,7 +1830,7 @@ function ensureTourDOM(){
     '<div class="tourfly"><img src="'+MASCOT_LOOP+'" alt="주황 해파리 캐릭터"></div>';
 }
 function openTutorial(i){
-  _tourReturnStep=null;closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
+  _tourReturnStep=null;cancelTourTracking();closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
   _tourActive=true;_tourLanding=false;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
   const root=$('#tour');root.innerHTML='';root.className='on';ensureTourDOM();
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
@@ -1775,7 +1839,7 @@ function renderTutorial(){
   if(!_tourActive||_tourLanding)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
   const installed=_tourStep===0&&standaloneMode();
   const s=installed?Object.assign({},base,{title:'Planner 앱으로 잘 열렸어',text:'홈 화면의 Planner 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',next:'계속'}):base;
-  prepareTourScene(s.scene);ensureTourDOM();
+  cancelTourTracking();setTourSceneSpace(s.scene);prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace(s.scene);startTourTracking(s.scene);
   const next=s.next||(s.advance==='target'?'건너뛰기':(last?'시작하기':'다음')),guide=$('#tour .tourguide');
   clearTimeout(_tourCopyTimer);guide.classList.add('changing');
   _tourCopyTimer=setTimeout(()=>{
@@ -1793,25 +1857,31 @@ function placeTutorial(){
   if(!_tourActive||_tourLanding)return;const s=TOUR_STEPS[_tourStep],t=getTourTarget(s),guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot');
   if(!guide||!fly||!spot)return;const gw=guide.offsetWidth,gh=guide.offsetHeight,fw=fly.offsetWidth,fh=fly.offsetHeight,safe=14;
   let gx=Math.max(safe,(innerWidth-gw)/2),gy=Math.max(245,innerHeight*.53),mx=(innerWidth-fw)/2,my=Math.max(24,gy-fh-18);
-  if(s.scene==='modal'||!t){spot.style.opacity='0';gy=Math.min(innerHeight-gh-34,Math.max(245,innerHeight*.54));my=Math.max(30,gy-fh-22);}
+  if(s.scene==='modal'||!t){
+    spot.style.opacity='0';const dock=$('.dock'),dockTop=dock?dock.getBoundingClientRect().top:innerHeight-safe;
+    gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));my=Math.max(12,gy-fh-14);
+  }
   else{
-    const raw=t.getBoundingClientRect();if((raw.bottom<4||raw.top>innerHeight-4)&&raw.height<innerHeight*.7){t.scrollIntoView({block:'center'});_tourPlaceTimer=setTimeout(placeTutorial,190);return;}
-    let left=Math.max(7,raw.left-7),right=Math.min(innerWidth-7,raw.right+7),top=Math.max(7,raw.top-7),bottom=Math.min(innerHeight-7,raw.bottom+7);
-    if(raw.height>innerHeight*.55){top=Math.max(90,innerHeight*.4);bottom=Math.min(innerHeight-90,top+78);}
-    spot.style.opacity='.94';spot.style.left=left+'px';spot.style.top=top+'px';spot.style.width=Math.max(20,right-left)+'px';spot.style.height=Math.max(20,bottom-top)+'px';
-    const below=bottom+18,above=top-gh-18;gy=below+gh<innerHeight-safe?below:(above>safe?above:Math.max(safe,innerHeight-gh-safe));
-    gx=Math.max(safe,Math.min(innerWidth-gw-safe,(left+right-gw)/2));
-    my=gy>fh+32?gy-fh-14:Math.min(innerHeight-fh-18,gy+gh+10);mx=Math.max(12,Math.min(innerWidth-fw-12,gx+gw-fw-8));
+    const rect=tourTargetRect(s,t,true);if(!rect)return;const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
+    if(TOUR_MOVING_SCENES.has(s.scene)){
+      gx=safe;gy=safe;mx=Math.max(12,innerWidth-fw-12);my=18;
+    }else{
+      const dock=$('.dock'),dockTop=dock?dock.getBoundingClientRect().top:innerHeight-safe;
+      const below=bottom+18,above=top-gh-18,limit=Math.max(safe,dockTop-gh-12);
+      gy=below+gh<dockTop-12?below:(above>safe?above:limit);
+      gx=Math.max(safe,Math.min(innerWidth-gw-safe,(left+right-gw)/2));
+      my=Math.max(12,gy>fh+32?gy-fh-14:Math.min(dockTop-fh-12,gy+gh+10));mx=Math.max(12,Math.min(innerWidth-fw-12,gx+gw-fw-8));
+    }
   }
   guide.style.transform='translate3d('+Math.round(gx)+'px,'+Math.round(gy)+'px,0)';
   fly.style.transform='translate3d('+Math.round(mx)+'px,'+Math.round(my)+'px,0)';
 }
 function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
-function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}_tourStep=Number.isInteger(s.nextTo)?s.nextTo:_tourStep+1;renderTutorial();}
+function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.length-1||s.finishOnSkip){finishTutorial();return;}_tourStep=Number.isInteger(s.nextTo)?s.nextTo:_tourStep+1;renderTutorial();}
 function tourSignal(name){if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.signal===name)setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},120);}
 function finishTutorial(){
   if(!_tourActive||_tourLanding)return;_tourLanding=true;_tourReturnStep=null;DB.s.tutorialSeen=true;save();
-  clearTimeout(_tourCopyTimer);clearTimeout(_tourPlaceTimer);const root=$('#tour'),guide=root.querySelector('.tourguide'),fly=root.querySelector('.tourfly'),spot=root.querySelector('.tourspot');
+  cancelTourTracking();document.body.classList.remove('tour-sheet-space');clearTimeout(_tourCopyTimer);clearTimeout(_tourPlaceTimer);const root=$('#tour'),guide=root.querySelector('.tourguide'),fly=root.querySelector('.tourfly'),spot=root.querySelector('.tourspot');
   if(guide)guide.classList.add('leaving');if(spot)spot.style.opacity='0';setTourTab('today');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     const home=$('#mascotHome');if(!fly||!home){completeTutorialLanding();return;}
@@ -1821,7 +1891,7 @@ function finishTutorial(){
   }));
 }
 function completeTutorialLanding(){
-  _tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
+  cancelTourTracking();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
   const home=$('#mascotHome');if(home){home.classList.remove('tour-away');home.classList.add('arrived');setTimeout(()=>home.classList.remove('arrived'),520);}
 }
 document.addEventListener('click',e=>{
@@ -1908,7 +1978,7 @@ firstPaint();
 if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=33').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=34').catch(()=>{});
 </script>
 </body>
 </html>
