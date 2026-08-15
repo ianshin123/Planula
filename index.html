@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=40">
+<link rel="manifest" href="manifest.webmanifest?v=41">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planula</title>
 <style>
@@ -2077,7 +2077,7 @@ if(!DB.s.introDone&&(!DB.s.tutorialSeen||plannerUntouched()))setTimeout(()=>open
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=40').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=41').catch(()=>{});
 </script>
 </body>
 </html>
