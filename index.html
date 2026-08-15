@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=42">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=42">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=42">
-<link rel="apple-touch-icon" href="icon-192.png?v=42">
+<link rel="manifest" href="manifest.webmanifest?v=43">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=43">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=43">
+<link rel="apple-touch-icon" href="icon-192.png?v=43">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -283,8 +283,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 #popfab.on{opacity:1;pointer-events:auto;transform:none}
 @media(max-width:620px){
   :root{--gut:44px;--unw:104px}
+  /* 헤더와 본문의 좌우 여백은 항상 같은 값이어야 화면 중앙에 맞는다. */
   #top{padding-left:14px;padding-right:14px}
-  #scroll{padding-left:30px;padding-right:10px}
+  #scroll{padding-left:14px;padding-right:14px}
   .daylayout{gap:8px}
   .unbar{padding:8px 6px}
   .unbar .uh{font-size:10px;letter-spacing:0}
@@ -603,7 +604,9 @@ function addDays(s,n){const d=parseD(s);d.setDate(d.getDate()+n);return dstr(d);
 function planDay(){const x=new Date();if(x.getHours()*60+x.getMinutes()<DAY0)x.setDate(x.getDate()-1);return dstr(x);}
 const TODAY=planDay;
 const DOW=['일','월','화','수','목','금','토'];
-const PALETTE=['#E07A4F','#F0A059','#D64F4F','#C9639E','#8A6FD4','#4F86D6','#3F9E6B','#8C9A4F','#7A6A5C','#5A8F9E'];
+/* 과목 색 — 색상환을 고르게 도는 한 벌. 밝기·채도를 맞춰 크림 배경과 어두운 배경 양쪽에서
+   같은 계열로 읽히게 했다. 첫 색은 앱 강조색과 같은 테라코타다. */
+const PALETTE=['#E07A4F','#EDA359','#C99B3E','#8CB059','#46A571','#3F9CB5','#5A8DD6','#8E82DC','#B771CE','#E0708F'];
 
 /* ═════ 3. 상태 ═════ */
 let tab='today', calM=new Date(), popDate=null, _anim=false;
@@ -1058,6 +1061,7 @@ function go(t){
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
   v.style.transform='translateX('+(-dir*28)+'px)';v.style.opacity='0';
   setTimeout(()=>{tab=t;$('#scroll').scrollTop=0;paint();
+    playHomeMascot();                       // 탭을 옮길 때마다 캐릭터가 한 번 움직인다
     if(t==='today')requestAnimationFrame(()=>{focusToday();});
     v.style.transition='none';v.style.transform='translateX('+(dir*28)+'px)';v.style.opacity='0';
     requestAnimationFrame(()=>{v.style.transition='transform .32s cubic-bezier(.3,1.1,.4,1),opacity .3s';
@@ -2079,7 +2083,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=42').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=43').catch(()=>{});
 </script>
 </body>
 </html>
