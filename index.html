@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=46">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=46">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=46">
-<link rel="apple-touch-icon" href="icon-192.png?v=46">
+<link rel="manifest" href="manifest.webmanifest?v=47">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=47">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=47">
+<link rel="apple-touch-icon" href="icon-192.png?v=47">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -21,6 +21,7 @@
   --ink:#26221D; --ink2:#6E655A; --ink3:#A79D90;
   --line:rgba(82,68,54,.14); --line2:rgba(82,68,54,.075);
   --ac:#E07A4F; --ac2:#F0A059; --ac-s:rgba(224,122,79,.13); --ac-b:rgba(224,122,79,.34);
+  --ac-glow:rgba(224,122,79,.42); --spot-glow:rgba(224,122,79,.62);
   --gd:#D64F4F; --gd-s:rgba(214,79,79,.13);
   --ok:#3F9E6B; --ok-s:rgba(63,158,107,.13);
   --band:rgba(224,122,79,.075);
@@ -37,6 +38,7 @@
   --ink:#F2EDE5; --ink2:#B0A597; --ink3:#7A7166;
   --line:rgba(255,255,255,.11); --line2:rgba(255,255,255,.055);
   --ac:#FF9264; --ac2:#FFB877; --ac-s:rgba(255,146,100,.16); --ac-b:rgba(255,146,100,.4);
+  --ac-glow:rgba(255,146,100,.26); --spot-glow:rgba(255,146,100,.5);
   --gd:#FF7A6E; --gd-s:rgba(255,122,110,.16);
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
   --band:rgba(255,146,100,.085);
@@ -50,6 +52,7 @@
   --ink:#F2EDE5; --ink2:#B0A597; --ink3:#7A7166;
   --line:rgba(255,255,255,.11); --line2:rgba(255,255,255,.055);
   --ac:#FF9264; --ac2:#FFB877; --ac-s:rgba(255,146,100,.16); --ac-b:rgba(255,146,100,.4);
+  --ac-glow:rgba(255,146,100,.26); --spot-glow:rgba(255,146,100,.5);
   --gd:#FF7A6E; --gd-s:rgba(255,122,110,.16);
   --ok:#4FC98A; --ok-s:rgba(79,201,138,.15);
   --band:rgba(255,146,100,.085);
@@ -368,21 +371,29 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .fullnote{padding:12px 14px;border-radius:var(--r3);background:var(--ac-s);color:var(--ink2);font-size:12.5px;font-weight:700;line-height:1.55}
 #tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .28s ease}
 #tour.on{opacity:1}#tour:not(.on),#tour:not(.on) *{pointer-events:none!important}
-.tourspot{position:fixed;z-index:1;border:2px solid var(--ac);border-radius:15px;box-shadow:0 0 10px rgba(224,122,79,.78),0 0 24px rgba(224,122,79,.34);pointer-events:none;opacity:.94;transition:left .52s cubic-bezier(.22,1,.36,1),top .52s cubic-bezier(.22,1,.36,1),width .52s cubic-bezier(.22,1,.36,1),height .52s cubic-bezier(.22,1,.36,1),opacity .25s}
+.tourspot{position:fixed;z-index:1;border:2px solid var(--ac);border-radius:15px;box-shadow:0 0 9px var(--spot-glow),0 0 20px var(--ac-glow);pointer-events:none;opacity:.94;transition:left .52s cubic-bezier(.22,1,.36,1),top .52s cubic-bezier(.22,1,.36,1),width .52s cubic-bezier(.22,1,.36,1),height .52s cubic-bezier(.22,1,.36,1),opacity .25s}
 .tourspot.tracking{transition:none}
 .tourguide{position:fixed;left:0;top:0;z-index:2;width:min(calc(100vw - 28px),350px);pointer-events:none;color:var(--ink);transform:translate3d(18px,420px,0);transition:transform .58s cubic-bezier(.22,1,.36,1),opacity .24s ease,filter .24s ease;will-change:transform}
 .tourguide.sheet-space{width:min(calc(100vw - 112px),300px)}
 .tourguide.changing{opacity:.18;filter:blur(3px)}.tourguide.leaving{opacity:0;filter:blur(5px)}.tourguide.leaving,.tourguide.leaving *{pointer-events:none!important}
-.tourmark{font-size:10.5px;font-weight:900;letter-spacing:.08em;color:var(--ac);text-shadow:0 0 7px var(--bg),0 0 15px var(--bg),0 0 10px rgba(224,122,79,.55)}
-.tourskip{position:absolute;right:0;top:-10px;padding:10px 2px;color:var(--ink2);font-size:12px;font-weight:850;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg)}
-.tourbody h2{font-size:23px;line-height:1.2;letter-spacing:-.04em;margin:9px 0 7px;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 20px var(--bg),0 2px 3px var(--bg)}
-.tourbody p{font-size:14px;font-weight:720;color:var(--ink2);line-height:1.62;white-space:pre-line;text-shadow:0 0 5px var(--bg),0 0 10px var(--bg),0 0 17px var(--bg)}
-.tourbody p strong{color:var(--ac);font-weight:900;text-shadow:0 0 6px var(--bg),0 0 13px rgba(224,122,79,.5)}
-.tourhint{margin-top:8px;color:var(--ac);font-size:12px;font-weight:900;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 10px rgba(224,122,79,.6)}
-.tourfoot{display:flex;align-items:center;gap:10px;margin-top:8px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:850;text-shadow:0 0 6px var(--bg),0 0 12px var(--bg)}
-.tourbtn,.tourback{padding:9px 2px;font-size:13px;font-weight:900;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 13px var(--bg)}.tourbtn{min-width:78px;color:var(--ac);text-align:right}.tourback{color:var(--ink2)}
+.tourmark{font-size:10.5px;font-weight:900;letter-spacing:.08em;color:var(--ac);text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 14px var(--bg)}
+.tourskip{position:absolute;right:0;top:-10px;padding:10px 2px;color:var(--ink3);font-size:11.5px;font-weight:800;pointer-events:auto;text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 15px var(--bg)}
+.tourbody h2{font-size:23px;line-height:1.2;letter-spacing:-.04em;margin:9px 0 7px;text-shadow:0 0 4px var(--bg),0 0 8px var(--bg),0 0 15px var(--bg),0 0 26px var(--bg)}
+.tourbody p{font-size:14px;font-weight:720;color:var(--ink2);line-height:1.62;white-space:pre-line;text-shadow:0 0 4px var(--bg),0 0 8px var(--bg),0 0 14px var(--bg),0 0 24px var(--bg)}
+.tourbody p strong{color:var(--ac);font-weight:900;text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 12px var(--ac-glow)}
+.tourhint{margin-top:8px;color:var(--ac);font-size:12px;font-weight:900;text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 12px var(--ac-glow)}
+.tourfoot{display:flex;align-items:center;gap:10px;margin-top:8px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:850;text-shadow:0 0 4px var(--bg),0 0 9px var(--bg)}
+.tourbtn,.tourback{pointer-events:auto;text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 15px var(--bg)}
+.tourback{padding:9px 2px;font-size:12px;font-weight:800;color:var(--ink3)}
+/* 진행 버튼은 안내를 넘기는 주 동작이다. 건너뛰기와 헷갈리지 않게 확실히 크게 둔다. */
+.tourbtn{padding:10px 2px 10px 12px;min-width:96px;color:var(--ac);text-align:right;
+  font-size:17px;font-weight:900;letter-spacing:-.02em;line-height:1.25;
+  text-shadow:0 0 4px var(--bg),0 0 9px var(--bg),0 0 16px var(--bg),0 0 15px var(--ac-glow)}
+.tourbtn::after{content:' →';font-weight:900}
+.tourbtn:active{transform:scale(.96)}
 /* 마지막 단계는 시작 버튼을 또렷하게 — 강조된 곳을 눌러 다시 시작하는 실수를 막는다 */
-.tourbtn.final{font-size:15.5px;text-shadow:0 0 7px var(--bg),0 0 15px var(--bg),0 0 16px rgba(224,122,79,.75)}
+.tourbtn.final{font-size:20px;letter-spacing:-.03em;
+  text-shadow:0 0 4px var(--bg),0 0 10px var(--bg),0 0 18px var(--bg),0 0 18px var(--ac-glow)}
 /* 시작 질문 — 배경 상자 없이 발광 텍스트 버튼만 둔다 */
 .tourchoice{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:15px}
 .tourpick{padding:11px 2px;text-align:left;pointer-events:auto;font-weight:900;
@@ -390,7 +401,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tourpick.p{color:var(--ac);font-size:15.5px}
 .tourpick.s{color:var(--ink2);font-size:14px;font-weight:850}
 .tourpick:active{transform:scale(.97)}
-.tourguide button:focus-visible{outline:none;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg),0 0 12px rgba(224,122,79,.75)}
+.tourguide button:focus-visible{outline:none;text-shadow:0 0 4px var(--bg),0 0 10px var(--bg),0 0 14px var(--ac-glow)}
 .tourfly{position:fixed;left:0;top:0;z-index:3;width:88px;height:119px;pointer-events:none;transform:translate3d(calc(50vw - 44px),80px,0);transition:transform .72s cubic-bezier(.22,1,.36,1),opacity .28s ease;will-change:transform}
 .tourfly img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 8px 10px rgba(65,34,18,.22));animation:mascotHover 2.4s ease-in-out infinite alternate;transform-origin:50% 45%}
 .tourfly.landing{transition-duration:.78s}.tourfly.landing img{animation:none}.tourfly.leaving{opacity:0}
@@ -1734,9 +1745,9 @@ function deleteSchedule(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=46';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=46';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=46';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=47';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=47';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=47';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -1770,7 +1781,7 @@ const TOUR_STEPS=[
   {id:'task-add',scene:'today',selector:'#mainFab',advance:'target',nextTo:'unassigned',title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
   {id:'task-editor',scene:'task-editor',selector:'#f_title',signal:'task-saved',signalTo:'unassigned',nextTo:'unassigned',title:'이름을 쓰고 저장해',text:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 과목과 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',icon:'add',next:'지금은 건너뛰기'},
   {id:'unassigned',scene:'today',target:'unassigned',allow:['.unbar'],title:'미배정은 대기 공간이야',text:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어. 직접 눌러 봐.',icon:'move'},
-  {id:'grid',scene:'today',target:'grid',allow:['#gridwrap .grid','.unbar'],title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 눌러 선택하고 시간표로 끌어 봐. 10분 간격으로 놓여. 이미 놓인 일도 먼저 선택해야 움직이고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
+  {id:'grid',scene:'today',target:'grid',allow:['#gridwrap .grid','.unbar'],keepClear:['.unbar'],title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 눌러 선택하고 시간표로 끌어 봐. 10분 간격으로 놓여. 이미 놓인 일도 먼저 선택해야 움직이고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
   {id:'cal-tab',scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:'data-btn',title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
   {id:'cal-cell',scene:'calendar',selector:'.cell.today',advance:'target',nextTo:'data-btn',title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
   {id:'day-fab',scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
@@ -1908,10 +1919,21 @@ function tourTargetRect(s,t,allowScroll){
   let top=Math.max(lo,raw.top-7),bottom=Math.min(hi,raw.bottom+7);
   if(bottom-top<14)return 'hidden';
   if(s.target==='grid'){
+    // 강조 칸을 실제 한 시간 높이에 맞춘다. 기본 일정이 놓이는 크기와 같아야
+    // '이만큼 들어간다'는 안내가 실제 결과와 어긋나지 않는다.
     const scroll=$('#scroll'),sr=scroll?scroll.getBoundingClientRect():{top:80,bottom:innerHeight-90};
-    const visibleTop=Math.max(raw.top+5,sr.top+8,lo,82),visibleBottom=Math.min(raw.bottom-5,sr.bottom-12,hi,innerHeight-92);
-    const cy=Math.max(visibleTop+38,Math.min(visibleBottom-38,innerHeight*.43));
-    top=Math.max(visibleTop,cy-38);bottom=Math.min(visibleBottom,top+76);
+    const visibleTop=Math.max(raw.top+2,sr.top+8,lo,82),visibleBottom=Math.min(raw.bottom-2,sr.bottom-12,hi,innerHeight-92);
+    const grid=$('#gridwrap .grid'),ds=grid?grid.dataset.date:TODAY();
+    const map=timeMap(ds);
+    // 화면 가운데에 걸리는 정각을 골라 그 한 시간 구간을 그대로 쓴다
+    const centerMin=map.min(Math.max(0,(visibleTop+visibleBottom)/2-raw.top));
+    let h0=Math.max(0,Math.min(1380,Math.round(centerMin/60)*60));
+    let hTop=raw.top+map.y(h0),hBot=raw.top+map.y(h0+60);
+    if(hTop<visibleTop||hBot>visibleBottom){                 // 위아래로 삐져나오면 한 칸 옮겨 본다
+      const alt=hTop<visibleTop?h0+60:h0-60;
+      if(alt>=0&&alt<=1380){const aT=raw.top+map.y(alt),aB=raw.top+map.y(alt+60);
+        if(aT>=visibleTop&&aB<=visibleBottom){h0=alt;hTop=aT;hBot=aB;}}}
+    top=Math.max(visibleTop,hTop);bottom=Math.min(visibleBottom,hBot);
     if(bottom-top<42){top=Math.max(lo,visibleTop);bottom=Math.min(hi,Math.max(top+42,visibleBottom));}
     if(bottom-top<14)return 'hidden';
     left=Math.max(7,raw.left+3);right=Math.min(innerWidth-7,raw.right-3);
@@ -2016,11 +2038,28 @@ function placeTutorial(allowScroll){
       gx=Math.max(safe,Math.min(innerWidth-gw-safe,(left+right-gw)/2));
       my=Math.max(12,gy>fh+32?gy-fh-14:Math.min(dockTop-fh-12,gy+gh+10));mx=Math.max(12,Math.min(innerWidth-fw-12,gx+gw-fw-8));
     }
-    // 캐릭터가 강조 대상을 덮지 않게 옆으로 물린다.
-    if(mx<right&&mx+fw>left&&my<bottom&&my+fh>top){
-      if(left-12>=fw)mx=Math.max(12,left-fw-10);
-      else if(innerWidth-right-12>=fw)mx=Math.min(innerWidth-fw-12,right+10);
-      else my=top-fh-10>=12?top-fh-10:Math.min(dockTop-fh-12,bottom+10);
+    // 캐릭터가 이 단계에서 만져야 하는 곳을 덮지 않게 비킨다.
+    // 강조 대상뿐 아니라 allow 로 함께 열어 둔 곳(미배정 레일 등)도 피한다.
+    // keepClear 에 적은 곳은 이 단계에서 손이 가야 하는 자리다. 그리드처럼 화면을 꽉 채우는
+    // 영역까지 피하려 들면 캐릭터가 갈 곳이 없어지므로 덮으면 안 되는 것만 적는다.
+    const avoid=[{left,right,top,bottom},{left:gx,right:gx+gw,top:gy,bottom:gy+gh}];
+    if(Array.isArray(s.keepClear))s.keepClear.forEach(q=>{
+      const el=document.querySelector(q);if(!el)return;
+      const r=el.getBoundingClientRect();
+      if(r.width>0&&r.height>0)avoid.push({left:r.left,right:r.right,top:r.top,bottom:r.bottom});});
+    const over=(x,y)=>avoid.reduce((n,a)=>n+
+      Math.max(0,Math.min(x+fw,a.right)-Math.max(x,a.left))*
+      Math.max(0,Math.min(y+fh,a.bottom)-Math.max(y,a.top)),0);
+    if(over(mx,my)>0){
+      const L=Math.min(...avoid.map(a=>a.left)),R=Math.max(...avoid.map(a=>a.right)),T=Math.min(...avoid.map(a=>a.top));
+      const xs=[mx,L-fw-10,R+10,12,innerWidth-fw-12],ys=[my,bottom+10,T-fh-10,12];
+      const ox=mx,oy=my;let best=null;
+      xs.forEach(x=>ys.forEach(y=>{
+        const cx=Math.max(12,Math.min(innerWidth-fw-12,x)),cy=Math.max(12,Math.min(dockTop-fh-12,y));
+        const a=over(cx,cy),d=Math.hypot(cx-ox,cy-oy);
+        // 가리지 않는 자리 중에서는 원래 있던 곳에 가장 가까운 쪽을 고른다
+        if(!best||a<best.a||(a===best.a&&d<best.d))best={a,d,x:cx,y:cy};}));
+      if(best){mx=best.x;my=best.y;}
     }
     }
   }
@@ -2143,7 +2182,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=46').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=47').catch(()=>{});
 </script>
 </body>
 </html>
