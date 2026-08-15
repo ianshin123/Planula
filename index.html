@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=50">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=50">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=50">
-<link rel="apple-touch-icon" href="icon-192.png?v=50">
+<link rel="manifest" href="manifest.webmanifest?v=51">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=51">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=51">
+<link rel="apple-touch-icon" href="icon-192.png?v=51">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -395,6 +395,18 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .schedsum>div{flex:1;min-width:0}.schedsum b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .schedsum span{display:block;margin-top:3px;color:var(--ink3);font-size:11.5px;font-weight:700;line-height:1.4}
 .schedbadge{flex:none;padding:6px 9px;border-radius:9px;background:var(--ac-s);color:var(--ac);font-size:11px;font-weight:850}
+/* 시간대를 켜고 끄는 스위치. 카드 전체는 수정으로 열리므로 스위치는 따로 둔다. */
+.schedrow{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.schedrow .schedsum{margin-bottom:0}
+.schedsum.static{background:var(--muted);opacity:1}
+.schedrow.off .schedsum{opacity:.5}
+.swt{flex:none;width:50px;height:30px;border-radius:15px;background:var(--line);position:relative;
+  transition:background .2s;border:1px solid var(--surface-brd)}
+.swt i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:var(--solid);
+  box-shadow:var(--shadow-sm);transition:transform .22s cubic-bezier(.32,1.5,.5,1)}
+.swt.on{background:var(--ac)}
+.swt.on i{transform:translateX(20px)}
+.swt:active{transform:scale(.94)}
 .schedempty{padding:20px 15px;border:1.5px dashed var(--line);border-radius:var(--r3);text-align:center;color:var(--ink3);font-size:13px;font-weight:650;line-height:1.6}
 .blockrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1.15fr) 38px;gap:7px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:8px}
 .blockrow label{display:block;font-size:10.5px;font-weight:800;color:var(--ink3);margin-bottom:4px}
@@ -482,6 +494,37 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
   -webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);
   clip-path:polygon(50% 0,100% 100%,0 100%)}
 .tourguide button:focus-visible{outline:none;text-shadow:0 0 4px var(--bg),0 0 10px var(--bg),0 0 14px var(--ac-glow)}
+/* 조작 힌트 — 강조 상자만으로는 '무엇을 하라는 건지'가 안 온다.
+   눌러야 하는 곳은 살짝 커졌다 작아지고, 끌어야 하는 곳은 실제 동작을
+   흐릿한 유령 카드로 반복해 보여준다. */
+@keyframes tourPress{0%,100%{transform:scale(1)}52%{transform:scale(1.11)}}
+.tour-press{animation:tourPress 1.2s ease-in-out infinite;transform-origin:center;will-change:transform}
+@keyframes tourSpotPulse{
+  0%,100%{box-shadow:0 0 0 2.5px var(--ac),0 0 15px var(--spot-glow)}
+  52%{box-shadow:0 0 0 4.5px var(--ac),0 0 30px var(--spot-glow)}}
+.tourspot.press{animation:tourSpotPulse 1.2s ease-in-out infinite}
+#tourdemo{position:fixed;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none;
+  opacity:0;transition:opacity .28s ease}
+#tourdemo.on{opacity:1}
+#tourdemo *{position:absolute;pointer-events:none}
+#tourdemo .tdcard{border-radius:var(--r3);background:var(--ac-s);border:1.6px dashed var(--ac-b);
+  box-shadow:0 6px 18px rgba(63,49,36,.14)}
+#tourdemo .tdfinger{width:28px;height:28px;border-radius:50%;background:var(--ac);opacity:.34;
+  box-shadow:0 0 0 7px var(--ac-s)}
+#tourdemo .move{animation:tdMove 2.4s cubic-bezier(.4,0,.25,1) infinite}
+@keyframes tdMove{
+  0%{transform:translate3d(var(--x1),var(--y1),0);opacity:0}
+  10%{transform:translate3d(var(--x1),var(--y1),0);opacity:.92}
+  62%{transform:translate3d(var(--x2),var(--y2),0);opacity:.92}
+  80%{transform:translate3d(var(--x2),var(--y2),0);opacity:0}
+  100%{transform:translate3d(var(--x2),var(--y2),0);opacity:0}}
+#tourdemo .grow{animation:tdGrow 2.4s cubic-bezier(.4,0,.25,1) infinite}
+@keyframes tdGrow{
+  0%{height:var(--h1);opacity:0}
+  10%{height:var(--h1);opacity:.92}
+  62%{height:var(--h2);opacity:.92}
+  80%{height:var(--h2);opacity:0}
+  100%{height:var(--h1);opacity:0}}
 .tourfly{position:fixed;left:0;top:0;z-index:3;width:88px;height:119px;pointer-events:none;transform:translate3d(calc(50vw - 44px),80px,0);transition:transform .72s cubic-bezier(.22,1,.36,1),opacity .28s ease;will-change:transform}
 .tourfly img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 8px 10px rgba(65,34,18,.22));animation:mascotHover 2.4s ease-in-out infinite alternate;transform-origin:50% 45%}
 .tourfly.landing{transition-duration:.78s}.tourfly.landing img{animation:none}
@@ -536,9 +579,13 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 /* ═════ 0. 언어 ═════
    기기 언어가 한국어면 한국어, 그 밖은 영어. 언어는 저장 데이터에 남기지 않는다.
    화면에 보이는 글자만 갈아 끼우고 저장 키·필드 이름은 그대로 둔다. */
+/* 켜 둔 언어. 영어 문구를 다시 다듬은 뒤 'en' 을 넣으면 그대로 살아난다.
+   사전(L)과 조판 규칙은 지우지 않고 그대로 둔다. */
+const LANG_ON=['ko'];
 const LANG=(function(){
   const l=((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase();
-  return l.indexOf('ko')===0?'ko':'en';
+  const want=l.indexOf('ko')===0?'ko':'en';
+  return LANG_ON.indexOf(want)>=0?want:LANG_ON[0];
 })();
 const KO=LANG==='ko';
 document.documentElement.lang=LANG;
@@ -547,6 +594,13 @@ const L=KO?{
   dow:['일','월','화','수','목','금','토'],
   gapLunch:'점심시간',gapDinner:'저녁시간',gapDawn:'새벽',gapNight:'취침 전',gapMorning:'아침 시간',gapFree:'빈 시간',gapBreak:'쉬는시간',
   schoolName:'학교',
+  defaultSchedName:'기본 시간대',
+  defaultBlocks:['새벽','아침','오전','점심','오후','저녁','밤'],
+  defaultSchedSub:'새벽·아침·오전·점심·오후·저녁·밤',
+  defaultSchedNote:'내 시간표를 만들면 자동으로 꺼진다. 지워지지는 않으니 언제든 다시 켤 수 있다.',
+  schedOn:'켬',schedOff:'끔',aSchedToggle:n=>n+' 켜고 끄기',
+  schedAllOff:'켜 둔 시간대가 없어 하루 전체가 보인다',
+  myScheds:'내 시간표',
   legacy:['점호','아침조례','1교시','2교시','3교시','4교시','5교시','6교시','7교시','8교시','야자 1차시','야자 2차시'],
   blockFallback:'시간대',schedFallback:'시간표',firstBlock:'첫 시간대',newBlock:'새 시간대',
   hour:'시간',minute:'분',
@@ -584,7 +638,7 @@ const L=KO?{
   edit:'수정',blockCount:n=>'시간대 '+n+'개',
   schedNone:'아직 만든 시간표가 없다.<br>모든 요일을 24시간으로 보여준다.',
   schedTitle:'시간표 설정',
-  schedLead:'이름을 붙인 시간표를 만들고 적용할 요일을 고르면 된다. 요일마다 따로 만들 수도 있고 평일처럼 묶을 수도 있다.',
+  schedLead:'아무것도 만들지 않으면 기본 시간대가 하루를 나눠 준다. 내 시간표를 만들면 기본은 저절로 꺼지고, 스위치로 언제든 켜고 끌 수 있다.',
   schedFree:'24시간 보기: ',schedFreeNote:'시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.',
   schedNew:'새 시간표',schedEdit:'시간표 수정',schedName:'시간표 이름',schedNamePh:'예: 학교, 토요일 학원',
   schedDays:'적용 요일 · 비워두면 24시간',clearDays:'모두 해제',
@@ -596,12 +650,10 @@ const L=KO?{
   sayAsk:'사용법을 다시 볼까?',sayReplay:'튜토리얼 다시 보기',sayClose:'닫기',
   tourEnd:'끝내기',tourBack:'이전',tourSkip:'건너뛰기',tourStart:'시작하기',tourNext:'다음',
   tourTapHint:'주황빛으로 표시된 곳을 눌러 주세요',tourSaveHint:'저장하면 다음 안내로 자연스럽게 이어져요',
+  tourDoHint:'직접 해 보면 넘어가요',
   introTitle:'Planula를 처음 쓰나요?',
   introText:'처음이라면 화면을 따라가며 사용법을 익힐 수 있어.\n써 본 적이 있다면 바로 시작해도 좋아.',
   introFirst:'처음이에요 · 사용법 보기',introAgain:'써 봤어요 · 바로 시작',
-  installedTitle:'Planula 앱으로 잘 열렸어',
-  installedText:'홈 화면의 Planula 아이콘으로 열렸어. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 사용법을 익혀 보자.',
-  installedNext:'계속',
   noBak:'백업이 없다',bakInfo:(t,s,r)=>'타임그리드로 바꾸기 전 원본 · 할일 <b>'+t+'</b>개 · 목표 <b>'+s+'</b>개 · 반복 <b>'+r+'</b>개',
   bakReally:'정말 되돌린다 — 지금 데이터는 사라진다',bakRestore:'백업으로 되돌리기',
   bakRestored:n=>'백업으로 되돌렸다 — 할일 '+n+'개',bakUnreadable:'백업을 읽지 못했다',saveFail:'저장 실패',
@@ -613,27 +665,15 @@ const L=KO?{
   backup:'백업',repRules:'반복 규칙',h24:'24시간',noRules:'등록된 반복이 없다',
   exported:'내보냈다',imported:n=>'가져왔다 — 할일 '+n+'개',fileUnreadable:'파일을 읽지 못했다',repDeleted:'반복을 지웠다',
   tour:{
-    install:{t:'먼저 홈 화면에 추가해',x:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 Planula 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',n:'추가했으면 계속'},
-    'sched-btn':{t:'시간표 설정은 여기야',x:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.'},
-    'sched-list':{t:'새 시간표를 만들 수 있어',x:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',n:'시간표 없이 계속'},
-    'sched-name':{t:'1. 시간표 이름부터',x:'무엇을 위한 틀인지 적어. <strong>학교</strong>, <strong>토요일 학원</strong>처럼 알아볼 이름이면 돼.',n:'이름을 적었어'},
-    'sched-days':{t:'2. 적용할 요일을 골라',x:'이 시간표를 쓸 요일을 눌러. <strong>평일</strong>을 누르면 월~금이 한 번에 잡혀. 요일을 모두 해제하면 어느 날에도 적용하지 않고 보관만 해.',n:'요일을 골랐어'},
-    'sched-block':{t:'3. 시간대 한 칸을 채워',x:'한 칸이 하루 안의 한 구간이야. 이름(<strong>1교시</strong> 같은)과 시작·끝 시각을 넣어. 오른쪽 <strong>−</strong>로 칸을 지울 수 있어.',n:'채웠어'},
-    'sched-add':{t:'4. 칸을 더 늘려',x:'<strong>+ 시간대 추가</strong>로 칸을 계속 늘려 하루를 채워. 칸 사이의 빈 시간도 일정을 놓을 수 있으니 쉬는 시간까지 만들 필요는 없어. 위의 <strong>학교 예시 불러오기</strong>를 쓰면 한 번에 채워져.',n:'추가했어'},
-    'sched-save':{t:'5. 저장하면 끝',x:'다 정했으면 <strong>저장</strong>을 눌러. 저장한 뒤에도 같은 메뉴에서 언제든 고칠 수 있어.',n:'지금은 건너뛰기'},
-    'subj-tab':{t:'목표 탭으로 가 볼까',x:'목표마다 색과 디데이, 하위 목표를 붙여 둘 수 있어. 과목이든 프로젝트든 운동이든 이름은 네 마음대로야. 표시된 탭을 눌러 줘.'},
-    'subj-add':{t:'목표는 여기서 추가해',x:'오른쪽 아래 +를 누르면 이름과 색을 정할 수 있어. 같은 +가 탭마다 그 화면에 맞는 것을 추가해 줘.'},
-    'subj-editor':{t:'만든 뒤에 더 채울 수 있어',x:'이름과 색을 정해 저장해. 저장한 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 목표를 연결할 수 있어.',n:'지금은 건너뛰기'},
-    'today-tab':{t:'이제 오늘로 돌아가자',x:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.'},
-    'task-add':{t:'첫 할 일은 +로 추가해',x:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.'},
-    'task-editor':{t:'이름을 쓰고 저장해',x:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 목표와 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',n:'지금은 건너뛰기'},
-    unassigned:{t:'미배정은 대기 공간이야',x:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어. 직접 눌러 봐.'},
-    grid:{t:'선택한 뒤 시간 위로 옮겨',x:'미배정 일을 한 번 눌러 선택하고 시간표로 끌어 봐. 5분 간격으로 놓여. 이미 놓인 일도 먼저 선택해야 움직이고, 주황색 위·아래 손잡이로만 길이를 조절해.'},
-    'cal-tab':{t:'다른 날짜는 달력에서',x:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.'},
-    'cal-cell':{t:'날짜를 누르면 그날이 열려',x:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.'},
-    'day-fab':{t:'그 날짜의 +도 따로 있어',x:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 위쪽 손잡이를 아래로 끌어내리면 팝업이 닫혀.'},
-    'data-btn':{t:'백업은 여기에 있어',x:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체를 파일로 저장하고, 언제든 다시 불러올 수 있어.'},
-    done:{t:'다 됐어. 이제 시작하자',x:'내보내기 파일에는 할 일·목표·반복·시간표가 함께 들어가.\n\n사용법이 다시 궁금하면 화면 위의 <strong>나를 눌러 봐.</strong> 말풍선이 뜨면 거기서 처음부터 다시 볼 수 있어.',n:'Planula 시작하기'}
+    sched:{t:'하루는 이미 칸으로 나뉘어 있어',x:'기본 시간대가 켜져 있어 아침·점심·오후·저녁·밤으로 보여. <strong>내 시간표를 만들면</strong> 이건 저절로 꺼지고, 스위치로 다시 켤 수 있어.',n:'기본 시간대로 시작'},
+    goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>로 이름과 색을 정해 저장해 줘.'},
+    dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 하나 넣자.'},
+    task:{t:'할 일을 두 개 만들어',x:'<strong>+</strong>로 만들면 시간 없이 오른쪽 미배정에 쌓여. 나란히 놓아 볼 거라 <strong>두 개</strong>가 필요해.'},
+    edit:{t:'한 번 눌러 고르고, 다시 눌러 고쳐',x:'미배정을 <strong>한 번 눌러 선택</strong>, <strong>다시 누르면</strong> 수정 창이야. 배치된 일도 똑같아.'},
+    place:{t:'시간 위로 끌어다 놓아',x:'선택한 일을 칸으로 <strong>끌어다 놓아</strong>. 5분 간격으로 붙어.'},
+    split:{t:'같은 칸에 하나 더',x:'남은 하나를 <strong>같은 칸</strong>에 놓으면 칸을 나눠 써. 하나가 빠지면 남은 일이 다시 채워.'},
+    resize:{t:'손잡이로 비율을 바꿔',x:'선택하면 위·아래에 주황 손잡이가 나와. <strong>아래 손잡이를 끌어</strong> 봐.'},
+    done:{t:'다 됐어. 이제 네 차례야',x:'오른쪽 위 <strong>반달</strong>로 라이트·다크를 바꿔.\n\n사용법은 언제든 위의 <strong>나를 눌러</strong> 다시 볼 수 있어.',n:'Planula 시작하기'}
   }
 }:{
   dow:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
@@ -641,6 +681,13 @@ const L=KO?{
   monFull:['January','February','March','April','May','June','July','August','September','October','November','December'],
   gapLunch:'Lunch',gapDinner:'Dinner',gapDawn:'Early morning',gapNight:'Before bed',gapMorning:'Morning',gapFree:'Open time',gapBreak:'Break',
   schoolName:'School',
+  defaultSchedName:'Default day',
+  defaultBlocks:['Early','Morning','Late morning','Lunch','Afternoon','Evening','Night'],
+  defaultSchedSub:'Early · Morning · Lunch · Afternoon · Evening · Night',
+  defaultSchedNote:'It switches off by itself once you make your own. Nothing is deleted, so you can turn it back on.',
+  schedOn:'On',schedOff:'Off',aSchedToggle:n=>'Turn '+n+' on or off',
+  schedAllOff:'No schedule is on, so the whole day is shown',
+  myScheds:'My schedules',
   legacy:['Roll call','Homeroom','Period 1','Period 2','Period 3','Period 4','Period 5','Period 6','Period 7','Period 8','Study hall 1','Study hall 2'],
   blockFallback:'Time block',schedFallback:'Schedule',firstBlock:'First block',newBlock:'New block',
   hour:'h',minute:'m',
@@ -679,7 +726,7 @@ const L=KO?{
   edit:'Edit',blockCount:n=>n===1?'1 block':n+' blocks',
   schedNone:'No schedules yet.<br>Every day shows the full 24 hours.',
   schedTitle:'Schedule settings',
-  schedLead:'Make a named schedule and pick the days it applies to. You can build one per day or group them, like all weekdays at once.',
+  schedLead:'With nothing of your own, the default day splits your hours for you. Build your own and the default switches off — the toggles turn any of them on or off.',
   schedFree:'24-hour view: ',schedFreeNote:'Days without a schedule let you place tasks anywhere in the day.',
   schedNew:'New schedule',schedEdit:'Edit schedule',schedName:'Schedule name',schedNamePh:'e.g. School, Saturday class',
   schedDays:'Days it applies to · empty means 24-hour',clearDays:'Clear all',
@@ -691,12 +738,10 @@ const L=KO?{
   sayAsk:'Want to see how it works again?',sayReplay:'Replay the tutorial',sayClose:'Close',
   tourEnd:'Done',tourBack:'Back',tourSkip:'Skip',tourStart:'Get started',tourNext:'Next',
   tourTapHint:'Tap the spot outlined in orange',tourSaveHint:'Save and the guide moves on by itself',
+  tourDoHint:'Do it once and the guide moves on',
   introTitle:'First time with Planula?',
   introText:'If it’s your first time, I’ll walk you through the app.\nIf you’ve used it before, jump straight in.',
   introFirst:'First time · show me around',introAgain:'Used it before · just start',
-  installedTitle:'You opened the Planula app',
-  installedText:'You opened it from the home screen icon. No address bar, just the app.\nTap the spots I point at and you’ll pick it up fast.',
-  installedNext:'Continue',
   noBak:'No backup saved',bakInfo:(t,s,r)=>'Original before the time grid · <b>'+t+'</b> tasks · <b>'+s+'</b> goals · <b>'+r+'</b> repeats',
   bakReally:'Yes, restore it — today’s data will be lost',bakRestore:'Restore from backup',
   bakRestored:n=>'Restored from backup — '+n+' tasks',bakUnreadable:'Could not read the backup',saveFail:'Could not save',
@@ -708,27 +753,15 @@ const L=KO?{
   backup:'Backup',repRules:'Repeat rules',h24:'24h',noRules:'No repeats set up',
   exported:'Exported',imported:n=>'Imported — '+n+' tasks',fileUnreadable:'Could not read the file',repDeleted:'Repeat deleted',
   tour:{
-    install:{t:'Add it to your home screen first',x:'<strong>iPhone · iPad (Safari)</strong>\nShare → More → Add to Home Screen\n\n<strong>Android (Chrome)</strong>\nThree dots (⋮) → Add to home screen → Install\n\nOpen it from the Planula icon afterwards and it runs like an app, with no address bar.',n:'Added it, continue'},
-    'sched-btn':{t:'Schedule settings live here',x:'Tap the calendar icon at the top right. That’s where you build the repeating shape of a day — school, class, work — one per weekday.'},
-    'sched-list':{t:'You can make a new schedule',x:'Tap the highlighted button to name a schedule and fill in its blocks. <strong>Skipping this is fine.</strong> Any day you leave empty shows the full 24 hours.',n:'Continue without one'},
-    'sched-name':{t:'1. Name it first',x:'Say what the shape is for. <strong>School</strong> or <strong>Saturday class</strong> — anything you’ll recognise.',n:'Named it'},
-    'sched-days':{t:'2. Pick the days',x:'Tap the days this schedule covers. <strong>Weekdays</strong> grabs Mon–Fri at once. Clear every day and it just sits saved without applying anywhere.',n:'Picked the days'},
-    'sched-block':{t:'3. Fill in one block',x:'A block is one stretch of the day. Give it a name (like <strong>Period 1</strong>) and a start and end time. The <strong>−</strong> on the right removes a block.',n:'Filled it in'},
-    'sched-add':{t:'4. Add more blocks',x:'Keep going with <strong>+ Add block</strong> until the day is covered. Gaps between blocks still take tasks, so there’s no need to add breaks. <strong>Load school example</strong> above fills everything at once.',n:'Added one'},
-    'sched-save':{t:'5. Save and you’re done',x:'Hit <strong>Save</strong> once it looks right. You can come back and change it any time from the same menu.',n:'Skip for now'},
-    'subj-tab':{t:'Let’s look at goals',x:'Every goal carries its own color, D-days and sub-goals. A school subject, a project, training — you name them. Tap the highlighted tab.'},
-    'subj-add':{t:'Goals are added here',x:'The + at the bottom right lets you set a name and a color. That same + adds whatever fits the tab you’re on.'},
-    'subj-editor':{t:'There’s more once it exists',x:'Set a name and color, then save. From the saved card you can add D-days and sub-goals, and any task can be linked to this goal.',n:'Skip for now'},
-    'today-tab':{t:'Back to today',x:'The Today tab jumps to the current time whenever you open it. Tap the highlighted tab.'},
-    'task-add':{t:'Add your first task with +',x:'The + at the bottom right creates a task. Make one without a time and it waits in the unassigned rail on the right.'},
-    'task-editor':{t:'Write a name and save',x:'A name is all you need. Open Details to set a goal and repeats. You’ll drag the time and length by hand later, so don’t fuss over it here.',n:'Skip for now'},
-    unassigned:{t:'Unassigned is the waiting area',x:'Anything without a time stays here. The check marks it done, and <strong>tap once to select, tap again to edit</strong>. Give it a try.'},
-    grid:{t:'Select it, then move it onto the day',x:'Tap an unassigned task to select it, then drag it onto the grid. It lands on 5-minute steps. Tasks already placed also need selecting first, and only the orange top and bottom handles resize them.'},
-    'cal-tab':{t:'Other dates are in the calendar',x:'Tap the Calendar tab below. Every day’s plan and D-day is visible at a glance.'},
-    'cal-cell':{t:'Tap a date to open it',x:'Try today’s cell. Every other date opens the same way, and tapping empty space clears the selection.'},
-    'day-fab':{t:'That date has its own +',x:'The + at the bottom right of the date popup adds a task to that day. Pull the handle at the top downward to close the popup.'},
-    'data-btn':{t:'Backups live here',x:'Tap the export icon at the top right. It saves the whole planner to a file you can load back any time.'},
-    done:{t:'That’s everything. Let’s go',x:'The export file carries your tasks, goals, repeats and schedules together.\n\nIf you want this again, <strong>tap me up at the top.</strong> A bubble appears and you can replay it from the start.',n:'Start Planula'}
+    sched:{t:'Your day is already split into blocks',x:'The default day is on, so your day reads as morning, lunch, afternoon, evening and night. <strong>Build your own schedule</strong> — school, class, work — and the default switches off by itself. The toggle here turns it back on any time.',n:'Start with the default day'},
+    goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong>, set a name and a color, and save.'},
+    dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and add one.'},
+    task:{t:'Now make two tasks',x:'Made with the <strong>+ at the bottom right</strong>, a task starts with no time and waits in the unassigned rail. You need <strong>two</strong> — we will put them side by side in a moment.'},
+    edit:{t:'Tap once to select, tap again to edit',x:'Tap an unassigned task <strong>once to select</strong> it, then <strong>tap it again</strong> to open the editor. Placed tasks work the same way. Change something and save.'},
+    place:{t:'Drag it onto the day',x:'Drag the selected task <strong>onto a block</strong> and it drops in, snapping to 5-minute steps. Try it like this.'},
+    split:{t:'Now drop the other one in the same block',x:'Drag the remaining task <strong>into the block you just used</strong>. They split it evenly, and if one leaves the other fills the block again.'},
+    resize:{t:'Change the split with the orange handles',x:'Select a task and orange handles appear above and below it. <strong>Drag the bottom handle</strong> to change its length — touching neighbours move their shared edge with it.'},
+    done:{t:'That’s it. Over to you',x:'The <strong>half-moon</strong> at the top right cycles system → light → dark.\n\nIf you want this again, <strong>tap me up at the top.</strong> A bubble appears and you can replay it from the start.',n:'Start Planula'}
   }
 };
 /* 날짜 표기 — 한국어는 숫자 중심, 영어는 약어 월 이름 */
@@ -764,6 +797,22 @@ const LEGACY_CLASSES=[
   ['ja1',  M(19,10),M(21,0), L.legacy[10]],
   ['ja2',  M(21,15),M(23,30),L.legacy[11]],
 ];
+/* 기본 시간대 — 시간표를 따로 만들지 않은 사람도 하루가 칸으로 나뉘어 보인다.
+   누구에게나 통하는 큰 덩어리로만 나눈다. 사용자가 자기 시간표를 만들면 이건 꺼지고
+   삭제되지는 않으므로 언제든 다시 켤 수 있다. */
+const DEFAULT_PROFILE_ID='default-day';
+const DEFAULT_BLOCKS=[
+  ['dawn',  M(0,0),  M(6,0),  0],
+  ['morn',  M(6,0),  M(9,0),  1],
+  ['am',    M(9,0),  M(12,0), 2],
+  ['lunch', M(12,0), M(13,0), 3],
+  ['pm',    M(13,0), M(18,0), 4],
+  ['eve',   M(18,0), M(21,0), 5],
+  ['night', M(21,0), M(24,0), 6],
+];
+function defaultProfile(){return {id:DEFAULT_PROFILE_ID,name:L.defaultSchedName,
+  blocks:DEFAULT_BLOCKS.map(x=>({id:x[0],s:x[1],e:x[2],name:L.defaultBlocks[x[3]]}))};}
+function defaultSchedOn(){return !(DB.s&&DB.s.defaultSchedOff);}
 const LEGACY_PROFILE_ID='default-school';
 function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:L.schoolName,blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
 function gapName(s,e){
@@ -783,9 +832,13 @@ function buildScheduleBlocks(profile){
   if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:gapName(cur,1440),cls:false});
   return out;
 }
+/* 그 요일에 켜진 사용자 시간표가 있으면 그것, 없으면 켜져 있는 기본 시간대,
+   둘 다 없으면 하루 전체 24시간 보기다. */
 function scheduleProfile(ds){
   const id=DB.s.dayProfiles&&DB.s.dayProfiles[String(parseD(ds).getDay())];
-  return (DB.s.scheduleProfiles||[]).find(p=>p.id===id)||null;
+  const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);
+  if(p&&!p.off)return p;
+  return defaultSchedOn()?defaultProfile():null;
 }
 function scheduleBlocks(ds){const p=scheduleProfile(ds);return p?buildScheduleBlocks(p):[];}
 function default24(ds){return !scheduleProfile(ds);}
@@ -819,14 +872,14 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
-function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},tutorialSeen:false,introDone:false};}
+function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},defaultSchedOff:false,tutorialSeen:false,introDone:false};}
 function normalizeProfile(p){
   const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||L.blockFallback),
     s:Math.max(0,Math.min(1435,Math.round(Number(b.s)||0))),
     e:Math.max(5,Math.min(1440,Math.round(Number(b.e)||0)))
   })).filter(b=>b.e>b.s).sort((a,b)=>a.s-b.s);
-  return {id:String(p&&p.id||('sch-'+Date.now().toString(36))),name:String(p&&p.name||L.schedFallback),blocks};
+  return {id:String(p&&p.id||('sch-'+Date.now().toString(36))),name:String(p&&p.name||L.schedFallback),blocks,off:(p&&p.off)===true};
 }
 function legacyDuration(min){
   const b=buildScheduleBlocks(legacyProfile()).find(x=>min>=x.s&&min<x.e)||null;
@@ -854,7 +907,9 @@ function normalizeDB(d,legacy){
     Object.keys(s.dayProfiles).sort().join('')==='12345'&&Object.values(s.dayProfiles).every(id=>id===LEGACY_PROFILE_ID)&&
     !Object.keys(s.force24).length;
   if(onlyAutoSchool){s.scheduleProfiles=[];s.dayProfiles={};}
-  const out={v:5,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  // 기본 시간대는 새 사용자에게 켜져 있고, 이미 자기 시간표를 만든 사람에게는 꺼져 있다.
+  s.defaultSchedOff=raw.defaultSchedOff===undefined?s.scheduleProfiles.length>0:raw.defaultSchedOff===true;
+  const out={v:6,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
     if(t.min!=null)t.min=((Math.round(Number(t.min)||0)%1440)+1440)%1440;
@@ -1270,7 +1325,7 @@ function openDay(ds){
 }
 function popMove(n){openDay(addDays(popDate,n));}
 function setDateViewMode(ds){
-  if(!scheduleProfile(ds)){closeSheet();openScheduleSettings();toast(L.needSched(DOW[parseD(ds).getDay()]));return false;}
+  if(!scheduleProfile(ds)){closeSheet();openScheduleSettings();toast(L.schedAllOff);return false;}
   const cur=is24(ds),def=default24(ds);if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];save();return true;
 }
 function popToggle24(){const ds=popDate;if(setDateViewMode(ds))openDay(ds);}
@@ -1688,7 +1743,10 @@ function bindGrid(root){
         if(!sameBand(leftBand,landed)){
           if(leftBand.auto)splitAutoSlot(ds,leftBand,true);
           else splitBand(ds,leftBand,true);}}
-      save();buzz(11);}
+      save();buzz(11);
+      // 사용법 중에는 '실제로 해냈다'를 이 자리에서 알린다.
+      if((mode==='move'||mode==='new')&&!overUn&&task.min!=null)tourSignal('task-placed');
+      if(mode==='rt'||mode==='rb')tourSignal('task-resized');}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
   root.addEventListener('touchcancel',()=>{clearAll();refresh();});
@@ -1797,7 +1855,7 @@ function closeSheet(fromScrim){
   closeSubSheet();$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
   $('#popfab').classList.remove('on');popDate=null;
   if(resume!=null)setTimeout(()=>openTutorial(resume),90);
-  else if(fromScrim&&_tourActive)setTimeout(()=>tourMove(-1),90);
+  else if(fromScrim&&_tourActive&&!_tourLanding)setTimeout(()=>{if(_tourActive&&!_tourLanding)renderTutorial();},90);
 }
 let _popScroll=0;
 function subSheetOn(){return $('#subsheet').classList.contains('on');}
@@ -1931,7 +1989,7 @@ function saveTask(){
         dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),
         ord:sibs.length,done:false,subj:e.subj,repId:null});}}
   materializeWindow();save();finishTaskSheet();
-  toast(e.id?L.edited:L.added);tourSignal('task-saved');
+  toast(e.id?L.edited:L.added);tourSignal(e.id?'task-edited':'task-saved');
 }
 function delTask(all){
   const t=DB.tasks.find(x=>x.id===_ed.id);if(!t)return;
@@ -1990,7 +2048,7 @@ function saveDday(){
   const s=subjOf(_dd.sid);if(!s)return;s.ddays=s.ddays||[];
   if(_dd.id){const d=s.ddays.find(x=>x.id===_dd.id);d.title=t;d.date=dt;}
   else s.ddays.push({id:uid(),title:t,date:dt});
-  save();closeSheet();paint();}
+  save();closeSheet();paint();tourSignal('dday-saved');}
 function delDday(){const s=subjOf(_dd.sid);s.ddays=(s.ddays||[]).filter(x=>x.id!==_dd.id);
   save();closeSheet();paint();}
 let _gl={};
@@ -2019,14 +2077,41 @@ function daysText(days){
   if(a.length===7)return L.everyDay;if(a.length===5&&[1,2,3,4,5].every(x=>a.includes(x)))return L.weekdays;
   if(a.length===2&&a.includes(0)&&a.includes(6))return L.weekends;return a.length?a.map(i=>DOW[i]).join(' · '):L.noDays;
 }
+function switchHTML(on,label,onclick){
+  return '<button class="swt'+(on?' on':'')+'" role="switch" aria-checked="'+(on?'true':'false')+'" '+
+    'aria-label="'+esc(label)+'" onclick="'+onclick+'"><i></i></button>';
+}
 function openScheduleSettings(){
-  const profiles=DB.s.scheduleProfiles||[],free=DOW.map((d,i)=>DB.s.dayProfiles[String(i)]?null:d).filter(d=>d!=null);
-  let list=profiles.length?profiles.map(p=>{
-    const days=profileDays(p.id);return '<button class="schedsum" onclick="editSchedule(\''+p.id+'\')"><div><b>'+esc(p.name)+'</b><span>'+esc(daysText(days))+' · '+esc(L.blockCount(p.blocks.length))+'</span></div><i class="schedbadge">'+esc(L.edit)+'</i></button>';
-  }).join(''):'<div class="schedempty">'+L.schedNone+'</div>';
+  const profiles=DB.s.scheduleProfiles||[];
+  const on=defaultSchedOn();
+  let list='<div class="schedrow'+(on?'':' off')+'" id="defaultSchedRow"><div class="schedsum static"><div><b>'+esc(L.defaultSchedName)+
+    '</b><span>'+esc(L.defaultSchedSub)+'</span></div></div>'+
+    switchHTML(on,L.aSchedToggle(L.defaultSchedName),'toggleDefaultSchedule()')+'</div>';
+  if(profiles.length)list+='<div class="fl">'+esc(L.myScheds)+'</div>'+profiles.map(p=>{
+    const days=profileDays(p.id),live=!p.off;
+    return '<div class="schedrow'+(live?'':' off')+'"><button class="schedsum" onclick="editSchedule(\''+p.id+'\')">'+
+      '<div><b>'+esc(p.name)+'</b><span>'+esc(daysText(days))+' · '+esc(L.blockCount(p.blocks.length))+'</span></div>'+
+      '<i class="schedbadge">'+esc(L.edit)+'</i></button>'+
+      switchHTML(live,L.aSchedToggle(p.name),'toggleSchedule(\''+p.id+'\')')+'</div>';
+  }).join('');
+  // 지금 어떤 날이 24시간으로 보이는지 요일 이름으로 알려준다
+  const wide=DOW.map((d,i)=>{
+    const id=DB.s.dayProfiles[String(i)],pr=profiles.find(x=>x.id===id);
+    return (pr&&!pr.off)||defaultSchedOn()?null:d;}).filter(d=>d!=null);
   openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+list+
-    '<div class="fullnote">'+esc(L.schedFree)+(free.length?esc(free.join(' · ')):esc(L.none))+'<br>'+esc(L.schedFreeNote)+'</div>'+
+    '<div class="fullnote">'+(wide.length
+      ?esc(L.schedFree)+esc(wide.join(' · '))+'<br>'+esc(L.schedFreeNote)
+      :esc(L.defaultSchedNote))+'</div>'+
     '<div class="row2"><button class="btn p" onclick="editSchedule(null)">'+esc(L.schedNew)+'</button></div>');
+}
+function toggleDefaultSchedule(){
+  DB.s.defaultSchedOff=defaultSchedOn();save();paint();openScheduleSettings();
+  toast(L.defaultSchedName+' · '+(defaultSchedOn()?L.schedOn:L.schedOff));
+}
+function toggleSchedule(id){
+  const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);if(!p)return;
+  p.off=!p.off;save();paint();openScheduleSettings();
+  toast(p.name+' · '+(p.off?L.schedOff:L.schedOn));
 }
 let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
@@ -2076,6 +2161,8 @@ function saveSchedule(){
   }
   const id=_sched.id||uid(),p={id,name,blocks};const at=DB.s.scheduleProfiles.findIndex(x=>x.id===id);
   if(at>=0)DB.s.scheduleProfiles[at]=p;else DB.s.scheduleProfiles.push(p);
+  // 내 시간표가 생기면 기본 시간대는 저절로 꺼진다. 지우지는 않으므로 다시 켤 수 있다.
+  if(at<0&&DB.s.scheduleProfiles.length===1)DB.s.defaultSchedOff=true;
   Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
   days.forEach(i=>DB.s.dayProfiles[String(i)]=id);save();paint();openScheduleSettings();toast(L.schedSaved);
   tourSignal('schedule-saved');
@@ -2085,14 +2172,15 @@ function deleteSchedule(){
   const id=_sched.id,days=profileDays(id);DB.s.scheduleProfiles=DB.s.scheduleProfiles.filter(p=>p.id!==id);
   Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
   Object.keys(DB.s.force24).forEach(ds=>{if(days.includes(parseD(ds).getDay())&&DB.s.force24[ds]===false)delete DB.s.force24[ds];});
+  if(!DB.s.scheduleProfiles.length)DB.s.defaultSchedOff=false;
   save();paint();openScheduleSettings();toast(L.schedDeleted);
 }
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=50';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=50';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=50';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=51';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=51';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=51';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2138,29 +2226,40 @@ document.addEventListener('click',e=>{
   hideMascotSay();
 },true);
 
+/* 사용법은 짧게, 대신 반드시 해 봐야 넘어간다.
+   시간대 만들기만 넘길 수 있고 나머지는 직접 해야 다음으로 간다.
+   hintKind 는 강조 상자 말고 어떻게 움직여 보여줄지다 — press(눌러라)/drag(끌어라)/grab(손잡이) */
 const TOUR_STEPS=[
-  {id:'install',scene:'modal',icon:'install'},
-  {id:'sched-btn',scene:'today',selector:'button[aria-label="'+L.aSched+'"]',advance:'target',nextTo:'subj-tab',icon:'schedule'},
-  {id:'sched-list',scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:'subj-tab',icon:'schedule'},
-  {id:'sched-name',scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-days',hint:'',icon:'schedule'},
-  {id:'sched-days',scene:'schedule-editor',selector:'#sheet .dws',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-block',hint:'',icon:'schedule'},
-  {id:'sched-block',scene:'schedule-editor',selector:'#sheet .blockrow',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-add',hint:'',icon:'schedule'},
-  {id:'sched-add',scene:'schedule-editor',selector:'#sheet .btn.s',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-save',hint:'',icon:'schedule'},
-  {id:'sched-save',scene:'schedule-editor',selector:'#sheet .btn.p',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'subj-tab',icon:'schedule'},
-  {id:'subj-tab',scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:'today-tab',icon:'subject'},
-  {id:'subj-add',scene:'subject',selector:'#mainFab',advance:'target',nextTo:'today-tab',icon:'subject'},
-  {id:'subj-editor',scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',signalTo:'today-tab',nextTo:'today-tab',icon:'subject'},
-  {id:'today-tab',scene:'subject',selector:'.nb[data-t="today"]',advance:'target',icon:'add'},
-  {id:'task-add',scene:'today',selector:'#mainFab',advance:'target',nextTo:'unassigned',icon:'add'},
-  {id:'task-editor',scene:'task-editor',selector:'#f_title',signal:'task-saved',signalTo:'unassigned',nextTo:'unassigned',icon:'add'},
-  {id:'unassigned',scene:'today',target:'unassigned',allow:['.unbar'],icon:'move'},
-  {id:'grid',scene:'today',target:'grid',allow:['#gridwrap .grid','.unbar'],keepClear:['.unbar'],icon:'move'},
-  {id:'cal-tab',scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:'data-btn',icon:'calendar'},
-  {id:'cal-cell',scene:'calendar',selector:'.cell.today',advance:'target',nextTo:'data-btn',icon:'calendar'},
-  {id:'day-fab',scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],icon:'add'},
-  {id:'data-btn',scene:'today',selector:'button[aria-label="'+L.aData+'"]',advance:'target',finishOnSkip:true,icon:'data'},
-  {id:'done',scene:'data',final:true,hint:'',icon:'data'}
+  {id:'sched',scene:'schedule-list',selector:'#defaultSchedRow',hintKind:'none',
+   btn:'skip',signal:'schedule-saved',allow:['#sheet'],hint:''},
+  {id:'goal',scene:'subject',selector:['#sheet.on #f_sname','#mainFab'],hintKind:'press',
+   signal:'subject-saved',allow:['#mainFab','#sheet']},
+  {id:'dday',scene:'subject',selector:['#sheet.on #f_ddt','.sj .sjf .mini'],hintKind:'press',
+   signal:'dday-saved',allow:['.sj','#sheet']},
+  {id:'task',scene:'today',selector:['#sheet.on #f_title','#mainFab'],hintKind:'press',
+   signal:'task-saved',need:'twoUnassigned',allow:['#mainFab','#sheet']},
+  {id:'edit',scene:'today',target:'unassigned',hintKind:'press',
+   signal:'task-edited',allow:['.unbar','#sheet','#subsheet']},
+  {id:'place',scene:'today',target:'grid',hintKind:'drag',keepClear:['.unbar'],
+   signal:'task-placed',need:'onePlaced',allow:['#gridwrap .grid','.unbar']},
+  {id:'split',scene:'today',target:'grid',hintKind:'drag',keepClear:['.unbar'],
+   signal:'task-placed',need:'shareBand',allow:['#gridwrap .grid','.unbar']},
+  {id:'resize',scene:'today',target:'placed',hintKind:'grab',keepClear:['.unbar'],
+   signal:'task-resized',allow:['#gridwrap .grid']},
+  {id:'done',scene:'today',selector:'button[aria-label="'+L.aTheme+'"]',hintKind:'press',
+   final:true,btn:'finish',hint:'',allow:['button[aria-label="'+L.aTheme+'"]']}
 ];
+/* 단계를 넘길 조건. 저장 한 번으로는 부족한 단계가 있다. */
+const TOUR_NEED={
+  twoUnassigned:()=>tasksOf(TODAY()).filter(t=>t.min==null).length>=2,
+  onePlaced:()=>tasksOf(TODAY()).filter(t=>t.min!=null).length>=1,
+  shareBand:()=>{
+    const ds=TODAY(),placed=tasksOf(ds).filter(t=>t.min!=null);
+    if(placed.length<2)return false;
+    const key=t=>{const b=autoSlotBand(t)||bandAt(ds,t.min);return b?b.s+'-'+b.e:'x'+t.min;};
+    const seen={};return placed.some(t=>{const k=key(t);if(seen[k])return true;seen[k]=1;return false;});
+  }
+};
 /* 단계의 대사는 언어 사전(L.tour)에 있다. 여기에는 순서와 조작 대상만 둔다. */
 function tourCopy(s){return (L.tour&&L.tour[s.id])||{};}
 function tourStepIndex(id){const i=TOUR_STEPS.findIndex(x=>x.id===id);return i<0?null:i;}
@@ -2239,7 +2338,6 @@ function tourGateAllows(node){
   if(open&&open.contains(node)){
     if(s.signal)return true;                               // 저장까지 해야 넘어가는 단계
     if(!t||!open.contains(t))return true;                  // 사용자의 조작으로 새로 열린 시트는 끝까지 쓸 수 있어야 한다
-    if(s.advance!=='target')return true;                   // 대상이 시트 안이지만 눌러서 넘어가는 단계가 아니다
   }
   return false;
 }
@@ -2282,8 +2380,7 @@ function introPick(first){
   if(first){openTutorial(0);return;}
   finishTutorial();                                        // 캐릭터는 오늘 헤더로 날아가 앉는다
 }
-const TOUR_MOVING_SCENES=new Set(['schedule-list','schedule-editor','subject-editor','task-editor','day','data']);
-function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
+const TOUR_MOVING_SCENES=new Set(['schedule-list']);
 function setTourTab(t){
   closeSheet();if(tab!==t){tab=t;$('#scroll').scrollTop=0;paint();}
   else paint();if(t==='today')requestAnimationFrame(()=>focusToday());
@@ -2300,17 +2397,12 @@ function prepareTourScene(scene){
   if(scene==='modal')return;
   if(scene==='today')setTourTab('today');
   else if(scene==='subject')setTourTab('subj');
-  else if(scene==='calendar')setTourTab('cal');
-  else if(scene==='schedule-list')openScheduleSettings();
-  else if(scene==='schedule-editor'){if(!tourSheetHas('#schName'))editSchedule(null);}
-  else if(scene==='subject-editor'){if(!tourSheetHas('#f_sname'))editSubject(null);}
-  else if(scene==='task-editor'){if(!tourSheetHas('#f_title'))newTask(TODAY(),null);}
-  else if(scene==='day'){if(!popDate||!$('#popbody')){setTourTab('cal');openDay(TODAY());}}
-  else if(scene==='data')openData();
+  else if(scene==='schedule-list'){if(!tourSheetHas('#defaultSchedRow'))openScheduleSettings();}
 }
 function getTourTarget(s){
   if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar .unrow');
   if(s.target==='grid')return document.querySelector('#gridwrap .grid');
+  if(s.target==='placed')return document.querySelector('#gridwrap .ev.sel')||document.querySelector('#gridwrap .ev');
   if(!s.selector)return null;
   // 목표를 여러 개 적으면 지금 화면에 실제로 있는 첫 번째를 쓴다.
   // 시트가 한 층 더 뜨면 강조 박스가 사라진 버튼에 남지 않고 새 입력창으로 옮겨간다.
@@ -2319,6 +2411,7 @@ function getTourTarget(s){
   return null;
 }
 function cancelTourTracking(){
+  clearTourHint();
   clearTimeout(_tourTrackTimer);_tourTrackTimer=null;
   if(_tourTrackFrame!=null)cancelAnimationFrame(_tourTrackFrame);_tourTrackFrame=null;
   const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');
@@ -2411,11 +2504,10 @@ function tourRelayout(){
 }
 function ensureTourDOM(){
   const root=$('#tour');if(root.querySelector('.tourguide'))return;
-  root.innerHTML='<div class="tourspot"></div><div class="tourguide">'+
-    '<div class="tourbubble"><div class="tourmark"></div><button class="tourskip" onclick="finishTutorial()">'+esc(L.tourEnd)+'</button>'+
+  root.innerHTML='<div class="tourspot"></div><div id="tourdemo"></div><div class="tourguide">'+
+    '<div class="tourbubble"><div class="tourmark"></div>'+
     '<div class="tourbody"><h2></h2><p></p><div class="tourhint"></div></div>'+
-    '<div class="tourfoot"><button class="tourback" onclick="tourMove(-1)">'+esc(L.tourBack)+'</button>'+
-    '<div class="tourprog"></div><button class="tourbtn" onclick="tourNext()"></button></div></div>'+
+    '<div class="tourfoot"><div class="tourprog"></div><button class="tourbtn" onclick="tourNext()"></button></div></div>'+
     '<i class="tourtail"></i></div>'+
     '<div class="tourfly"><img src="'+MASCOT_LOOP+'" alt="'+esc(L.altMascot)+'"></div>';
 }
@@ -2430,24 +2522,25 @@ function openTutorial(i){
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
 }
 function renderTutorial(){
-  if(!_tourActive||_tourLanding)return;const base=TOUR_STEPS[_tourStep],last=_tourStep===TOUR_STEPS.length-1;
-  const installed=_tourStep===0&&standaloneMode();
-  const c0=tourCopy(base);
-  const copy=installed?{t:L.installedTitle,x:L.installedText,n:L.installedNext}:c0;
-  const s=base;
-  cancelTourTracking();setTourSceneSpace(s.scene);prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace(s.scene);startTourTracking(s.scene);
-  const next=copy.n||(s.advance==='target'?L.tourSkip:(last?L.tourStart:L.tourNext)),guide=$('#tour .tourguide');
+  if(!_tourActive||_tourLanding)return;
+  const s=TOUR_STEPS[_tourStep],copy=tourCopy(s),guide0=$('#tour .tourguide');
+  cancelTourTracking();clearTourHint();
+  setTourSceneSpace(s.scene);prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace(s.scene);startTourTracking(s.scene);
+  const guide=$('#tour .tourguide');
   clearTimeout(_tourCopyTimer);guide.classList.add('changing');
   _tourCopyTimer=setTimeout(()=>{
     if(!_tourActive||_tourLanding)return;
     guide.querySelector('.tourmark').textContent='PLANULA GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length;
     guide.querySelector('h2').textContent=copy.t||'';tourType(guide.querySelector('p'),copy.x||'');
     const hint=guide.querySelector('.tourhint');
-    hint.textContent=s.hint!=null?s.hint:(s.advance==='target'?L.tourTapHint:s.signal?L.tourSaveHint:'');
+    // 넘길 수 있는 단계가 아니면 '직접 해 봐야 넘어간다'는 사실을 분명히 적는다.
+    hint.textContent=s.hint!=null?s.hint:(s.btn?'':L.tourDoHint);
     hint.style.display=hint.textContent?'block':'none';
-    guide.querySelector('.tourbtn').classList.toggle('final',!!s.final||last);
-    const back=guide.querySelector('.tourback');back.style.visibility=_tourStep?'visible':'hidden';
-    guide.querySelector('.tourprog').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;guide.querySelector('.tourbtn').textContent=next;
+    const btn=guide.querySelector('.tourbtn');
+    if(s.btn){btn.style.display='';btn.classList.toggle('final',s.btn==='finish');
+      btn.textContent=copy.n||(s.btn==='finish'?L.tourStart:L.tourSkip);}
+    else{btn.style.display='none';btn.classList.remove('final');btn.textContent='';}
+    guide.querySelector('.tourprog').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;
     guide.classList.remove('changing');clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
   },90);
   clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,35);
@@ -2466,19 +2559,20 @@ function placeTutorial(allowScroll){
   if(Array.isArray(s.keepClear))s.keepClear.forEach(q=>{
     const el=document.querySelector(q);if(el)addRect(el.getBoundingClientRect());});
 
+  let hintRect=null;
   if(s.scene==='modal'||!t){
-    spot.style.opacity='0';
+    spot.style.opacity='0';clearTourHint();
     gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));
   }else{
     const rect=tourTargetRect(s,t,allowScroll!==false);
     if(!rect)return;
     if(rect==='hidden'){
-      spot.style.opacity='0';
+      spot.style.opacity='0';clearTourHint();
       if(TOUR_MOVING_SCENES.has(s.scene)){gx=safe;gy=safe;}
       else gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.3),dockTop-gh-12));
     }else{
       const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
-      avoid.push({left,right,top,bottom});
+      avoid.push({left,right,top,bottom});hintRect=rect;
       if(TOUR_MOVING_SCENES.has(s.scene)){gx=safe;gy=safe;}
       else{
         const below=bottom+18,above=top-gh-18,limit=Math.max(safe,dockTop-gh-12);
@@ -2504,17 +2598,22 @@ function placeTutorial(allowScroll){
     {side:'right',x:gx+gw+gap,    y:gy+4},
     {side:'left', x:gx-fw-gap,    y:gy+4}
   ];
+  /* 강조 칸을 덮는 것이 화면 밖으로 나가는 것보다 나쁘다. 자리가 정 없으면
+     화면 안으로 끌어당겨 놓고 겹침이 가장 적은 쪽을 고른다. */
   let pick=null;
   cands.forEach((c,i)=>{
-    const fits=c.x>=8&&c.x+fw<=innerWidth-8&&c.y>=8&&c.y+fh<=dockTop-4;
-    const score=(fits?0:1e6)+over(c.x,c.y)+i;
-    if(!pick||score<pick.score)pick={score,...c};
+    const cx=Math.max(8,Math.min(innerWidth-fw-8,c.x));
+    const cy=Math.max(8,Math.min(Math.max(8,dockTop-fh-4),c.y));
+    const fits=Math.abs(cx-c.x)<1&&Math.abs(cy-c.y)<1;
+    const score=over(cx,cy)*12+(fits?0:900)+i;
+    if(!pick||score<pick.score)pick={score,...c,x:cx,y:cy};
   });
   const mx=Math.max(8,Math.min(innerWidth-fw-8,pick.x));
   const my=Math.max(8,Math.min(Math.max(8,dockTop-fh-4),pick.y));
 
   guide.style.transform='translate3d('+Math.round(gx)+'px,'+Math.round(gy)+'px,0)';
   fly.style.transform='translate3d('+Math.round(mx)+'px,'+Math.round(my)+'px,0)';
+  if(!_tourIntro&&hintRect)applyTourHint(s,t,hintRect);
 
   // 말풍선 꼬리가 캐릭터를 가리킨다
   if(tail){
@@ -2529,17 +2628,79 @@ function placeTutorial(allowScroll){
     }
   }
 }
+/* ── 조작 힌트 ──────────────────────────────────────────────
+   press : 눌러야 하는 곳을 직접 크게 만들었다 되돌린다
+   drag  : 미배정 → 시간 칸으로 옮기는 동작을 유령 카드로 반복 재생
+   grab  : 아래 손잡이를 잡아 늘리는 동작을 유령 카드 높이로 반복 재생   */
+let _tourPressEl=null,_tourHintKey='';
+function clearTourHint(){
+  _tourHintKey='';
+  if(_tourPressEl){_tourPressEl.classList.remove('tour-press');_tourPressEl=null;}
+  const spot=$('#tour .tourspot');if(spot)spot.classList.remove('press');
+  const d=$('#tourdemo');if(d){d.classList.remove('on');d.innerHTML='';}
+}
+function tourHintPress(t){
+  const spot=$('#tour .tourspot');if(spot)spot.classList.add('press');
+  // 카드나 그리드처럼 큰 덩어리를 키우면 화면이 출렁인다. 버튼·칩만 직접 키운다.
+  if(!t)return;
+  const r=t.getBoundingClientRect();
+  if(r.width<=160&&r.height<=160){t.classList.add('tour-press');_tourPressEl=t;}
+}
+function tourDemoBox(){
+  const d=$('#tourdemo');if(!d)return null;
+  d.innerHTML='';d.classList.add('on');return d;
+}
+/* 미배정 칩을 집어 시간 칸에 놓는 동작을 그대로 보여준다 */
+function tourHintDrag(spotRect){
+  const chip=document.querySelector('.uchip');
+  if(!chip||!spotRect)return;
+  const c=chip.getBoundingClientRect();
+  const w=Math.min(150,Math.max(96,c.width)),h=Math.max(34,Math.min(64,c.height));
+  const x1=Math.round(c.left+c.width/2-w/2),y1=Math.round(c.top+c.height/2-h/2);
+  const x2=Math.round((spotRect.left+spotRect.right)/2-w/2);
+  const y2=Math.round((spotRect.top+spotRect.bottom)/2-h/2);
+  const d=tourDemoBox();if(!d)return;
+  d.innerHTML='<div class="tdcard move" style="width:'+w+'px;height:'+h+'px;'+
+      '--x1:'+x1+'px;--y1:'+y1+'px;--x2:'+x2+'px;--y2:'+y2+'px"></div>'+
+    '<div class="tdfinger move" style="--x1:'+(x1+w/2-14)+'px;--y1:'+(y1+h/2-14)+'px;'+
+      '--x2:'+(x2+w/2-14)+'px;--y2:'+(y2+h/2-14)+'px"></div>';
+}
+/* 아래 손잡이를 잡아 늘리는 동작 */
+function tourHintGrab(t){
+  if(!t)return;
+  const r=t.getBoundingClientRect(),grow=Math.max(34,Math.min(70,r.height*.6));
+  const d=tourDemoBox();if(!d)return;
+  const x=Math.round(r.left),y=Math.round(r.top);
+  d.innerHTML='<div class="tdcard grow" style="left:'+x+'px;top:'+y+'px;width:'+Math.round(r.width)+'px;'+
+      '--h1:'+Math.round(r.height)+'px;--h2:'+Math.round(r.height+grow)+'px"></div>'+
+    '<div class="tdfinger move" style="--x1:'+Math.round(r.left+r.width/2-14)+'px;--y1:'+Math.round(r.bottom-14)+'px;'+
+      '--x2:'+Math.round(r.left+r.width/2-14)+'px;--y2:'+Math.round(r.bottom+grow-14)+'px"></div>';
+}
+/* 스크롤할 때마다 placeTutorial 이 다시 도는데, 그때마다 애니메이션을 새로 만들면
+   유령 카드가 계속 처음으로 튄다. 같은 자리면 그대로 둔다. */
+function applyTourHint(s,t,rect){
+  if(!s||!_tourActive||_tourLanding){clearTourHint();_tourHintKey='';return;}
+  const key=s.id+'|'+(s.hintKind||'')+'|'+
+    (rect?Math.round(rect.left)+','+Math.round(rect.top)+','+Math.round(rect.bottom):'')+'|'+
+    (t?Math.round(t.getBoundingClientRect().top):'');
+  if(key===_tourHintKey)return;
+  clearTourHint();_tourHintKey=key;
+  if(s.hintKind==='press')tourHintPress(t);
+  else if(s.hintKind==='drag')tourHintDrag(rect&&typeof rect==='object'?rect:null);
+  else if(s.hintKind==='grab')tourHintGrab(t);
+}
 function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
-function tourGoto(id,fallback){const i=tourStepIndex(id);
-  _tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,i==null?fallback:i));renderTutorial();}
 function tourNext(){const s=TOUR_STEPS[_tourStep];
-  if(_tourStep===TOUR_STEPS.length-1||s.final||s.finishOnSkip){finishTutorial();return;}
-  tourGoto(s.nextTo,_tourStep+1);}
-// 안내 도중 사용자가 먼저 저장해 버려도 흐름이 끊기지 않게, 그 묶음 다음으로 건너뛴다.
+  if(s.final||_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}
+  tourMove(1);}
+/* 단계는 사용자가 실제로 해냈을 때만 넘어간다. 저장 한 번으로 부족한 단계는
+   need 조건까지 만족해야 한다(할 일 두 개, 같은 칸에 두 개 등). */
 function tourSignal(name){
   if(!_tourActive||_tourIntro)return;const step=_tourStep,s=TOUR_STEPS[step];
   if(s.signal!==name)return;
-  setTimeout(()=>{if(_tourActive&&_tourStep===step)tourGoto(s.signalTo,step+1);},120);}
+  if(s.need&&TOUR_NEED[s.need]&&!TOUR_NEED[s.need]()){
+    setTimeout(()=>{if(_tourActive&&_tourStep===step)renderTutorial();},140);return;}
+  setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},160);}
 function finishTutorial(){
   if(!_tourActive||_tourLanding)return;_tourLanding=true;_tourReturnStep=null;DB.s.tutorialSeen=true;save();
   const gen=++_tourLandGen;
@@ -2565,13 +2726,9 @@ function completeTutorialLanding(gen){
   if(gen!=null&&gen!==_tourLandGen)return;      // 옛 착지 타이머가 새로 연 튜토리얼을 지우지 못하게 한다
   clearTimeout(_tourLandTimer);_tourLandTimer=null;_tourIntro=false;
   clearTimeout(_tourTypeTimer);_tourTypeTimer=null;_tourTypeDone=null;
-  cancelTourTracking();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
+  cancelTourTracking();clearTourHint();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
   const home=$('#mascotHome');if(home)home.classList.remove('tour-away');
 }
-document.addEventListener('click',e=>{
-  if(!_tourActive||_tourLanding)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.advance!=='target')return;
-  const t=getTourTarget(s);if(t&&(t===e.target||t.contains(e.target)))setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},230);
-},true);
 document.addEventListener('scroll',()=>{if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(()=>placeTutorial(false),30);}},true);
 // 설치형 앱처럼 사용한다. iOS의 두 손가락 확대와 데스크톱 트랙패드 확대를 모두 막는다.
 ['gesturestart','gesturechange','gestureend'].forEach(name=>document.addEventListener(name,e=>e.preventDefault(),{passive:false}));
@@ -2653,7 +2810,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=50').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=51').catch(()=>{});
 </script>
 </body>
 </html>
