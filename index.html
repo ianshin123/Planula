@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=39">
+<link rel="manifest" href="manifest.webmanifest?v=40">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Planula</title>
 <style>
@@ -72,8 +72,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 #top{padding:calc(var(--st) + 14px) 20px 8px;flex:none}
 #topin{max-width:var(--wrap);margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+/* 마스코트가 탭을 옮겨도 같은 자리에 있도록 제목이 남는 폭을 먹고 버튼 영역 폭을 고정한다.
+   버튼 수가 탭마다 달라도(달력은 3개) 오른쪽 정렬이라 보이는 위치는 그대로다. */
+.h1{flex:1;min-width:0}
+.hbtns{min-width:192px;justify-content:flex-end}
 .h1{font-size:29px;font-weight:800;letter-spacing:-.034em;line-height:1.08}
-.h1 small{display:block;font-size:13px;font-weight:650;color:var(--ink3);letter-spacing:-.01em;margin-bottom:3px}
+/* 마스코트가 자리를 차지하므로 부제목은 줄이 바뀔 수 있다. 낱말 중간에서 끊기지 않게 한다. */
+.h1 small{display:block;font-size:13px;font-weight:650;color:var(--ink3);letter-spacing:-.01em;margin-bottom:3px;word-break:keep-all}
 .hbtns{display:flex;gap:8px;align-items:center}
 .ib{width:42px;height:42px;border-radius:var(--r3);display:grid;place-items:center;color:var(--ink2);flex:none}
 .ib:active{transform:scale(.9);color:var(--ac)}
@@ -373,6 +378,13 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tourhint{margin-top:8px;color:var(--ac);font-size:12px;font-weight:900;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 10px rgba(224,122,79,.6)}
 .tourfoot{display:flex;align-items:center;gap:10px;margin-top:8px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:850;text-shadow:0 0 6px var(--bg),0 0 12px var(--bg)}
 .tourbtn,.tourback{padding:9px 2px;font-size:13px;font-weight:900;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 13px var(--bg)}.tourbtn{min-width:78px;color:var(--ac);text-align:right}.tourback{color:var(--ink2)}
+/* 시작 질문 — 배경 상자 없이 발광 텍스트 버튼만 둔다 */
+.tourchoice{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:15px}
+.tourpick{padding:11px 2px;text-align:left;pointer-events:auto;font-weight:900;
+  text-shadow:0 0 6px var(--bg),0 0 13px var(--bg),0 0 20px var(--bg)}
+.tourpick.p{color:var(--ac);font-size:15.5px}
+.tourpick.s{color:var(--ink2);font-size:14px;font-weight:850}
+.tourpick:active{transform:scale(.97)}
 .tourguide button:focus-visible{outline:none;text-shadow:0 0 6px var(--bg),0 0 14px var(--bg),0 0 12px rgba(224,122,79,.75)}
 .tourfly{position:fixed;left:0;top:0;z-index:3;width:88px;height:119px;pointer-events:none;transform:translate3d(calc(50vw - 44px),80px,0);transition:transform .72s cubic-bezier(.22,1,.36,1),opacity .28s ease;will-change:transform}
 .tourfly img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 8px 10px rgba(65,34,18,.22));animation:mascotHover 2.4s ease-in-out infinite alternate;transform-origin:50% 45%}
@@ -497,7 +509,7 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
-function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},tutorialSeen:false};}
+function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},tutorialSeen:false,introDone:false};}
 function normalizeProfile(p){
   const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||'시간대'),
@@ -517,6 +529,7 @@ function normalizeDB(d,legacy){
   const hasPlannerData=(Array.isArray(d.tasks)&&d.tasks.length)||(Array.isArray(d.subjects)&&d.subjects.length)||(Array.isArray(d.repeats)&&d.repeats.length);
   const s=freshSettings();s.force24=raw.force24&&typeof raw.force24==='object'?Object.assign({},raw.force24):{};
   s.theme=['sys','light','dark'].includes(raw.theme)?raw.theme:'sys';s.tutorialSeen=raw.tutorialSeen===true;
+  s.introDone=raw.introDone===true;
   if(hasSchedules){
     s.scheduleProfiles=raw.scheduleProfiles.map(normalizeProfile);
     const ids=new Set(s.scheduleProfiles.map(p=>p.id));
@@ -888,8 +901,8 @@ function topHTML(){
     return '<div class="hrow"><div class="h1"><small>'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+DOW[d.getDay()]+'요일</small>오늘</div>'+mascotHTML('home')+'<div class="hbtns">'+
       '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="24시간 보기 전환" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
-  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>날짜를 누르면 그날 계획이 열린다</small>달력</div><div class="hbtns">'+th+'</div></div>';
-  return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div><div class="hbtns">'+
+  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>날짜를 눌러 그날 열기</small>달력</div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div>'+mascotHTML('home')+'<div class="hbtns">'+
     '<button class="ib" aria-label="과목 추가" onclick="editSubject(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>'+th+'</div></div>';
 }
 function cycleTheme(){
@@ -1757,7 +1770,64 @@ const TOUR_STEPS=[
 let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null,_tourTrackTimer=null,_tourTrackFrame=null;
 // 끝내기 착지는 여러 프레임에 걸쳐 진행된다. 그 사이에 튜토리얼을 다시 열면 세대 번호가 올라가고
 // 옛 착지 절차는 새 화면을 건드리지 않고 조용히 물러난다.
-let _tourLandGen=0,_tourLandTimer=null;
+let _tourLandGen=0,_tourLandTimer=null,_tourIntro=false;
+
+/* 튜토리얼 중에는 지금 안내하는 곳만 만질 수 있다. 다른 기능을 둘러보다 흐름이 끊기지 않게 한다.
+   건너뛰기·끝내기·이전·다음은 항상 열려 있고, 세로 스크롤은 막지 않는다(터치 기본동작을 살려 둔다). */
+const TOUR_GATE_EVENTS=['pointerdown','pointerup','mousedown','mouseup','click','dblclick',
+  'touchstart','touchend','touchcancel','keydown','keypress','focusin','contextmenu'];
+function tourGateAllows(node){
+  if(!node)return false;
+  if(node.closest('#tour'))return true;                    // 튜토리얼 자체 버튼
+  if(node.closest('#scrim,#subscrim'))return true;         // 바깥 빈 곳 → 이전 단계로 돌아가는 경로
+  if(_tourIntro)return false;                              // 시작 질문 중에는 앱을 만지지 않는다
+  const s=TOUR_STEPS[_tourStep];if(!s)return false;
+  const t=getTourTarget(s);
+  if(t&&(t===node||t.contains(node)))return true;          // 지금 가리키는 대상
+  // 저장해야 넘어가는 단계와, 가리키는 대상이 시트 안에 있는 단계는 그 시트 전체를 연다.
+  // 이름을 적고 요일을 고르고 저장까지 눌러야 하므로 대상 하나만 열면 진행이 막힌다.
+  if(s.advance!=='target'){
+    const sub=$('#subsheet'),sheet=$('#sheet');
+    const open=sub&&sub.classList.contains('on')?sub:(sheet&&sheet.classList.contains('on')?sheet:null);
+    if(open&&open.contains(node)&&(s.signal||(t&&open.contains(t))))return true;
+  }
+  return false;
+}
+TOUR_GATE_EVENTS.forEach(name=>window.addEventListener(name,e=>{
+  if(!_tourActive||_tourLanding)return;
+  const node=e.target instanceof Element?e.target:null;
+  if(tourGateAllows(node))return;
+  e.stopImmediatePropagation();
+  if(e.type==='focusin'){if(node&&node.blur)node.blur();return;}
+  // 터치는 기본동작을 막지 않는다 — 막으면 화면 스크롤까지 멈춘다.
+  if(e.cancelable&&e.type.slice(0,5)!=='touch')e.preventDefault();
+},true));
+
+/* 처음 여는 사람에게만 사용법을 권하고, 써 본 사람은 통째로 건너뛴다. */
+function openIntro(){
+  cancelTourTracking();closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
+  _tourLandGen++;clearTimeout(_tourLandTimer);_tourLandTimer=null;
+  _tourIntro=true;_tourActive=true;_tourLanding=false;_tourStep=0;
+  document.body.classList.remove('tour-sheet-space');
+  const root=$('#tour');
+  root.innerHTML='<div class="tourspot" style="opacity:0"></div>'+
+    '<div class="tourguide"><div class="tourmark">PLANULA</div>'+
+    '<div class="tourbody"><h2>Planula를 처음 쓰나요?</h2>'+
+    '<p>처음이라면 화면을 따라가며 사용법을 익힐 수 있어.\n써 본 적이 있다면 바로 시작해도 좋아.</p></div>'+
+    '<div class="tourchoice">'+
+    '<button class="tourpick p" onclick="introPick(true)">처음이에요 · 사용법 보기</button>'+
+    '<button class="tourpick s" onclick="introPick(false)">써 봤어요 · 바로 시작</button>'+
+    '</div></div><div class="tourfly"><img src="'+MASCOT_LOOP+'" alt="주황 해파리 캐릭터"></div>';
+  root.className='on';
+  paint();
+  const home=$('#mascotHome');if(home)home.classList.add('tour-away');
+  clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,35);
+}
+function introPick(first){
+  DB.s.introDone=true;save();
+  if(first){openTutorial(0);return;}
+  finishTutorial();                                        // 캐릭터는 오늘 헤더로 날아가 앉는다
+}
 const TOUR_MOVING_SCENES=new Set(['schedule-list','schedule-editor','subject-editor','task-editor','day','data']);
 function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function setTourTab(t){
@@ -1851,7 +1921,7 @@ function openTutorial(i){
   _tourReturnStep=null;cancelTourTracking();closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
   // 끝내기 착지가 아직 진행 중이면 예약된 정리를 무효로 만든다.
   // 취소하지 않으면 뒤늦게 터진 타이머가 방금 연 튜토리얼의 #tour를 통째로 비운다.
-  _tourLandGen++;clearTimeout(_tourLandTimer);_tourLandTimer=null;
+  _tourLandGen++;clearTimeout(_tourLandTimer);_tourLandTimer=null;_tourIntro=false;
   _tourActive=true;_tourLanding=false;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
   const root=$('#tour');root.innerHTML='';root.className='on';ensureTourDOM();
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
@@ -1875,7 +1945,9 @@ function renderTutorial(){
   clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,35);
 }
 function placeTutorial(){
-  if(!_tourActive||_tourLanding)return;const s=TOUR_STEPS[_tourStep],t=getTourTarget(s),guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot');
+  if(!_tourActive||_tourLanding)return;
+  const s=_tourIntro?{scene:'modal'}:TOUR_STEPS[_tourStep],t=_tourIntro?null:getTourTarget(s);
+  const guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot');
   if(!guide||!fly||!spot)return;const gw=guide.offsetWidth,gh=guide.offsetHeight,fw=fly.offsetWidth,fh=fly.offsetHeight,safe=14;
   let gx=Math.max(safe,(innerWidth-gw)/2),gy=Math.max(245,innerHeight*.53),mx=(innerWidth-fw)/2,my=Math.max(24,gy-fh-18);
   if(s.scene==='modal'||!t){
@@ -1915,7 +1987,7 @@ function finishTutorial(){
 }
 function completeTutorialLanding(gen){
   if(gen!=null&&gen!==_tourLandGen)return;      // 옛 착지 타이머가 새로 연 튜토리얼을 지우지 못하게 한다
-  clearTimeout(_tourLandTimer);_tourLandTimer=null;
+  clearTimeout(_tourLandTimer);_tourLandTimer=null;_tourIntro=false;
   cancelTourTracking();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
   const home=$('#mascotHome');if(home){home.classList.remove('tour-away');home.classList.add('arrived');setTimeout(()=>home.classList.remove('arrived'),520);}
 }
@@ -2000,11 +2072,12 @@ function delRule(id){
 
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
-if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openTutorial(0),420);
+// 아직 한 번도 고르지 않았고 데이터도 없으면 시작 질문을 먼저 띄운다.
+if(!DB.s.introDone&&(!DB.s.tutorialSeen||plannerUntouched()))setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=39').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=40').catch(()=>{});
 </script>
 </body>
 </html>
