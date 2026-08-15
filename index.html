@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=52">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=52">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=52">
-<link rel="apple-touch-icon" href="icon-192.png?v=52">
+<link rel="manifest" href="manifest.webmanifest?v=53">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=53">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=53">
+<link rel="apple-touch-icon" href="icon-192.png?v=53">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -337,7 +337,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   background:var(--blur-strong);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
   -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   transform:translateY(110%);transition:transform .36s cubic-bezier(.32,.72,0,1);
-  padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain}
+  padding:10px 20px calc(var(--sb) + 22px);max-height:90vh;max-height:90dvh;
+  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 #sheet.on{transform:translateY(0)}
 body.tour-sheet-space #sheet{max-height:56vh;max-height:56dvh}
 #subscrim{position:fixed;inset:0;z-index:120;background:rgba(30,22,14,.28);opacity:0;pointer-events:none;transition:opacity .24s;
@@ -347,11 +348,13 @@ body.tour-sheet-space #sheet{max-height:56vh;max-height:56dvh}
   background:var(--blur-strong);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);
   -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   transform:translateY(110%);transition:transform .32s cubic-bezier(.32,.72,0,1);
-  padding:10px 20px calc(var(--sb) + 22px);max-height:84vh;max-height:84dvh;overflow-y:auto;overscroll-behavior:contain}
+  padding:10px 20px calc(var(--sb) + 22px);max-height:84vh;max-height:84dvh;
+  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 #subsheet.on{transform:translateY(0)}
 body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 /* 시트 맨 위 손잡이. 보이는 막대는 42×5 그대로지만 잡히는 범위는 ::before 로
-   시트 폭 전체·위아래 12px 넓힌다. 막대 크기 그대로면 끌어내리기가 계속 빗나간다. */
+   시트 폭 전체·위아래 13px 넓힌다. 막대 크기 그대로면 끌어내리기가 계속 빗나간다.
+   시트는 overflow-x:hidden 이라 넓힌 영역이 가로 스크롤을 만들지 않는다. */
 .grab{position:relative;width:42px;height:5px;border-radius:3px;background:var(--ink3);opacity:.45;margin:0 auto 14px;
   transition:opacity .16s,transform .16s}
 .grab::before{content:'';position:absolute;left:-50vw;right:-50vw;top:-13px;bottom:-13px}
@@ -601,10 +604,15 @@ const L=KO?{
   defaultSchedName:'기본 시간대',
   defaultWeekday:'평일',defaultWeekend:'주말',
   defaultWeekdayBlocks:['1교시','2교시','3교시','4교시','5교시','6교시','7교시','방과후','야자 1차시','야자 2차시'],
-  defaultWeekendBlocks:['오전','점심','오후','저녁','밤'],
-  defaultWeekdaySub:'1교시 ~ 야자 2차시',defaultWeekendSub:'오전 ~ 밤',
+  defaultWeekendBlocks:['아침','오전','오후','늦은 오후','저녁','밤'],
+  defaultWeekdaySub:'1교시 ~ 야자 2차시',defaultWeekendSub:'아침 ~ 밤',
   defaultSchedNote:'기본은 일반적인 고등학생 하루다. 수정을 눌러 내 하루에 맞게 고쳐 쓰면 그때부터 내 시간표가 되고, 기본은 저절로 꺼진다. 지워지지는 않으니 언제든 다시 켤 수 있다.',
   schedOn:'켬',schedOff:'끔',aSchedToggle:n=>n+' 켜고 끄기',
+  editedMark:'고침',
+  defaultEditTitle:n=>n+' 기본 시간대 수정',
+  defaultEditLead:'칸을 더하거나 지우고 시각을 내 하루에 맞게 바꾸면 된다. 그대로 저장해도 된다. 이건 기본 시간대를 고치는 것이고, 따로 쓰는 시간표는 나중에 새 시간표로 만든다.',
+  defaultSaved:'기본 시간대를 고쳤다',
+  defaultReset:'원래 기본값으로 되돌리기',defaultResetDone:'원래 기본값으로 되돌렸다',
   schedAllOff:'켜 둔 시간대가 없어 하루 전체가 보인다',
   myScheds:'내 시간표',
   legacy:['점호','아침조례','1교시','2교시','3교시','4교시','5교시','6교시','7교시','8교시','야자 1차시','야자 2차시'],
@@ -671,7 +679,7 @@ const L=KO?{
   backup:'백업',repRules:'반복 규칙',h24:'24시간',noRules:'등록된 반복이 없다',
   exported:'내보냈다',imported:n=>'가져왔다 — 할일 '+n+'개',fileUnreadable:'파일을 읽지 못했다',repDeleted:'반복을 지웠다',
   tour:{
-    sched:{t:'하루를 네 시간표에 맞춰',x:'기본은 일반적인 고등학생 하루야. <strong>수정</strong>을 눌러 칸을 더하거나 지우고 시각을 네 하루에 맞게 바꿔. 그대로 저장해도 돼.',n:'기본 그대로 쓰기'},
+    sched:{t:'하루를 네 시간표에 맞춰',x:'기본은 일반적인 고등학생 하루야. <strong>수정</strong>을 눌러 칸을 더하거나 지우고 시각을 바꿔 봐. <strong>평일과 주말 각각</strong> 고칠 수 있고, 그대로 둬도 돼.',n:'시간표 다 정했어'},
     goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>로 이름과 색을 정해 저장해 줘.'},
     dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 하나 넣자.'},
     task:{t:'할 일을 두 개 만들어',x:'<strong>+</strong>로 만들면 시간 없이 오른쪽 미배정에 쌓여. 나란히 놓아 볼 거라 <strong>두 개</strong>가 필요해.'},
@@ -690,10 +698,15 @@ const L=KO?{
   defaultSchedName:'Default day',
   defaultWeekday:'Weekday',defaultWeekend:'Weekend',
   defaultWeekdayBlocks:['Period 1','Period 2','Period 3','Period 4','Period 5','Period 6','Period 7','After school','Study hall 1','Study hall 2'],
-  defaultWeekendBlocks:['Morning','Lunch','Afternoon','Dinner','Night'],
-  defaultWeekdaySub:'Period 1 → Study hall 2',defaultWeekendSub:'Morning → Night',
+  defaultWeekendBlocks:['Early','Morning','Afternoon','Late afternoon','Evening','Night'],
+  defaultWeekdaySub:'Period 1 → Study hall 2',defaultWeekendSub:'Early → Night',
   defaultSchedNote:'The default is an ordinary school day. Tap Edit, shape it to your own hours, and it becomes your schedule — the default switches off by itself. Nothing is deleted, so you can turn it back on.',
   schedOn:'On',schedOff:'Off',aSchedToggle:n=>'Turn '+n+' on or off',
+  editedMark:'edited',
+  defaultEditTitle:n=>'Edit the '+n.toLowerCase()+' default',
+  defaultEditLead:'Add or drop blocks and move the times to match your day. Saving it unchanged is fine. This edits the default itself — a separate schedule of your own is made later with New schedule.',
+  defaultSaved:'Default schedule updated',
+  defaultReset:'Reset to the original default',defaultResetDone:'Reset to the original default',
   schedAllOff:'No schedule is on, so the whole day is shown',
   myScheds:'My schedules',
   legacy:['Roll call','Homeroom','Period 1','Period 2','Period 3','Period 4','Period 5','Period 6','Period 7','Period 8','Study hall 1','Study hall 2'],
@@ -761,7 +774,7 @@ const L=KO?{
   backup:'Backup',repRules:'Repeat rules',h24:'24h',noRules:'No repeats set up',
   exported:'Exported',imported:n=>'Imported — '+n+' tasks',fileUnreadable:'Could not read the file',repDeleted:'Repeat deleted',
   tour:{
-    sched:{t:'Shape the day to your own hours',x:'The default is an ordinary school day. Tap <strong>Edit</strong> to add or drop blocks and move the times to match yours. Saving it unchanged is fine too.',n:'Keep the default'},
+    sched:{t:'Shape the day to your own hours',x:'The default is an ordinary school day. Tap <strong>Edit</strong> to add or drop blocks and move the times. <strong>Weekday and weekend</strong> are edited separately, and leaving them as they are is fine.',n:'Schedules are set'},
     goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong>, set a name and a color, and save.'},
     dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and add one.'},
     task:{t:'Now make two tasks',x:'Made with the <strong>+ at the bottom right</strong>, a task starts with no time and waits in the unassigned rail. You need <strong>two</strong> — we will put them side by side in a moment.'},
@@ -821,26 +834,40 @@ const DEFAULT_WEEKDAY=[
   ['ja1', M(19,10),M(21,0),  8],
   ['ja2', M(21,15),M(23,30), 9],
 ];
+/* 주말도 한 칸이 너무 크면 칸에 들어가는 게 잘 안 보인다.
+   점심·저녁·쉬는시간은 블록으로 만들지 않고 사이를 비워 자동으로 이름이 붙게 한다. */
 const DEFAULT_WEEKEND=[
-  ['am',   M(8,0),  M(12,0), 0],
-  ['lun',  M(12,0), M(13,0), 1],
-  ['pm',   M(13,0), M(18,0), 2],
-  ['din',  M(18,0), M(19,0), 3],
-  ['nig',  M(19,0), M(24,0), 4],
+  ['wam',  M(8,0),  M(9,0),  0],
+  ['wam2', M(9,30), M(12,0), 1],
+  ['wpm',  M(13,0), M(15,0), 2],
+  ['wpm2', M(15,30),M(18,0), 3],
+  ['wev',  M(19,0), M(21,0), 4],
+  ['wnig', M(21,30),M(23,30),5],
 ];
 function isWeekendDay(ds){const d=parseD(ds).getDay();return d===0||d===6;}
+/* 기본 시간대를 고치면 '내 시간표'가 되는 게 아니라 기본 시간대의 고친 버전이 된다.
+   DB.s.defaultBlocks 에 따로 담고, 비어 있으면 코드에 있는 원래 값을 쓴다.
+   내 시간표는 나중에 '새 시간표'로 따로 만드는 것이다. */
+function defaultKindOf(ds){return isWeekendDay(ds)?'weekend':'weekday';}
+function defaultEdited(kind){
+  const d=DB.s&&DB.s.defaultBlocks;return !!(d&&Array.isArray(d[kind])&&d[kind].length);}
 function defaultProfile(kind){
   const w=kind==='weekend';
-  return {id:w?'default-weekend':'default-weekday',name:w?L.defaultWeekend:L.defaultWeekday,
-    blocks:(w?DEFAULT_WEEKEND:DEFAULT_WEEKDAY).map(x=>({id:x[0],s:x[1],e:x[2],
-      name:(w?L.defaultWeekendBlocks:L.defaultWeekdayBlocks)[x[3]]}))};}
+  const custom=DB.s&&DB.s.defaultBlocks&&DB.s.defaultBlocks[kind];
+  const blocks=(Array.isArray(custom)&&custom.length)
+    ?custom.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e}))
+    :(w?DEFAULT_WEEKEND:DEFAULT_WEEKDAY).map(x=>({id:x[0],s:x[1],e:x[2],
+      name:(w?L.defaultWeekendBlocks:L.defaultWeekdayBlocks)[x[3]]}));
+  return {id:w?'default-weekend':'default-weekday',name:w?L.defaultWeekend:L.defaultWeekday,blocks};}
 function defaultSchedOn(){return !(DB.s&&DB.s.defaultSchedOff);}
 const LEGACY_PROFILE_ID='default-school';
 function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:L.schoolName,blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
+/* 빈 구간 이름. 점심·저녁은 정확한 분이 아니라 시간대 범위로 잡는다.
+   블록으로 만들지 않고 빈 구간으로 두어야 평일 쉬는시간과 같은 회색으로 보인다. */
 function gapName(s,e){
   if(s===0)return L.gapDawn;
-  if(s===M(12,20))return L.gapLunch;
-  if(s===M(18,0))return L.gapDinner;
+  if(s>=M(11,30)&&s<=M(13,0))return L.gapLunch;
+  if(s>=M(17,30)&&s<=M(19,0))return L.gapDinner;
   if(e<=M(6,50))return L.gapDawn;
   if(s>=M(23,30))return L.gapNight;
   if(s===M(7,15))return L.gapMorning;
@@ -861,7 +888,7 @@ function scheduleProfile(ds){
   const id=DB.s.dayProfiles&&DB.s.dayProfiles[String(parseD(ds).getDay())];
   const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);
   if(p&&!p.off)return p;
-  return defaultSchedOn()?defaultProfile(isWeekendDay(ds)?'weekend':'weekday'):null;
+  return defaultSchedOn()?defaultProfile(defaultKindOf(ds)):null;
 }
 function scheduleBlocks(ds){const p=scheduleProfile(ds);return p?buildScheduleBlocks(p):[];}
 function default24(ds){return !scheduleProfile(ds);}
@@ -895,7 +922,8 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
-function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},defaultSchedOff:false,tutorialSeen:false,introDone:false};}
+function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},
+  defaultSchedOff:false,defaultBlocks:{},tutorialSeen:false,introDone:false};}
 function normalizeProfile(p){
   const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||L.blockFallback),
@@ -932,6 +960,10 @@ function normalizeDB(d,legacy){
   if(onlyAutoSchool){s.scheduleProfiles=[];s.dayProfiles={};}
   // 기본 시간대는 새 사용자에게 켜져 있고, 이미 자기 시간표를 만든 사람에게는 꺼져 있다.
   s.defaultSchedOff=raw.defaultSchedOff===undefined?s.scheduleProfiles.length>0:raw.defaultSchedOff===true;
+  // 기본 시간대를 고친 값. 없으면 코드에 있는 원래 값을 쓴다.
+  s.defaultBlocks={};
+  if(raw.defaultBlocks&&typeof raw.defaultBlocks==='object')['weekday','weekend'].forEach(k=>{
+    const b=normalizeProfile({blocks:raw.defaultBlocks[k]}).blocks;if(b.length)s.defaultBlocks[k]=b;});
   const out={v:6,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
@@ -2114,41 +2146,51 @@ function switchHTML(on,label,onclick){
   return '<button class="swt'+(on?' on':'')+'" role="switch" aria-checked="'+(on?'true':'false')+'" '+
     'aria-label="'+esc(label)+'" onclick="'+onclick+'"><i></i></button>';
 }
+/* 카드 본문을 누르면 고르기만 하고, 실제 수정은 오른쪽 '수정' 버튼으로만 연다.
+   이름 부분을 눌렀다고 편집기가 열리면 눌러 본 사람이 당황한다. */
+let _schedSel=null;
+function selectSchedRow(id){_schedSel=(_schedSel===id?null:id);openScheduleSettings();}
+function schedRowHTML(id,name,sub,opts){
+  const sel=_schedSel===id?' sel':'',off=opts.off?' off':'';
+  return '<div class="schedrow'+off+sel+'" id="'+id+'">'+
+    '<button class="schedsum" onclick="selectSchedRow(\''+id+'\')">'+
+    '<div><b>'+esc(name)+'</b><span>'+esc(sub)+'</span></div></button>'+
+    '<button class="schedbadge" onclick="'+opts.edit+'">'+esc(L.edit)+'</button>'+
+    (opts.toggle?switchHTML(!opts.off,opts.toggleLabel,opts.toggle):'<i class="swtpad"></i>')+
+    '</div>';
+}
 function defaultRow(kind,withSwitch){
   const pr=defaultProfile(kind),on=defaultSchedOn();
-  return '<div class="schedrow'+(on?'':' off')+'" id="'+(kind==='weekend'?'defaultWeekendRow':'defaultSchedRow')+'">'+
-    '<button class="schedsum" onclick="editScheduleFromDefault(\''+kind+'\')">'+
-    '<div><b>'+esc(pr.name)+'</b><span>'+esc(kind==='weekend'?L.defaultWeekendSub:L.defaultWeekdaySub)+
-    ' · '+esc(L.blockCount(pr.blocks.length))+'</span></div><i class="schedbadge">'+esc(L.edit)+'</i></button>'+
-    (withSwitch?switchHTML(on,L.aSchedToggle(L.defaultSchedName),'toggleDefaultSchedule()'):'<i class="swtpad"></i>')+
-    '</div>';
+  const sub=(kind==='weekend'?L.defaultWeekendSub:L.defaultWeekdaySub)+' · '+L.blockCount(pr.blocks.length)+
+    (defaultEdited(kind)?' · '+L.editedMark:'');
+  return schedRowHTML(kind==='weekend'?'defaultWeekendRow':'defaultSchedRow',pr.name,sub,
+    {off:!on,edit:'editScheduleFromDefault(\''+kind+'\')',
+     toggle:withSwitch?'toggleDefaultSchedule()':null,toggleLabel:L.aSchedToggle(L.defaultSchedName)});
 }
 function openScheduleSettings(){
   const profiles=DB.s.scheduleProfiles||[];
   let list='<div class="fl">'+esc(L.defaultSchedName)+'</div>'+
     defaultRow('weekday',true)+defaultRow('weekend',false);
-  if(profiles.length)list+='<div class="fl">'+esc(L.myScheds)+'</div>'+profiles.map(p=>{
-    const days=profileDays(p.id),live=!p.off;
-    return '<div class="schedrow'+(live?'':' off')+'"><button class="schedsum" onclick="editSchedule(\''+p.id+'\')">'+
-      '<div><b>'+esc(p.name)+'</b><span>'+esc(daysText(days))+' · '+esc(L.blockCount(p.blocks.length))+'</span></div>'+
-      '<i class="schedbadge">'+esc(L.edit)+'</i></button>'+
-      switchHTML(live,L.aSchedToggle(p.name),'toggleSchedule(\''+p.id+'\')')+'</div>';
-  }).join('');
+  if(profiles.length)list+='<div class="fl">'+esc(L.myScheds)+'</div>'+profiles.map(p=>
+    schedRowHTML('sched-'+p.id,p.name,daysText(profileDays(p.id))+' · '+L.blockCount(p.blocks.length),
+      {off:!!p.off,edit:'editSchedule(\''+p.id+'\')',
+       toggle:'toggleSchedule(\''+p.id+'\')',toggleLabel:L.aSchedToggle(p.name)})).join('');
   // 지금 어떤 요일이 24시간으로 보이는지 알려준다
   const wide=DOW.map((d,i)=>{
     const id=DB.s.dayProfiles[String(i)],pr=profiles.find(x=>x.id===id);
     return (pr&&!pr.off)||defaultSchedOn()?null:d;}).filter(d=>d!=null);
+  // 사용법 중에는 새 시간표를 만들지 않는다. 새 사용자는 기본 또는 기본의 수정본으로 시작한다.
+  const newBtn=_tourActive?'':'<div class="row2"><button class="btn p" onclick="editSchedule(null)">'+esc(L.schedNew)+'</button></div>';
   openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+list+
     '<div class="fullnote">'+(wide.length
       ?esc(L.schedFree)+esc(wide.join(' · '))+'<br>'+esc(L.schedFreeNote)
-      :esc(L.defaultSchedNote))+'</div>'+
-    '<div class="row2"><button class="btn p" onclick="editSchedule(null)">'+esc(L.schedNew)+'</button></div>');
+      :esc(L.defaultSchedNote))+'</div>'+newBtn);
 }
-/* 기본 시간대를 바탕으로 내 시간표를 만든다. 그대로 저장하면 기본 그대로 쓰는 것이고,
-   칸을 더하거나 지우고 시각을 바꾸면 그게 내 시간표가 된다. */
+/* 기본 시간대를 고친다. 결과는 '내 시간표'가 아니라 기본 시간대의 고친 버전이다.
+   내 시간표는 나중에 '새 시간표'로 따로 만든다. */
 function editScheduleFromDefault(kind){
   const pr=defaultProfile(kind);
-  _sched={id:null,name:pr.name,days:kind==='weekend'?[0,6]:[1,2,3,4,5],
+  _sched={id:null,defaultKind:kind,name:pr.name,days:kind==='weekend'?[0,6]:[1,2,3,4,5],
     blocks:pr.blocks.map(b=>({id:uid(),name:b.name,s:b.s,e:b.e})),deleteArmed:false};
   scheduleEditor();
 }
@@ -2171,23 +2213,30 @@ function editSchedule(id){
   scheduleEditor();
 }
 function syncScheduleForm(){
-  const n=$('#schName');if(n)_sched.name=n.value;
+  const n=$('#schName');if(n&&!_sched.defaultKind)_sched.name=n.value;
   document.querySelectorAll('.blockrow[data-bi]').forEach(row=>{const b=_sched.blocks[Number(row.dataset.bi)];if(!b)return;
     b.name=row.querySelector('.bname').value;b.s=parseTime(row.querySelector('.bstart').value,false);b.e=parseTime(row.querySelector('.bend').value,true);});
 }
 function scheduleEditor(){
-  const h='<div class="sh2">'+esc(_sched.id?L.schedEdit:L.schedNew)+'</div>'+
-    '<div class="fl">'+esc(L.schedName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedNamePh)+'" value="'+esc(_sched.name)+'">'+
-    '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'weekday\')">'+esc(L.weekdays)+'</button> · <button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
-    '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
-    '<div class="fl"><span>'+esc(L.blocks)+'</span><button onclick="loadScheduleExample()">'+esc(L.loadExample)+'</button></div>'+
+  const dk=_sched.defaultKind;
+  // 기본 시간대를 고칠 때는 이름과 적용 요일이 정해져 있다. 칸만 고친다.
+  const head=dk
+    ?'<div class="sh2">'+esc(L.defaultEditTitle(_sched.name))+'</div>'+
+     '<div class="sheetlead">'+esc(L.defaultEditLead)+'</div>'
+    :'<div class="sh2">'+esc(_sched.id?L.schedEdit:L.schedNew)+'</div>'+
+     '<div class="fl">'+esc(L.schedName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedNamePh)+'" value="'+esc(_sched.name)+'">'+
+     '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'weekday\')">'+esc(L.weekdays)+'</button> · <button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
+     '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>';
+  const h=head+
+    '<div class="fl"><span>'+esc(L.blocks)+'</span>'+(dk?'':'<button onclick="loadScheduleExample()">'+esc(L.loadExample)+'</button>')+'</div>'+
     _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>'+esc(L.name)+'</label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
       '<div class="blocktimes"><div><label>'+esc(L.start)+'</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
       '<div><label>'+esc(L.end)+'</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
       '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
     '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button>'+
     '<div class="row2"><button class="btn p" onclick="saveSchedule()">'+esc(L.save)+'</button></div>'+
-    (_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedule()">'+esc(_sched.deleteArmed?L.reallyDel:L.schedDel)+'</button></div>':'');
+    (dk?(defaultEdited(dk)?'<div class="row2"><button class="btn d" onclick="resetDefaultSchedule()">'+esc(L.defaultReset)+'</button></div>':'')
+       :(_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedule()">'+esc(_sched.deleteArmed?L.reallyDel:L.schedDel)+'</button></div>':''));
   openSheet(h);
 }
 function toggleScheduleDay(i){syncScheduleForm();const p=_sched.days.indexOf(i);if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);scheduleEditor();}
@@ -2207,6 +2256,14 @@ function saveSchedule(){
     if(!Number.isFinite(b.s)||!Number.isFinite(b.e)||b.s<0||b.e>1440||b.e<=b.s){toast(L.checkTimes);return;}
     if(i&&b.s<blocks[i-1].e){toast(L.overlapping);return;}
   }
+  if(_sched.defaultKind){
+    // 고친 결과는 기본 시간대의 수정본이다. 내 시간표 목록에 넣지 않는다.
+    DB.s.defaultBlocks=DB.s.defaultBlocks||{};
+    DB.s.defaultBlocks[_sched.defaultKind]=blocks;
+    DB.s.defaultSchedOff=false;
+    save();paint();openScheduleSettings();toast(L.defaultSaved);
+    tourSignal('schedule-saved');return;
+  }
   const id=_sched.id||uid(),p={id,name,blocks};const at=DB.s.scheduleProfiles.findIndex(x=>x.id===id);
   if(at>=0)DB.s.scheduleProfiles[at]=p;else DB.s.scheduleProfiles.push(p);
   // 내 시간표가 생기면 기본 시간대는 저절로 꺼진다. 지우지는 않으므로 다시 켤 수 있다.
@@ -2214,6 +2271,11 @@ function saveSchedule(){
   Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
   days.forEach(i=>DB.s.dayProfiles[String(i)]=id);save();paint();openScheduleSettings();toast(L.schedSaved);
   tourSignal('schedule-saved');
+}
+function resetDefaultSchedule(){
+  const k=_sched.defaultKind;if(!k)return;
+  if(DB.s.defaultBlocks)delete DB.s.defaultBlocks[k];
+  save();paint();openScheduleSettings();toast(L.defaultResetDone);
 }
 function deleteSchedule(){
   if(!_sched.deleteArmed){syncScheduleForm();_sched.deleteArmed=true;scheduleEditor();return;}
@@ -2226,9 +2288,9 @@ function deleteSchedule(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=52';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=52';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=52';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=53';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=53';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=53';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2278,8 +2340,8 @@ document.addEventListener('click',e=>{
    시간대 만들기만 넘길 수 있고 나머지는 직접 해야 다음으로 간다.
    hintKind 는 강조 상자 말고 어떻게 움직여 보여줄지다 — press(눌러라)/drag(끌어라)/grab(손잡이) */
 const TOUR_STEPS=[
-  {id:'sched',scene:'schedule-list',selector:['#sheet.on #schName','#defaultSchedRow .schedsum'],hintKind:'press',
-   btn:'skip',signal:'schedule-saved',allow:['#sheet'],hint:''},
+  {id:'sched',scene:'schedule-list',selector:['#sheet.on .blockrow','#defaultSchedRow .schedbadge'],hintKind:'press',
+   btn:'skip',allow:['#sheet'],hint:''},
   {id:'goal',scene:'subject',selector:['#sheet.on #f_sname','#mainFab'],hintKind:'press',
    signal:'subject-saved',allow:['#mainFab','#sheet']},
   {id:'dday',scene:'subject',selector:['#sheet.on #f_ddt','.sj .sjf .mini'],hintKind:'press',
@@ -2505,21 +2567,30 @@ function tourTargetRect(s,t,allowScroll){
   let top=Math.max(lo,raw.top-7),bottom=Math.min(hi,raw.bottom+7);
   if(bottom-top<14)return 'hidden';
   if(s.target==='grid'){
-    // 강조 칸을 실제 한 시간 높이에 맞춘다. 기본 일정이 놓이는 크기와 같아야
-    // '이만큼 들어간다'는 안내가 실제 결과와 어긋나지 않는다.
+    /* 강조 칸은 일정이 실제로 들어가는 칸이어야 한다. 시간표 보기에서는 그 시간대 밴드
+       통째로 들어가므로 한 시간으로 그리면 '이만큼 들어간다'가 실제와 어긋난다.
+       24시간 보기에서만 다음 정각까지의 한 시간을 쓴다. */
     const scroll=$('#scroll'),sr=scroll?scroll.getBoundingClientRect():{top:80,bottom:innerHeight-90};
     const visibleTop=Math.max(raw.top+2,sr.top+8,lo,82),visibleBottom=Math.min(raw.bottom-2,sr.bottom-12,hi,innerHeight-92);
     const grid=$('#gridwrap .grid'),ds=grid?grid.dataset.date:TODAY();
     const map=timeMap(ds);
-    // 화면 가운데에 걸리는 정각을 골라 그 한 시간 구간을 그대로 쓴다
-    const centerMin=map.min(Math.max(0,(visibleTop+visibleBottom)/2-raw.top));
-    let h0=Math.max(0,Math.min(1380,Math.round(centerMin/60)*60));
-    let hTop=raw.top+map.y(h0),hBot=raw.top+map.y(h0+60);
-    if(hTop<visibleTop||hBot>visibleBottom){                 // 위아래로 삐져나오면 한 칸 옮겨 본다
-      const alt=hTop<visibleTop?h0+60:h0-60;
-      if(alt>=0&&alt<=1380){const aT=raw.top+map.y(alt),aB=raw.top+map.y(alt+60);
-        if(aT>=visibleTop&&aB<=visibleBottom){h0=alt;hTop=aT;hBot=aB;}}}
-    top=Math.max(visibleTop,hTop);bottom=Math.min(visibleBottom,hBot);
+    const span=(rs,re)=>({t:raw.top+map.y(Math.max(0,rs)),b:raw.top+map.y(Math.min(1440,re))});
+    const cellAt=cy=>{
+      const cm=map.min(Math.max(0,cy-raw.top));
+      if(!is24(ds)){
+        const bd=bandAt(ds,abs(Math.min(1439,cm)));
+        if(bd){const rs=rel(bd.s);return span(rs,Math.min(1440,rs+(bd.e-bd.s)));}}
+      const h0=Math.max(0,Math.min(1380,Math.floor(cm/60)*60));
+      return span(h0,h0+60);
+    };
+    let c=cellAt((visibleTop+visibleBottom)/2);
+    if(c.t<visibleTop||c.b>visibleBottom){         // 화면 밖으로 삐져나오면 위·아래 칸을 살펴본다
+      [visibleTop+30,visibleBottom-30].some(y=>{
+        const alt=cellAt(y);
+        if(alt.t>=visibleTop&&alt.b<=visibleBottom){c=alt;return true;}
+        return false;});
+    }
+    top=Math.max(visibleTop,c.t);bottom=Math.min(visibleBottom,c.b);
     if(bottom-top<42){top=Math.max(lo,visibleTop);bottom=Math.min(hi,Math.max(top+42,visibleBottom));}
     if(bottom-top<14)return 'hidden';
     left=Math.max(7,raw.left+3);right=Math.min(innerWidth-7,raw.right-3);
@@ -2618,7 +2689,7 @@ function placeTutorial(allowScroll){
   // 열린 시트는 사용자가 지금 채워야 하는 곳이다. 캐릭터가 그 위에 앉으면 안 된다.
   const sheetEl=tourSheetEl();if(sheetEl)addRect(sheetEl.getBoundingClientRect());
 
-  let hintRect=null;
+  let hintRect=null,spotRect=null;
   if(s.scene==='modal'||!t){
     spot.style.opacity='0';clearTourHint();
     gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));
@@ -2631,7 +2702,7 @@ function placeTutorial(allowScroll){
       else gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.3),dockTop-gh-12));
     }else{
       const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
-      avoid.push({left,right,top,bottom});hintRect=rect;
+      avoid.push({left,right,top,bottom});hintRect=rect;spotRect=rect;
       if(sheetEl){gx=safe;gy=safe;}
       else{
         const below=bottom+18,above=top-gh-18,limit=Math.max(safe,dockTop-gh-12);
@@ -2645,9 +2716,11 @@ function placeTutorial(allowScroll){
 
   /* 캐릭터는 말풍선에 붙여 둔다. 말하는 것처럼 보여야 하고, 멀리 떨어져 입력창 위로
      내려가면 안 된다. 위쪽을 먼저 보고 자리가 없을 때만 아래·옆으로 돌린다. */
-  const over=(x,y)=>avoid.reduce((n,a)=>n+
-    Math.max(0,Math.min(x+fw,a.right)-Math.max(x,a.left))*
-    Math.max(0,Math.min(y+fh,a.bottom)-Math.max(y,a.top)),0);
+  const area=(x,y,a)=>!a?0:Math.max(0,Math.min(x+fw,a.right)-Math.max(x,a.left))*
+                            Math.max(0,Math.min(y+fh,a.bottom)-Math.max(y,a.top));
+  const over=(x,y)=>avoid.reduce((n,a)=>n+area(x,y,a),0);
+  // 말풍선 글씨를 덮는 것도 강조 칸을 덮는 것 다음으로 나쁘다.
+  const guideRect={left:gx,right:gx+gw,top:gy,bottom:gy+gh};
   const gap=4;
   const cands=[
     {side:'up',   x:gx+12,        y:gy-fh-gap},
@@ -2657,6 +2730,12 @@ function placeTutorial(allowScroll){
     {side:'right',x:gx+gw+gap,    y:gy+4},
     {side:'left', x:gx-fw-gap,    y:gy+4}
   ];
+  /* 강조 칸이 크면 말풍선 옆자리가 전부 막힌다. 그럴 때 쓸 자리로 강조 칸의
+     위·아래를 후보에 더한다. 말풍선에서 좀 떨어지더라도 글씨를 덮는 것보다 낫다. */
+  if(spotRect){
+    cands.push({side:'up',  x:gx+12,y:spotRect.top-fh-8});
+    cands.push({side:'down',x:gx+12,y:spotRect.bottom+8});
+  }
   /* 강조 칸을 덮는 것이 화면 밖으로 나가는 것보다 나쁘다. 자리가 정 없으면
      화면 안으로 끌어당겨 놓고 겹침이 가장 적은 쪽을 고른다. */
   let pick=null;
@@ -2664,7 +2743,7 @@ function placeTutorial(allowScroll){
     const cx=Math.max(8,Math.min(innerWidth-fw-8,c.x));
     const cy=Math.max(8,Math.min(Math.max(8,dockTop-fh-4),c.y));
     const fits=Math.abs(cx-c.x)<1&&Math.abs(cy-c.y)<1;
-    const score=over(cx,cy)*12+(fits?0:900)+i;
+    const score=over(cx,cy)*12+area(cx,cy,guideRect)*6+(fits?0:900)+i;
     if(!pick||score<pick.score)pick={score,...c,x:cx,y:cy};
   });
   const mx=Math.max(8,Math.min(innerWidth-fw-8,pick.x));
@@ -2714,7 +2793,9 @@ function tourHintDrag(spotRect){
   const chip=document.querySelector('.uchip');
   if(!chip||!spotRect)return;
   const c=chip.getBoundingClientRect();
-  const w=Math.min(150,Math.max(96,c.width)),h=Math.max(34,Math.min(64,c.height));
+  // 도착 크기는 강조 칸 그대로다. 실제로 그만큼 들어가므로 크기를 줄여 그리면 거짓말이 된다.
+  const w=Math.round(Math.max(60,spotRect.right-spotRect.left-14));
+  const h=Math.round(Math.max(30,spotRect.bottom-spotRect.top-12));
   const x1=Math.round(c.left+c.width/2-w/2),y1=Math.round(c.top+c.height/2-h/2);
   const x2=Math.round((spotRect.left+spotRect.right)/2-w/2);
   const y2=Math.round((spotRect.top+spotRect.bottom)/2-h/2);
@@ -2869,7 +2950,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=52').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=53').catch(()=>{});
 </script>
 </body>
 </html>
