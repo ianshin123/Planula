@@ -9,8 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=41">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest?v=42">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=42">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=42">
+<link rel="apple-touch-icon" href="icon-192.png?v=42">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -2072,12 +2074,12 @@ function delRule(id){
 
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
-// 아직 한 번도 고르지 않았고 데이터도 없으면 시작 질문을 먼저 띄운다.
-if(!DB.s.introDone&&(!DB.s.tutorialSeen||plannerUntouched()))setTimeout(()=>openIntro(),420);
+// 재등장 기준은 오직 '만든 데이터가 하나도 없는 상태'다. 전에 답한 적이 있어도 다시 묻는다.
+if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=41').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=42').catch(()=>{});
 </script>
 </body>
 </html>
