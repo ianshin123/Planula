@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=43">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=43">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=43">
-<link rel="apple-touch-icon" href="icon-192.png?v=43">
+<link rel="manifest" href="manifest.webmanifest?v=44">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=44">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=44">
+<link rel="apple-touch-icon" href="icon-192.png?v=44">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -343,8 +343,8 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tpb:active{transform:scale(.9);background:var(--ac-s);color:var(--ac)}
 .tpv{font-size:27px;font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums;text-align:center}
 .tpu{font-size:12px;font-weight:700;color:var(--ink3);text-align:center;margin-top:-2px}
-.swatches{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:4px 0}
-.sw{width:46px;height:46px;border-radius:50%;border:3px solid transparent;
+.swatches{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:4px 0}
+.sw{width:36px;height:36px;border-radius:50%;border:2.5px solid transparent;
   box-shadow:0 0 0 1px rgba(0,0,0,.08);transition:transform .18s}
 .sw.on{transform:scale(1.14);border-color:var(--solid);box-shadow:0 0 0 4px var(--ac-s),0 0 0 1px rgba(0,0,0,.1)}
 .row2{display:flex;gap:9px;margin-top:20px}
@@ -907,8 +907,7 @@ function topHTML(){
       '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="24시간 보기 전환" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
   if(tab==='cal')return '<div class="hrow"><div class="h1"><small>날짜를 눌러 그날 열기</small>달력</div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
-  return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div>'+mascotHTML('home')+'<div class="hbtns">'+
-    '<button class="ib" aria-label="과목 추가" onclick="editSubject(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>'+th+'</div></div>';
+  return '<div class="hrow"><div class="h1"><small>디데이와 목표</small>과목</div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
 }
 function cycleTheme(){
   const o=['sys','light','dark'],i=o.indexOf(DB.s.theme||'sys');
@@ -980,7 +979,7 @@ function ddHTML(s,d,editable){
     '<div class="ddc '+cl+'">'+lab+'</div></div>';
 }
 function subjHTML(){
-  if(!DB.subjects.length)return '<div class="card glass"><div class="empty">과목이 없다.<br>오른쪽 위 + 로 추가</div></div>';
+  if(!DB.subjects.length)return '<div class="card glass"><div class="empty">과목이 없다.<br>오른쪽 아래 + 로 추가</div></div>';
   let h='';
   DB.subjects.forEach(s=>{
     const dds=(s.ddays||[]).slice().sort((a,b)=>a.date<b.date?-1:1),gls=s.goals||[];
@@ -1524,7 +1523,6 @@ function taskSheet(){
   if(e.id)h+='<div class="row2"><button class="btn d" onclick="delTask(false)">'+(e.repId?'이것만 삭제':'삭제')+'</button>'+
     (e.repId?'<button class="btn d" onclick="delTask(true)">반복 전체 삭제</button>':'')+'</div>';
   openTaskSheet(h);
-  setTimeout(()=>{if(!e.id&&$('#f_title'))$('#f_title').focus();},380);
 }
 function readTitle(){const i=$('#f_title');if(i)_ed.title=i.value;
   const rs=$('#r_s'),re=$('#r_e');if(_ed.rep){if(rs)_ed.rep.start=rs.value;if(re)_ed.rep.end=re.value;}}
@@ -1602,8 +1600,7 @@ function sjSheet(){
     PALETTE.map(c=>'<button class="sw'+(s.color===c?' on':'')+'" style="background:'+c+'" onclick="setSjColor(\''+c+'\')"></button>').join('')+'</div>'+
     '<div class="row2"><button class="btn p" onclick="saveSubject()">저장</button></div>';
   if(s.id)h+='<div class="row2"><button class="btn d" onclick="delSubject()">과목 삭제</button></div>';
-  openSheet(h);
-  setTimeout(()=>{if(!s.id&&$('#f_sname'))$('#f_sname').focus();},380);}
+  openSheet(h);}
 function setSjColor(c){const i=$('#f_sname');if(i)_sj.name=i.value;_sj.color=c;sjSheet();}
 function saveSubject(){
   const i=$('#f_sname');if(i)_sj.name=i.value;
@@ -1645,8 +1642,7 @@ function editGoal(sid,gid){
     '<input class="fi" id="f_gl" placeholder="예: 3단원 문제집 1회독" value="'+esc(_gl.text)+'">'+
     '<div class="row2"><button class="btn p" onclick="saveGoal()">저장</button></div>';
   if(g)h+='<div class="row2"><button class="btn d" onclick="delGoal()">삭제</button></div>';
-  openSheet(h);
-  setTimeout(()=>{if(!g&&$('#f_gl'))$('#f_gl').focus();},380);}
+  openSheet(h);}
 function saveGoal(){
   const v=$('#f_gl').value.trim();if(!v){toast('내용을 적어줘');return;}
   const s=subjOf(_gl.sid);s.goals=s.goals||[];
@@ -1760,7 +1756,7 @@ const TOUR_STEPS=[
   {scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:4,title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
   {scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',title:'이름·요일·시간대를 정해',text:'이름을 붙이고 적용 요일을 고른 뒤 시간대를 추가해. 평일을 한 번에 고를 수도 있고, 요일을 모두 해제한 채 보관할 수도 있어. 나중에도 같은 메뉴에서 수정할 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
   {scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:8,title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
-  {scene:'subject',selector:'button[aria-label="과목 추가"]',advance:'target',nextTo:7,title:'과목은 여기서 추가해',text:'오른쪽 위 +를 누르면 과목 이름과 색을 정할 수 있어.',icon:'subject'},
+  {scene:'subject',selector:'#mainFab',advance:'target',nextTo:7,title:'과목은 여기서 추가해',text:'오른쪽 아래 +를 누르면 과목 이름과 색을 정할 수 있어. 같은 +가 탭마다 그 화면에 맞는 것을 추가해 줘.',icon:'subject'},
   {scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',title:'과목을 만든 뒤 더 채울 수 있어',text:'이름과 색을 정해 저장해. 저장한 과목 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 과목을 연결할 수 있어.',icon:'subject',next:'지금은 건너뛰기'},
   {scene:'subject',selector:'.nb[data-t="today"]',advance:'target',title:'이제 오늘로 돌아가자',text:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.',icon:'add'},
   {scene:'today',selector:'#mainFab',advance:'target',nextTo:12,title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
@@ -2083,7 +2079,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=43').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=44').catch(()=>{});
 </script>
 </body>
 </html>

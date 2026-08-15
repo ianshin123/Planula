@@ -1,9 +1,9 @@
 /* 플래너 서비스워커.
    HTML은 network-first → 배포 즉시 최신본이 보인다(캐시 갇힘 없음).
    정적 자산은 cache-first. */
-const CACHE = 'planula-v43';
+const CACHE = 'planula-v44';
 const ASSETS = [
-  './', './index.html', './manifest.webmanifest?v=43', './icon-192.png?v=43', './icon-512.png?v=43',
+  './', './index.html', './manifest.webmanifest?v=44', './icon-192.png?v=44', './icon-512.png?v=44',
   './assets/planner-mascot-idle.png', './assets/planner-mascot-loop.gif', './assets/planner-mascot-once.gif'
 ];
 
