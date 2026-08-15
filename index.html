@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=44">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=44">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=44">
-<link rel="apple-touch-icon" href="icon-192.png?v=44">
+<link rel="manifest" href="manifest.webmanifest?v=45">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=45">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=45">
+<link rel="apple-touch-icon" href="icon-192.png?v=45">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1730,9 +1730,10 @@ function deleteSchedule(){
 }
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
-const MASCOT_IDLE='assets/planner-mascot-idle.png';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif';
-const MASCOT_ONCE='assets/planner-mascot-once.gif';
+/* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=45';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=45';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=45';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2079,7 +2080,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=44').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=45').catch(()=>{});
 </script>
 </body>
 </html>

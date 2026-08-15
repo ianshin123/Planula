@@ -8,7 +8,7 @@
 - 정적 파일은 `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png`, `.nojekyll`이다.
 - GitHub 저장소가 코드의 정본이다. 변경은 현재 작업 브랜치에서 하고, 기본 브랜치에 직접 덮어쓰지 않는다.
 - GitHub Pages는 저장소에 설정된 배포 브랜치를 따른다. 작업 브랜치 push만으로 운영 페이지에 반영된다고 단정하지 않는다.
-- `index.html`·`manifest.webmanifest`·`sw.js`가 참조하는 manifest와 아이콘 URL에는 캐시 버전 쿼리를 붙인다. 쿼리 없이 두면 아이콘 파일을 바꿔도 브라우저와 서비스워커가 옛 파일을 계속 준다. `sw.js`의 `CACHE`를 올릴 때 세 파일의 쿼리 번호를 모두 같은 값으로 맞춘다.
+- `index.html`·`manifest.webmanifest`·`sw.js`가 참조하는 manifest·아이콘·마스코트 URL에는 캐시 버전 쿼리를 붙인다. 쿼리 없이 두면 파일 내용을 바꿔도 파일명이 같아 브라우저와 서비스워커가 옛 파일을 계속 준다. `sw.js`의 `CACHE`를 올릴 때 세 파일의 쿼리 번호를 모두 같은 값으로 맞춘다.
 - 앱 데이터는 브라우저 `localStorage`에만 있다. 서버, 계정, 토큰, 동기화, 외부 API를 추가하지 않는다.
 
 ## 데이터 모델
