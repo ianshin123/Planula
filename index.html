@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=51">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=51">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=51">
-<link rel="apple-touch-icon" href="icon-192.png?v=51">
+<link rel="manifest" href="manifest.webmanifest?v=52">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=52">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=52">
+<link rel="apple-touch-icon" href="icon-192.png?v=52">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -123,8 +123,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 /* 미배정 — 오른쪽 세로 레일 */
 .daylayout{display:grid;grid-template-columns:minmax(0,1fr) var(--unw);gap:12px;align-items:start}
+/* 미배정 레일은 스크롤과 관계없이 화면 오른쪽에 통째로 보여야 한다.
+   높이를 화면 크기로만 계산하면 스크롤 맨 아래에서 sticky 가 풀리며 위가 잘리고
+   아래는 독에 가린다. 실제로 보이는 세로를 재서 --railh 에 넣는다(fitRail). */
 .unbar{position:sticky;top:4px;z-index:20;padding:9px 8px;border-radius:17px;
-  height:calc(100dvh - var(--st) - var(--dockh) - 98px);min-height:180px;
+  height:var(--railh,calc(100dvh - var(--st) - var(--dockh) - 98px));min-height:150px;
   display:flex;flex-direction:column;transition:box-shadow .16s}
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
 .unbar.empty .unrow{min-height:120px;display:flex;align-items:center;justify-content:center;
@@ -407,6 +410,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .swt.on{background:var(--ac)}
 .swt.on i{transform:translateX(20px)}
 .swt:active{transform:scale(.94)}
+.swtpad{flex:none;width:50px}
 .schedempty{padding:20px 15px;border:1.5px dashed var(--line);border-radius:var(--r3);text-align:center;color:var(--ink3);font-size:13px;font-weight:650;line-height:1.6}
 .blockrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1.15fr) 38px;gap:7px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:8px}
 .blockrow label{display:block;font-size:10.5px;font-weight:800;color:var(--ink3);margin-bottom:4px}
@@ -595,9 +599,11 @@ const L=KO?{
   gapLunch:'점심시간',gapDinner:'저녁시간',gapDawn:'새벽',gapNight:'취침 전',gapMorning:'아침 시간',gapFree:'빈 시간',gapBreak:'쉬는시간',
   schoolName:'학교',
   defaultSchedName:'기본 시간대',
-  defaultBlocks:['새벽','아침','오전','점심','오후','저녁','밤'],
-  defaultSchedSub:'새벽·아침·오전·점심·오후·저녁·밤',
-  defaultSchedNote:'내 시간표를 만들면 자동으로 꺼진다. 지워지지는 않으니 언제든 다시 켤 수 있다.',
+  defaultWeekday:'평일',defaultWeekend:'주말',
+  defaultWeekdayBlocks:['1교시','2교시','3교시','4교시','5교시','6교시','7교시','방과후','야자 1차시','야자 2차시'],
+  defaultWeekendBlocks:['오전','점심','오후','저녁','밤'],
+  defaultWeekdaySub:'1교시 ~ 야자 2차시',defaultWeekendSub:'오전 ~ 밤',
+  defaultSchedNote:'기본은 일반적인 고등학생 하루다. 수정을 눌러 내 하루에 맞게 고쳐 쓰면 그때부터 내 시간표가 되고, 기본은 저절로 꺼진다. 지워지지는 않으니 언제든 다시 켤 수 있다.',
   schedOn:'켬',schedOff:'끔',aSchedToggle:n=>n+' 켜고 끄기',
   schedAllOff:'켜 둔 시간대가 없어 하루 전체가 보인다',
   myScheds:'내 시간표',
@@ -665,7 +671,7 @@ const L=KO?{
   backup:'백업',repRules:'반복 규칙',h24:'24시간',noRules:'등록된 반복이 없다',
   exported:'내보냈다',imported:n=>'가져왔다 — 할일 '+n+'개',fileUnreadable:'파일을 읽지 못했다',repDeleted:'반복을 지웠다',
   tour:{
-    sched:{t:'하루는 이미 칸으로 나뉘어 있어',x:'기본 시간대가 켜져 있어 아침·점심·오후·저녁·밤으로 보여. <strong>내 시간표를 만들면</strong> 이건 저절로 꺼지고, 스위치로 다시 켤 수 있어.',n:'기본 시간대로 시작'},
+    sched:{t:'하루를 네 시간표에 맞춰',x:'기본은 일반적인 고등학생 하루야. <strong>수정</strong>을 눌러 칸을 더하거나 지우고 시각을 네 하루에 맞게 바꿔. 그대로 저장해도 돼.',n:'기본 그대로 쓰기'},
     goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>로 이름과 색을 정해 저장해 줘.'},
     dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 하나 넣자.'},
     task:{t:'할 일을 두 개 만들어',x:'<strong>+</strong>로 만들면 시간 없이 오른쪽 미배정에 쌓여. 나란히 놓아 볼 거라 <strong>두 개</strong>가 필요해.'},
@@ -682,9 +688,11 @@ const L=KO?{
   gapLunch:'Lunch',gapDinner:'Dinner',gapDawn:'Early morning',gapNight:'Before bed',gapMorning:'Morning',gapFree:'Open time',gapBreak:'Break',
   schoolName:'School',
   defaultSchedName:'Default day',
-  defaultBlocks:['Early','Morning','Late morning','Lunch','Afternoon','Evening','Night'],
-  defaultSchedSub:'Early · Morning · Lunch · Afternoon · Evening · Night',
-  defaultSchedNote:'It switches off by itself once you make your own. Nothing is deleted, so you can turn it back on.',
+  defaultWeekday:'Weekday',defaultWeekend:'Weekend',
+  defaultWeekdayBlocks:['Period 1','Period 2','Period 3','Period 4','Period 5','Period 6','Period 7','After school','Study hall 1','Study hall 2'],
+  defaultWeekendBlocks:['Morning','Lunch','Afternoon','Dinner','Night'],
+  defaultWeekdaySub:'Period 1 → Study hall 2',defaultWeekendSub:'Morning → Night',
+  defaultSchedNote:'The default is an ordinary school day. Tap Edit, shape it to your own hours, and it becomes your schedule — the default switches off by itself. Nothing is deleted, so you can turn it back on.',
   schedOn:'On',schedOff:'Off',aSchedToggle:n=>'Turn '+n+' on or off',
   schedAllOff:'No schedule is on, so the whole day is shown',
   myScheds:'My schedules',
@@ -753,7 +761,7 @@ const L=KO?{
   backup:'Backup',repRules:'Repeat rules',h24:'24h',noRules:'No repeats set up',
   exported:'Exported',imported:n=>'Imported — '+n+' tasks',fileUnreadable:'Could not read the file',repDeleted:'Repeat deleted',
   tour:{
-    sched:{t:'Your day is already split into blocks',x:'The default day is on, so your day reads as morning, lunch, afternoon, evening and night. <strong>Build your own schedule</strong> — school, class, work — and the default switches off by itself. The toggle here turns it back on any time.',n:'Start with the default day'},
+    sched:{t:'Shape the day to your own hours',x:'The default is an ordinary school day. Tap <strong>Edit</strong> to add or drop blocks and move the times to match yours. Saving it unchanged is fine too.',n:'Keep the default'},
     goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong>, set a name and a color, and save.'},
     dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and add one.'},
     task:{t:'Now make two tasks',x:'Made with the <strong>+ at the bottom right</strong>, a task starts with no time and waits in the unassigned rail. You need <strong>two</strong> — we will put them side by side in a moment.'},
@@ -798,24 +806,39 @@ const LEGACY_CLASSES=[
   ['ja2',  M(21,15),M(23,30),L.legacy[11]],
 ];
 /* 기본 시간대 — 시간표를 따로 만들지 않은 사람도 하루가 칸으로 나뉘어 보인다.
-   누구에게나 통하는 큰 덩어리로만 나눈다. 사용자가 자기 시간표를 만들면 이건 꺼지고
-   삭제되지는 않으므로 언제든 다시 켤 수 있다. */
-const DEFAULT_PROFILE_ID='default-day';
-const DEFAULT_BLOCKS=[
-  ['dawn',  M(0,0),  M(6,0),  0],
-  ['morn',  M(6,0),  M(9,0),  1],
-  ['am',    M(9,0),  M(12,0), 2],
-  ['lunch', M(12,0), M(13,0), 3],
-  ['pm',    M(13,0), M(18,0), 4],
-  ['eve',   M(18,0), M(21,0), 5],
-  ['night', M(21,0), M(24,0), 6],
+   큰 덩어리로만 나누면 쪼개지는 감각이 안 와닿아서, 실제 고등학생 하루를 그대로 넣었다.
+   사용자는 이걸 바탕으로 자기 시간표에 맞게 고쳐 쓴다. 자기 시간표를 만들면 기본은
+   꺼지고 삭제되지는 않으므로 언제든 다시 켤 수 있다. */
+const DEFAULT_WEEKDAY=[
+  ['p1',  M(8,30), M(9,20),  0],
+  ['p2',  M(9,30), M(10,20), 1],
+  ['p3',  M(10,30),M(11,20), 2],
+  ['p4',  M(11,30),M(12,20), 3],
+  ['p5',  M(13,30),M(14,20), 4],
+  ['p6',  M(14,30),M(15,20), 5],
+  ['p7',  M(15,30),M(16,20), 6],
+  ['aft', M(16,50),M(18,0),  7],
+  ['ja1', M(19,10),M(21,0),  8],
+  ['ja2', M(21,15),M(23,30), 9],
 ];
-function defaultProfile(){return {id:DEFAULT_PROFILE_ID,name:L.defaultSchedName,
-  blocks:DEFAULT_BLOCKS.map(x=>({id:x[0],s:x[1],e:x[2],name:L.defaultBlocks[x[3]]}))};}
+const DEFAULT_WEEKEND=[
+  ['am',   M(8,0),  M(12,0), 0],
+  ['lun',  M(12,0), M(13,0), 1],
+  ['pm',   M(13,0), M(18,0), 2],
+  ['din',  M(18,0), M(19,0), 3],
+  ['nig',  M(19,0), M(24,0), 4],
+];
+function isWeekendDay(ds){const d=parseD(ds).getDay();return d===0||d===6;}
+function defaultProfile(kind){
+  const w=kind==='weekend';
+  return {id:w?'default-weekend':'default-weekday',name:w?L.defaultWeekend:L.defaultWeekday,
+    blocks:(w?DEFAULT_WEEKEND:DEFAULT_WEEKDAY).map(x=>({id:x[0],s:x[1],e:x[2],
+      name:(w?L.defaultWeekendBlocks:L.defaultWeekdayBlocks)[x[3]]}))};}
 function defaultSchedOn(){return !(DB.s&&DB.s.defaultSchedOff);}
 const LEGACY_PROFILE_ID='default-school';
 function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:L.schoolName,blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
 function gapName(s,e){
+  if(s===0)return L.gapDawn;
   if(s===M(12,20))return L.gapLunch;
   if(s===M(18,0))return L.gapDinner;
   if(e<=M(6,50))return L.gapDawn;
@@ -838,7 +861,7 @@ function scheduleProfile(ds){
   const id=DB.s.dayProfiles&&DB.s.dayProfiles[String(parseD(ds).getDay())];
   const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);
   if(p&&!p.off)return p;
-  return defaultSchedOn()?defaultProfile():null;
+  return defaultSchedOn()?defaultProfile(isWeekendDay(ds)?'weekend':'weekday'):null;
 }
 function scheduleBlocks(ds){const p=scheduleProfile(ds);return p?buildScheduleBlocks(p):[];}
 function default24(ds){return !scheduleProfile(ds);}
@@ -1301,6 +1324,16 @@ function calHTML(){
     up.slice(0,8).forEach(({s,d})=>{h+=ddHTML(s,d,false);});h+='</div>';}
   return h;
 }
+/* 스크롤 영역에서 실제로 보이는 세로와, .daylayout 이 차지할 수 있는 세로 중
+   작은 쪽에 맞춘다. 후자를 빼먹으면 맨 아래로 내렸을 때 sticky 가 풀려 위가 잘린다. */
+function fitRail(){
+  const S=$('#scroll'),d=document.querySelector('.dock');if(!S||!d)return;
+  const sr=S.getBoundingClientRect(),dockTop=d.getBoundingClientRect().top;
+  const pb=parseFloat(getComputedStyle(S).paddingBottom)||0;
+  const onScreen=Math.min(dockTop,sr.bottom)-sr.top-14;
+  const inFlow=sr.height-pb-8;
+  document.documentElement.style.setProperty('--railh',Math.max(150,Math.round(Math.min(onScreen,inFlow)))+'px');
+}
 function fitCalendar(){
   const g=document.querySelector('.calgrid');if(!g)return;
   g.style.height='auto';
@@ -1367,7 +1400,7 @@ function paint(){
   $('#view').innerHTML=({today:todayHTML,cal:calHTML,subj:subjHTML}[tab])();
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   placeThumb();attachDockDrag();
-  if(tab==='today')bindGrid($('#view'));
+  if(tab==='today'){bindGrid($('#view'));requestAnimationFrame(fitRail);}
   if(tab==='subj')bindGoalDrag();
   if(tab==='cal')requestAnimationFrame(fitCalendar);
 }
@@ -2081,12 +2114,19 @@ function switchHTML(on,label,onclick){
   return '<button class="swt'+(on?' on':'')+'" role="switch" aria-checked="'+(on?'true':'false')+'" '+
     'aria-label="'+esc(label)+'" onclick="'+onclick+'"><i></i></button>';
 }
+function defaultRow(kind,withSwitch){
+  const pr=defaultProfile(kind),on=defaultSchedOn();
+  return '<div class="schedrow'+(on?'':' off')+'" id="'+(kind==='weekend'?'defaultWeekendRow':'defaultSchedRow')+'">'+
+    '<button class="schedsum" onclick="editScheduleFromDefault(\''+kind+'\')">'+
+    '<div><b>'+esc(pr.name)+'</b><span>'+esc(kind==='weekend'?L.defaultWeekendSub:L.defaultWeekdaySub)+
+    ' · '+esc(L.blockCount(pr.blocks.length))+'</span></div><i class="schedbadge">'+esc(L.edit)+'</i></button>'+
+    (withSwitch?switchHTML(on,L.aSchedToggle(L.defaultSchedName),'toggleDefaultSchedule()'):'<i class="swtpad"></i>')+
+    '</div>';
+}
 function openScheduleSettings(){
   const profiles=DB.s.scheduleProfiles||[];
-  const on=defaultSchedOn();
-  let list='<div class="schedrow'+(on?'':' off')+'" id="defaultSchedRow"><div class="schedsum static"><div><b>'+esc(L.defaultSchedName)+
-    '</b><span>'+esc(L.defaultSchedSub)+'</span></div></div>'+
-    switchHTML(on,L.aSchedToggle(L.defaultSchedName),'toggleDefaultSchedule()')+'</div>';
+  let list='<div class="fl">'+esc(L.defaultSchedName)+'</div>'+
+    defaultRow('weekday',true)+defaultRow('weekend',false);
   if(profiles.length)list+='<div class="fl">'+esc(L.myScheds)+'</div>'+profiles.map(p=>{
     const days=profileDays(p.id),live=!p.off;
     return '<div class="schedrow'+(live?'':' off')+'"><button class="schedsum" onclick="editSchedule(\''+p.id+'\')">'+
@@ -2094,7 +2134,7 @@ function openScheduleSettings(){
       '<i class="schedbadge">'+esc(L.edit)+'</i></button>'+
       switchHTML(live,L.aSchedToggle(p.name),'toggleSchedule(\''+p.id+'\')')+'</div>';
   }).join('');
-  // 지금 어떤 날이 24시간으로 보이는지 요일 이름으로 알려준다
+  // 지금 어떤 요일이 24시간으로 보이는지 알려준다
   const wide=DOW.map((d,i)=>{
     const id=DB.s.dayProfiles[String(i)],pr=profiles.find(x=>x.id===id);
     return (pr&&!pr.off)||defaultSchedOn()?null:d;}).filter(d=>d!=null);
@@ -2103,6 +2143,14 @@ function openScheduleSettings(){
       ?esc(L.schedFree)+esc(wide.join(' · '))+'<br>'+esc(L.schedFreeNote)
       :esc(L.defaultSchedNote))+'</div>'+
     '<div class="row2"><button class="btn p" onclick="editSchedule(null)">'+esc(L.schedNew)+'</button></div>');
+}
+/* 기본 시간대를 바탕으로 내 시간표를 만든다. 그대로 저장하면 기본 그대로 쓰는 것이고,
+   칸을 더하거나 지우고 시각을 바꾸면 그게 내 시간표가 된다. */
+function editScheduleFromDefault(kind){
+  const pr=defaultProfile(kind);
+  _sched={id:null,name:pr.name,days:kind==='weekend'?[0,6]:[1,2,3,4,5],
+    blocks:pr.blocks.map(b=>({id:uid(),name:b.name,s:b.s,e:b.e})),deleteArmed:false};
+  scheduleEditor();
 }
 function toggleDefaultSchedule(){
   DB.s.defaultSchedOff=defaultSchedOn();save();paint();openScheduleSettings();
@@ -2149,7 +2197,7 @@ function addScheduleBlock(){
   _sched.blocks.push({id:uid(),name:L.newBlock,s,e:Math.min(1440,s+60)});scheduleEditor();
 }
 function removeScheduleBlock(i){syncScheduleForm();_sched.blocks.splice(i,1);scheduleEditor();}
-function loadScheduleExample(){syncScheduleForm();_sched.blocks=legacyProfile().blocks.map(b=>Object.assign({},b,{id:uid()}));scheduleEditor();}
+function loadScheduleExample(){syncScheduleForm();_sched.blocks=defaultProfile('weekday').blocks.map(b=>Object.assign({},b,{id:uid()}));scheduleEditor();}
 function saveSchedule(){
   syncScheduleForm();const name=_sched.name.trim(),days=[...new Set(_sched.days)].sort((a,b)=>a-b);
   const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)})).sort((a,b)=>a.s-b.s);
@@ -2178,9 +2226,9 @@ function deleteSchedule(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=51';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=51';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=51';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=52';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=52';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=52';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2230,7 +2278,7 @@ document.addEventListener('click',e=>{
    시간대 만들기만 넘길 수 있고 나머지는 직접 해야 다음으로 간다.
    hintKind 는 강조 상자 말고 어떻게 움직여 보여줄지다 — press(눌러라)/drag(끌어라)/grab(손잡이) */
 const TOUR_STEPS=[
-  {id:'sched',scene:'schedule-list',selector:'#defaultSchedRow',hintKind:'none',
+  {id:'sched',scene:'schedule-list',selector:['#sheet.on #schName','#defaultSchedRow .schedsum'],hintKind:'press',
    btn:'skip',signal:'schedule-saved',allow:['#sheet'],hint:''},
   {id:'goal',scene:'subject',selector:['#sheet.on #f_sname','#mainFab'],hintKind:'press',
    signal:'subject-saved',allow:['#mainFab','#sheet']},
@@ -2238,7 +2286,7 @@ const TOUR_STEPS=[
    signal:'dday-saved',allow:['.sj','#sheet']},
   {id:'task',scene:'today',selector:['#sheet.on #f_title','#mainFab'],hintKind:'press',
    signal:'task-saved',need:'twoUnassigned',allow:['#mainFab','#sheet']},
-  {id:'edit',scene:'today',target:'unassigned',hintKind:'press',
+  {id:'edit',scene:'today',selector:['#subsheet.on #f_title','#sheet.on #f_title','.uchip'],hintKind:'press',
    signal:'task-edited',allow:['.unbar','#sheet','#subsheet']},
   {id:'place',scene:'today',target:'grid',hintKind:'drag',keepClear:['.unbar'],
    signal:'task-placed',need:'onePlaced',allow:['#gridwrap .grid','.unbar']},
@@ -2380,7 +2428,15 @@ function introPick(first){
   if(first){openTutorial(0);return;}
   finishTutorial();                                        // 캐릭터는 오늘 헤더로 날아가 앉는다
 }
-const TOUR_MOVING_SCENES=new Set(['schedule-list']);
+/* 시트는 올라오면서 움직인다. 그 동안 강조 박스가 옛 자리에 남지 않게 따라가고,
+   말풍선이 시트를 덮지 않게 시트 높이를 줄인다. 장면 이름이 아니라 '지금 시트가
+   열려 있는가'로 판단해야 어떤 단계에서 시트가 떠도 항상 맞는다. */
+function tourSheetEl(){
+  const sub=$('#subsheet'),sh=$('#sheet');
+  if(sub&&sub.classList.contains('on'))return sub;
+  if(sh&&sh.classList.contains('on'))return sh;
+  return null;
+}
 function setTourTab(t){
   closeSheet();if(tab!==t){tab=t;$('#scroll').scrollTop=0;paint();}
   else paint();if(t==='today')requestAnimationFrame(()=>focusToday());
@@ -2416,8 +2472,8 @@ function cancelTourTracking(){
   if(_tourTrackFrame!=null)cancelAnimationFrame(_tourTrackFrame);_tourTrackFrame=null;
   const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');
 }
-function setTourSceneSpace(scene){
-  const on=TOUR_MOVING_SCENES.has(scene);document.body.classList.toggle('tour-sheet-space',on);
+function setTourSceneSpace(){
+  const on=!!tourSheetEl();document.body.classList.toggle('tour-sheet-space',on);
   const guide=$('#tour .tourguide');if(guide)guide.classList.toggle('sheet-space',on);
 }
 /* 목표가 들어 있는 스크롤 영역. 이 밖으로 밀려난 목표는 강조하지 않는다. */
@@ -2478,8 +2534,8 @@ function applyTourSpot(rect,tracking){
   spot.style.left=rect.left+'px';spot.style.top=rect.top+'px';
   spot.style.width=Math.max(20,rect.right-rect.left)+'px';spot.style.height=Math.max(20,rect.bottom-rect.top)+'px';
 }
-function startTourTracking(scene){
-  cancelTourTracking();if(!TOUR_MOVING_SCENES.has(scene))return;
+function startTourTracking(){
+  cancelTourTracking();
   const step=_tourStep;
   _tourTrackTimer=setTimeout(()=>{
     const until=performance.now()+560;
@@ -2490,7 +2546,8 @@ function startTourTracking(scene){
         if(r==='hidden'){const sp=$('#tour .tourspot');if(sp)sp.style.opacity='0';}
         else if(r)applyTourSpot(r,true);}
       if(now<until)_tourTrackFrame=requestAnimationFrame(tick);
-      else{_tourTrackFrame=null;const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');placeTutorial();}
+      else{_tourTrackFrame=null;const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');
+        setTourSceneSpace();placeTutorial();}
     };
     _tourTrackFrame=requestAnimationFrame(tick);
   },70);
@@ -2499,7 +2556,7 @@ function startTourTracking(scene){
    올라오는 애니메이션 동안 목표의 실제 사각형을 따라가고 마지막 위치를 한 번 더 확정한다. */
 function tourRelayout(){
   if(!_tourActive||_tourLanding)return;
-  startTourTracking(TOUR_STEPS[_tourStep].scene);
+  setTourSceneSpace();startTourTracking();
   clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
 }
 function ensureTourDOM(){
@@ -2525,7 +2582,7 @@ function renderTutorial(){
   if(!_tourActive||_tourLanding)return;
   const s=TOUR_STEPS[_tourStep],copy=tourCopy(s),guide0=$('#tour .tourguide');
   cancelTourTracking();clearTourHint();
-  setTourSceneSpace(s.scene);prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace(s.scene);startTourTracking(s.scene);
+  setTourSceneSpace();prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace();startTourTracking();
   const guide=$('#tour .tourguide');
   clearTimeout(_tourCopyTimer);guide.classList.add('changing');
   _tourCopyTimer=setTimeout(()=>{
@@ -2558,6 +2615,8 @@ function placeTutorial(allowScroll){
   const addRect=r=>{if(r&&r.width!==0)avoid.push({left:r.left,right:r.right,top:r.top,bottom:r.bottom});};
   if(Array.isArray(s.keepClear))s.keepClear.forEach(q=>{
     const el=document.querySelector(q);if(el)addRect(el.getBoundingClientRect());});
+  // 열린 시트는 사용자가 지금 채워야 하는 곳이다. 캐릭터가 그 위에 앉으면 안 된다.
+  const sheetEl=tourSheetEl();if(sheetEl)addRect(sheetEl.getBoundingClientRect());
 
   let hintRect=null;
   if(s.scene==='modal'||!t){
@@ -2568,12 +2627,12 @@ function placeTutorial(allowScroll){
     if(!rect)return;
     if(rect==='hidden'){
       spot.style.opacity='0';clearTourHint();
-      if(TOUR_MOVING_SCENES.has(s.scene)){gx=safe;gy=safe;}
+      if(sheetEl){gx=safe;gy=safe;}
       else gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.3),dockTop-gh-12));
     }else{
       const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
       avoid.push({left,right,top,bottom});hintRect=rect;
-      if(TOUR_MOVING_SCENES.has(s.scene)){gx=safe;gy=safe;}
+      if(sheetEl){gx=safe;gy=safe;}
       else{
         const below=bottom+18,above=top-gh-18,limit=Math.max(safe,dockTop-gh-12);
         gy=below+gh<dockTop-12?below:(above>safe?above:limit);
@@ -2807,10 +2866,10 @@ function delRule(id){
 firstPaint();
 // 재등장 기준은 오직 '만든 데이터가 하나도 없는 상태'다. 전에 답한 적이 있어도 다시 묻는다.
 if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
-window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
+window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=51').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=52').catch(()=>{});
 </script>
 </body>
 </html>
