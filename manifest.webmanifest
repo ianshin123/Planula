@@ -1,7 +1,7 @@
 {
   "name": "Planula",
   "short_name": "Planula",
-  "description": "요일별 시간표와 24시간 보기를 자유롭게 쓰는 Planula.",
+  "description": "Planula — a day planner with per-weekday schedules and a free 24-hour view. Korean and English.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -9,10 +9,11 @@
   "orientation": "portrait-primary",
   "background_color": "#F7F5F1",
   "theme_color": "#F7F5F1",
-  "lang": "ko",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
-    { "src": "icon-192.png?v=49", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png?v=49", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png?v=49", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icon-192.png?v=50", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png?v=50", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png?v=50", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
