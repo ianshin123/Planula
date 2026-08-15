@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=45">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=45">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=45">
-<link rel="apple-touch-icon" href="icon-192.png?v=45">
+<link rel="manifest" href="manifest.webmanifest?v=46">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=46">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=46">
+<link rel="apple-touch-icon" href="icon-192.png?v=46">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -381,6 +381,8 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tourhint{margin-top:8px;color:var(--ac);font-size:12px;font-weight:900;text-shadow:0 0 5px var(--bg),0 0 11px var(--bg),0 0 10px rgba(224,122,79,.6)}
 .tourfoot{display:flex;align-items:center;gap:10px;margin-top:8px}.tourprog{flex:1;color:var(--ink3);font-size:11px;font-weight:850;text-shadow:0 0 6px var(--bg),0 0 12px var(--bg)}
 .tourbtn,.tourback{padding:9px 2px;font-size:13px;font-weight:900;pointer-events:auto;text-shadow:0 0 6px var(--bg),0 0 13px var(--bg)}.tourbtn{min-width:78px;color:var(--ac);text-align:right}.tourback{color:var(--ink2)}
+/* 마지막 단계는 시작 버튼을 또렷하게 — 강조된 곳을 눌러 다시 시작하는 실수를 막는다 */
+.tourbtn.final{font-size:15.5px;text-shadow:0 0 7px var(--bg),0 0 15px var(--bg),0 0 16px rgba(224,122,79,.75)}
 /* 시작 질문 — 배경 상자 없이 발광 텍스트 버튼만 둔다 */
 .tourchoice{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:15px}
 .tourpick{padding:11px 2px;text-align:left;pointer-events:auto;font-weight:900;
@@ -1431,7 +1433,8 @@ function bindGoalDrag(){
 function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
   closeSubSheet();
   $('#scrim').classList.add('on');$('#sheet').classList.add('on');
-  $('#popfab').classList.remove('on');}
+  $('#popfab').classList.remove('on');
+  tourRelayout();}                       // 시트를 다시 그리면 강조 대상 노드도 새로 생긴다
 function closeSheet(fromScrim){
   const resume=_tourReturnStep;_tourReturnStep=null;
   closeSubSheet();$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
@@ -1731,9 +1734,9 @@ function deleteSchedule(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=45';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=45';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=45';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=46';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=46';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=46';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -1752,24 +1755,30 @@ function playHomeMascot(){
   },MASCOT_CYCLE_MS+80);
 }
 const TOUR_STEPS=[
-  {scene:'modal',title:'먼저 홈 화면에 추가해',text:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 Planula 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
-  {scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:4,title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
-  {scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:4,title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
-  {scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',title:'이름·요일·시간대를 정해',text:'이름을 붙이고 적용 요일을 고른 뒤 시간대를 추가해. 평일을 한 번에 고를 수도 있고, 요일을 모두 해제한 채 보관할 수도 있어. 나중에도 같은 메뉴에서 수정할 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
-  {scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:8,title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
-  {scene:'subject',selector:'#mainFab',advance:'target',nextTo:7,title:'과목은 여기서 추가해',text:'오른쪽 아래 +를 누르면 과목 이름과 색을 정할 수 있어. 같은 +가 탭마다 그 화면에 맞는 것을 추가해 줘.',icon:'subject'},
-  {scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',title:'과목을 만든 뒤 더 채울 수 있어',text:'이름과 색을 정해 저장해. 저장한 과목 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 과목을 연결할 수 있어.',icon:'subject',next:'지금은 건너뛰기'},
-  {scene:'subject',selector:'.nb[data-t="today"]',advance:'target',title:'이제 오늘로 돌아가자',text:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.',icon:'add'},
-  {scene:'today',selector:'#mainFab',advance:'target',nextTo:12,title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
-  {scene:'task-editor',selector:'#f_title',signal:'task-saved',title:'이름을 쓰고 저장해',text:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 과목과 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',icon:'add',next:'지금은 건너뛰기'},
-  {scene:'today',target:'unassigned',title:'미배정은 대기 공간이야',text:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어.',icon:'move'},
-  {scene:'today',target:'grid',title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 선택하고 시간표로 끌면 10분 간격으로 배치돼. 이미 놓인 일도 먼저 선택해야 이동할 수 있고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
-  {scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:15,title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
-  {scene:'calendar',selector:'.cell.today',advance:'target',nextTo:15,title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
-  {scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
-  {scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',finishOnSkip:true,title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
-  {scene:'data',selector:'#sheet .tutorial-replay',title:'언제든 다시 시작할 수 있어',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>를 누르면 이 안내를 처음부터 다시 볼 수 있어.',icon:'data',next:'Planula 시작하기'}
+  {id:'install',scene:'modal',title:'먼저 홈 화면에 추가해',text:'<strong>iPhone·iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 설치 및 바로가기 만들기 → 설치 또는 홈 화면에 추가\n\n추가한 뒤 홈 화면의 Planula 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',icon:'install',next:'추가했으면 계속'},
+  {id:'sched-btn',scene:'today',selector:'button[aria-label="시간표 설정"]',advance:'target',nextTo:'subj-tab',title:'시간표 설정은 여기야',text:'오른쪽 위 달력 모양을 눌러 봐. 학교·학원·근무처럼 반복되는 하루 틀을 요일별로 만들거나 수정하는 곳이야.',icon:'schedule'},
+  {id:'sched-list',scene:'schedule-list',selector:'#sheet .btn.p',advance:'target',nextTo:'subj-tab',title:'새 시간표를 만들 수 있어',text:'시간표 이름과 시간대를 직접 만들려면 표시된 버튼을 눌러. <strong>아무 시간표도 만들지 않아도 괜찮아.</strong> 비워 둔 요일은 24시간 전체가 보여.',icon:'schedule',next:'시간표 없이 계속'},
+  {id:'sched-name',scene:'schedule-editor',selector:'#schName',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-days',hint:'',title:'1. 시간표 이름부터',text:'무엇을 위한 틀인지 적어. <strong>학교</strong>, <strong>토요일 학원</strong>처럼 알아볼 이름이면 돼.',icon:'schedule',next:'이름을 적었어'},
+  {id:'sched-days',scene:'schedule-editor',selector:'#sheet .dws',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-block',hint:'',title:'2. 적용할 요일을 골라',text:'이 시간표를 쓸 요일을 눌러. <strong>평일</strong>을 누르면 월~금이 한 번에 잡혀. 요일을 모두 해제하면 어느 날에도 적용하지 않고 보관만 해.',icon:'schedule',next:'요일을 골랐어'},
+  {id:'sched-block',scene:'schedule-editor',selector:'#sheet .blockrow',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-add',hint:'',title:'3. 시간대 한 칸을 채워',text:'한 칸이 하루 안의 한 구간이야. 이름(<strong>1교시</strong> 같은)과 시작·끝 시각을 넣어. 오른쪽 <strong>−</strong>로 칸을 지울 수 있어.',icon:'schedule',next:'채웠어'},
+  {id:'sched-add',scene:'schedule-editor',selector:'#sheet .btn.s',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'sched-save',hint:'',title:'4. 칸을 더 늘려',text:'<strong>+ 시간대 추가</strong>로 칸을 계속 늘려 하루를 채워. 칸 사이의 빈 시간도 일정을 놓을 수 있으니 쉬는 시간까지 만들 필요는 없어. 위의 <strong>학교 예시 불러오기</strong>를 쓰면 한 번에 채워져.',icon:'schedule',next:'추가했어'},
+  {id:'sched-save',scene:'schedule-editor',selector:'#sheet .btn.p',signal:'schedule-saved',signalTo:'subj-tab',nextTo:'subj-tab',title:'5. 저장하면 끝',text:'다 정했으면 <strong>저장</strong>을 눌러. 저장한 뒤에도 같은 메뉴에서 언제든 고칠 수 있어.',icon:'schedule',next:'지금은 건너뛰기'},
+  {id:'subj-tab',scene:'today',selector:'.nb[data-t="subj"]',advance:'target',nextTo:'today-tab',title:'과목 탭으로 가 볼까',text:'과목별 색, 디데이, 하위 목표는 아래 과목 탭에서 관리해. 표시된 탭을 눌러 줘.',icon:'subject'},
+  {id:'subj-add',scene:'subject',selector:'#mainFab',advance:'target',nextTo:'today-tab',title:'과목은 여기서 추가해',text:'오른쪽 아래 +를 누르면 과목 이름과 색을 정할 수 있어. 같은 +가 탭마다 그 화면에 맞는 것을 추가해 줘.',icon:'subject'},
+  {id:'subj-editor',scene:'subject-editor',selector:'#f_sname',signal:'subject-saved',signalTo:'today-tab',nextTo:'today-tab',title:'과목을 만든 뒤 더 채울 수 있어',text:'이름과 색을 정해 저장해. 저장한 과목 카드에서는 디데이와 하위 목표를 추가하고, 할 일 수정 화면에서도 이 과목을 연결할 수 있어.',icon:'subject',next:'지금은 건너뛰기'},
+  {id:'today-tab',scene:'subject',selector:'.nb[data-t="today"]',advance:'target',title:'이제 오늘로 돌아가자',text:'오늘 탭은 열 때마다 현재 시간 근처로 이동해. 표시된 오늘 탭을 눌러 줘.',icon:'add'},
+  {id:'task-add',scene:'today',selector:'#mainFab',advance:'target',nextTo:'unassigned',title:'첫 할 일은 +로 추가해',text:'오른쪽 아래 +를 누르면 새 할 일을 만들 수 있어. 시간을 정하지 않고 만들면 오른쪽 미배정 칸에 들어가.',icon:'add'},
+  {id:'task-editor',scene:'task-editor',selector:'#f_title',signal:'task-saved',signalTo:'unassigned',nextTo:'unassigned',title:'이름을 쓰고 저장해',text:'할 일 이름을 적고 저장하면 돼. 자세히를 열면 과목과 반복을 정할 수 있어. 시간은 나중에 손으로 옮기고 길이를 조절하므로 여기서 복잡하게 맞출 필요는 없어.',icon:'add',next:'지금은 건너뛰기'},
+  {id:'unassigned',scene:'today',target:'unassigned',allow:['.unbar'],title:'미배정은 대기 공간이야',text:'시간을 아직 정하지 않은 일은 여기에 남아. 체크로 바로 완료할 수도 있고, <strong>한 번 눌러 선택한 뒤 다시 누르면 수정</strong>할 수 있어. 직접 눌러 봐.',icon:'move'},
+  {id:'grid',scene:'today',target:'grid',allow:['#gridwrap .grid','.unbar'],title:'선택한 뒤 시간 위로 옮겨',text:'미배정 일을 한 번 눌러 선택하고 시간표로 끌어 봐. 10분 간격으로 놓여. 이미 놓인 일도 먼저 선택해야 움직이고, 주황색 위·아래 손잡이로만 길이를 조절해.',icon:'move'},
+  {id:'cal-tab',scene:'today',selector:'.nb[data-t="cal"]',advance:'target',nextTo:'data-btn',title:'다른 날짜는 달력에서',text:'아래 달력 탭을 눌러 줘. 날짜별 계획과 디데이를 한눈에 볼 수 있어.',icon:'calendar'},
+  {id:'cal-cell',scene:'calendar',selector:'.cell.today',advance:'target',nextTo:'data-btn',title:'날짜를 누르면 그날이 열려',text:'오늘 칸을 눌러 봐. 다른 날짜도 같은 방식으로 열고, 빈 곳을 눌러 선택을 해제할 수 있어.',icon:'calendar'},
+  {id:'day-fab',scene:'day',selector:['#subsheet.on #f_title','#popfab.on'],title:'그 날짜의 +도 따로 있어',text:'날짜 팝업 오른쪽 아래 +로 그날 할 일을 추가해. 수정 팝업을 닫아도 보고 있던 날짜와 스크롤 위치로 돌아와.',icon:'add'},
+  {id:'data-btn',scene:'today',selector:'button[aria-label="데이터 관리"]',advance:'target',finishOnSkip:true,title:'백업과 다시 보기는 여기야',text:'오른쪽 위 내보내기 모양을 눌러 줘. 플래너 전체 백업과 튜토리얼 다시 보기가 들어 있어.',icon:'data'},
+  {id:'done',scene:'data',final:true,hint:'',title:'다 됐어. 이제 시작하자',text:'내보내기 파일에는 할 일·과목·반복·시간표가 함께 들어가. 이 화면의 <strong>튜토리얼 다시 보기</strong>로 언제든 이 안내를 처음부터 볼 수 있어.',icon:'data',next:'Planula 시작하기'}
 ];
+function tourStepIndex(id){const i=TOUR_STEPS.findIndex(x=>x.id===id);return i<0?null:i;}
+
 let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourPlaceTimer=null,_tourCopyTimer=null,_tourTrackTimer=null,_tourTrackFrame=null;
 // 끝내기 착지는 여러 프레임에 걸쳐 진행된다. 그 사이에 튜토리얼을 다시 열면 세대 번호가 올라가고
 // 옛 착지 절차는 새 화면을 건드리지 않고 조용히 물러난다.
@@ -1787,12 +1796,14 @@ function tourGateAllows(node){
   const s=TOUR_STEPS[_tourStep];if(!s)return false;
   const t=getTourTarget(s);
   if(t&&(t===node||t.contains(node)))return true;          // 지금 가리키는 대상
-  // 저장해야 넘어가는 단계와, 가리키는 대상이 시트 안에 있는 단계는 그 시트 전체를 연다.
-  // 이름을 적고 요일을 고르고 저장까지 눌러야 하므로 대상 하나만 열면 진행이 막힌다.
-  if(s.advance!=='target'){
-    const sub=$('#subsheet'),sheet=$('#sheet');
-    const open=sub&&sub.classList.contains('on')?sub:(sheet&&sheet.classList.contains('on')?sheet:null);
-    if(open&&open.contains(node)&&(s.signal||(t&&open.contains(t))))return true;
+  // 한 단계에서 여러 곳을 만져야 하는 경우(미배정에서 집어 시간표로 끌기 등)
+  if(Array.isArray(s.allow)&&s.allow.some(q=>node.closest(q)))return true;
+  const sub=$('#subsheet'),sheet=$('#sheet');
+  const open=sub&&sub.classList.contains('on')?sub:(sheet&&sheet.classList.contains('on')?sheet:null);
+  if(open&&open.contains(node)){
+    if(s.signal)return true;                               // 저장까지 해야 넘어가는 단계
+    if(!t||!open.contains(t))return true;                  // 사용자의 조작으로 새로 열린 시트는 끝까지 쓸 수 있어야 한다
+    if(s.advance!=='target')return true;                   // 대상이 시트 안이지만 눌러서 넘어가는 단계가 아니다
   }
   return false;
 }
@@ -1868,26 +1879,49 @@ function setTourSceneSpace(scene){
   const on=TOUR_MOVING_SCENES.has(scene);document.body.classList.toggle('tour-sheet-space',on);
   const guide=$('#tour .tourguide');if(guide)guide.classList.toggle('sheet-space',on);
 }
+/* 목표가 들어 있는 스크롤 영역. 이 밖으로 밀려난 목표는 강조하지 않는다. */
+function tourClipRect(t){
+  const sh=t.closest('#subsheet,#sheet');
+  if(sh)return sh.getBoundingClientRect();
+  const sc=$('#scroll');
+  if(sc&&sc.contains(t))return sc.getBoundingClientRect();
+  return {top:0,bottom:innerHeight,left:0,right:innerWidth};
+}
 function tourTargetRect(s,t,allowScroll){
-  const raw=t.getBoundingClientRect();
-  if(allowScroll&&(raw.bottom<4||raw.top>innerHeight-4)&&raw.height<innerHeight*.7){
-    t.scrollIntoView({block:'center'});clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,190);return null;}
+  const raw=t.getBoundingClientRect(),clip=tourClipRect(t);
+  const lo=Math.max(clip.top,0)+2,hi=Math.min(clip.bottom,innerHeight)-2;
+  const outside=raw.bottom<=lo+6||raw.top>=hi-6;
+  if(outside){
+    // 단계에 처음 들어올 때만 목표를 화면 안으로 데려온다.
+    // 사용자가 직접 스크롤하는 중에는 끌어당기지 않고 강조만 감춘다.
+    if(allowScroll&&raw.height<innerHeight*.7){
+      t.scrollIntoView({block:'center'});clearTimeout(_tourPlaceTimer);
+      _tourPlaceTimer=setTimeout(()=>placeTutorial(false),190);return null;}
+    return 'hidden';
+  }
+  // 목표가 스크롤로 잘려 나가는 중이면 가장자리에 걸친 조각을 그리지 않고 감춘다.
+  // 시간표 그리드처럼 원래 화면보다 큰 대상은 아래에서 따로 보이는 구간만 잡는다.
+  const tall=s.target==='grid'||raw.height>innerHeight*.55;
+  const shown=Math.min(raw.bottom,hi)-Math.max(raw.top,lo);
+  if(!tall&&shown<raw.height*.75)return 'hidden';
   let left=Math.max(7,raw.left-7),right=Math.min(innerWidth-7,raw.right+7);
-  let top=Math.max(7,raw.top-7),bottom=Math.min(innerHeight-7,raw.bottom+7);
+  let top=Math.max(lo,raw.top-7),bottom=Math.min(hi,raw.bottom+7);
+  if(bottom-top<14)return 'hidden';
   if(s.target==='grid'){
     const scroll=$('#scroll'),sr=scroll?scroll.getBoundingClientRect():{top:80,bottom:innerHeight-90};
-    const visibleTop=Math.max(raw.top+5,sr.top+8,82),visibleBottom=Math.min(raw.bottom-5,sr.bottom-12,innerHeight-92);
+    const visibleTop=Math.max(raw.top+5,sr.top+8,lo,82),visibleBottom=Math.min(raw.bottom-5,sr.bottom-12,hi,innerHeight-92);
     const cy=Math.max(visibleTop+38,Math.min(visibleBottom-38,innerHeight*.43));
     top=Math.max(visibleTop,cy-38);bottom=Math.min(visibleBottom,top+76);
-    if(bottom-top<42){top=Math.max(7,visibleTop);bottom=Math.min(innerHeight-7,Math.max(top+42,visibleBottom));}
+    if(bottom-top<42){top=Math.max(lo,visibleTop);bottom=Math.min(hi,Math.max(top+42,visibleBottom));}
+    if(bottom-top<14)return 'hidden';
     left=Math.max(7,raw.left+3);right=Math.min(innerWidth-7,raw.right-3);
   }else if(raw.height>innerHeight*.55){
-    top=Math.max(90,innerHeight*.4);bottom=Math.min(innerHeight-90,top+78);
+    top=Math.max(Math.max(lo,90),innerHeight*.4);bottom=Math.min(Math.min(hi,innerHeight-90),top+78);
   }
   return {left,right,top,bottom};
 }
 function applyTourSpot(rect,tracking){
-  const spot=$('#tour .tourspot');if(!spot||!rect)return;
+  const spot=$('#tour .tourspot');if(!spot||!rect||typeof rect!=='object')return;
   spot.classList.toggle('tracking',!!tracking);spot.style.opacity='.94';
   spot.style.left=rect.left+'px';spot.style.top=rect.top+'px';
   spot.style.width=Math.max(20,rect.right-rect.left)+'px';spot.style.height=Math.max(20,rect.bottom-rect.top)+'px';
@@ -1899,7 +1933,10 @@ function startTourTracking(scene){
     const until=performance.now()+560;
     const tick=now=>{
       if(!_tourActive||_tourLanding||_tourStep!==step){cancelTourTracking();return;}
-      const s=TOUR_STEPS[step],t=getTourTarget(s);if(t)applyTourSpot(tourTargetRect(s,t,false),true);
+      const s=TOUR_STEPS[step],t=getTourTarget(s);
+      if(t){const r=tourTargetRect(s,t,false);
+        if(r==='hidden'){const sp=$('#tour .tourspot');if(sp)sp.style.opacity='0';}
+        else if(r)applyTourSpot(r,true);}
       if(now<until)_tourTrackFrame=requestAnimationFrame(tick);
       else{_tourTrackFrame=null;const spot=$('#tour .tourspot');if(spot)spot.classList.remove('tracking');placeTutorial();}
     };
@@ -1940,14 +1977,17 @@ function renderTutorial(){
     if(!_tourActive||_tourLanding)return;
     guide.querySelector('.tourmark').textContent='PLANULA GUIDE · '+(_tourStep+1)+' / '+TOUR_STEPS.length;
     guide.querySelector('h2').textContent=s.title;guide.querySelector('p').innerHTML=s.text;
-    const hint=guide.querySelector('.tourhint');hint.textContent=s.advance==='target'?'주황빛으로 표시된 곳을 눌러 주세요':s.signal?'저장하면 다음 안내로 자연스럽게 이어져요':'';hint.style.display=hint.textContent?'block':'none';
+    const hint=guide.querySelector('.tourhint');
+    hint.textContent=s.hint!=null?s.hint:(s.advance==='target'?'주황빛으로 표시된 곳을 눌러 주세요':s.signal?'저장하면 다음 안내로 자연스럽게 이어져요':'');
+    hint.style.display=hint.textContent?'block':'none';
+    guide.querySelector('.tourbtn').classList.toggle('final',!!s.final||last);
     const back=guide.querySelector('.tourback');back.style.visibility=_tourStep?'visible':'hidden';
     guide.querySelector('.tourprog').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;guide.querySelector('.tourbtn').textContent=next;
     guide.classList.remove('changing');clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
   },90);
   clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,35);
 }
-function placeTutorial(){
+function placeTutorial(allowScroll){
   if(!_tourActive||_tourLanding)return;
   const s=_tourIntro?{scene:'modal'}:TOUR_STEPS[_tourStep],t=_tourIntro?null:getTourTarget(s);
   const guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot');
@@ -1958,23 +1998,46 @@ function placeTutorial(){
     gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));my=Math.max(12,gy-fh-14);
   }
   else{
-    const rect=tourTargetRect(s,t,true);if(!rect)return;const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
+    const rect=tourTargetRect(s,t,allowScroll!==false);
+    if(!rect)return;
+    const dock=$('.dock'),dockTop=dock?dock.getBoundingClientRect().top:innerHeight-safe;
+    if(rect==='hidden'){
+      // 목표가 스크롤 밖으로 나갔다. 가장자리에 붙어 따라다니지 않게 강조만 감춘다.
+      spot.style.opacity='0';
+      if(TOUR_MOVING_SCENES.has(s.scene)){gx=safe;gy=safe;mx=Math.max(12,innerWidth-fw-12);my=18;}
+      else{gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.3),dockTop-gh-12));my=Math.max(12,gy-fh-14);}
+    }else{
+    const {left,right,top,bottom}=rect;applyTourSpot(rect,false);
     if(TOUR_MOVING_SCENES.has(s.scene)){
       gx=safe;gy=safe;mx=Math.max(12,innerWidth-fw-12);my=18;
     }else{
-      const dock=$('.dock'),dockTop=dock?dock.getBoundingClientRect().top:innerHeight-safe;
       const below=bottom+18,above=top-gh-18,limit=Math.max(safe,dockTop-gh-12);
       gy=below+gh<dockTop-12?below:(above>safe?above:limit);
       gx=Math.max(safe,Math.min(innerWidth-gw-safe,(left+right-gw)/2));
       my=Math.max(12,gy>fh+32?gy-fh-14:Math.min(dockTop-fh-12,gy+gh+10));mx=Math.max(12,Math.min(innerWidth-fw-12,gx+gw-fw-8));
+    }
+    // 캐릭터가 강조 대상을 덮지 않게 옆으로 물린다.
+    if(mx<right&&mx+fw>left&&my<bottom&&my+fh>top){
+      if(left-12>=fw)mx=Math.max(12,left-fw-10);
+      else if(innerWidth-right-12>=fw)mx=Math.min(innerWidth-fw-12,right+10);
+      else my=top-fh-10>=12?top-fh-10:Math.min(dockTop-fh-12,bottom+10);
+    }
     }
   }
   guide.style.transform='translate3d('+Math.round(gx)+'px,'+Math.round(gy)+'px,0)';
   fly.style.transform='translate3d('+Math.round(mx)+'px,'+Math.round(my)+'px,0)';
 }
 function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
-function tourNext(){const s=TOUR_STEPS[_tourStep];if(_tourStep===TOUR_STEPS.length-1||s.finishOnSkip){finishTutorial();return;}_tourStep=Number.isInteger(s.nextTo)?s.nextTo:_tourStep+1;renderTutorial();}
-function tourSignal(name){if(!_tourActive)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.signal===name)setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},120);}
+function tourGoto(id,fallback){const i=tourStepIndex(id);
+  _tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,i==null?fallback:i));renderTutorial();}
+function tourNext(){const s=TOUR_STEPS[_tourStep];
+  if(_tourStep===TOUR_STEPS.length-1||s.final||s.finishOnSkip){finishTutorial();return;}
+  tourGoto(s.nextTo,_tourStep+1);}
+// 안내 도중 사용자가 먼저 저장해 버려도 흐름이 끊기지 않게, 그 묶음 다음으로 건너뛴다.
+function tourSignal(name){
+  if(!_tourActive||_tourIntro)return;const step=_tourStep,s=TOUR_STEPS[step];
+  if(s.signal!==name)return;
+  setTimeout(()=>{if(_tourActive&&_tourStep===step)tourGoto(s.signalTo,step+1);},120);}
 function finishTutorial(){
   if(!_tourActive||_tourLanding)return;_tourLanding=true;_tourReturnStep=null;DB.s.tutorialSeen=true;save();
   const gen=++_tourLandGen;
@@ -1998,7 +2061,7 @@ document.addEventListener('click',e=>{
   if(!_tourActive||_tourLanding)return;const step=_tourStep,s=TOUR_STEPS[step];if(s.advance!=='target')return;
   const t=getTourTarget(s);if(t&&(t===e.target||t.contains(e.target)))setTimeout(()=>{if(_tourActive&&_tourStep===step)tourMove(1);},230);
 },true);
-document.addEventListener('scroll',()=>{if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);}},true);
+document.addEventListener('scroll',()=>{if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(()=>placeTutorial(false),30);}},true);
 // 설치형 앱처럼 사용한다. iOS의 두 손가락 확대와 데스크톱 트랙패드 확대를 모두 막는다.
 ['gesturestart','gesturechange','gestureend'].forEach(name=>document.addEventListener(name,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
@@ -2080,7 +2143,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=45').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=46').catch(()=>{});
 </script>
 </body>
 </html>
