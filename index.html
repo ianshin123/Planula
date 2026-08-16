@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=53">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=53">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=53">
-<link rel="apple-touch-icon" href="icon-192.png?v=53">
+<link rel="manifest" href="manifest.webmanifest?v=54">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=54">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=54">
+<link rel="apple-touch-icon" href="icon-192.png?v=54">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -606,13 +606,13 @@ const L=KO?{
   defaultWeekdayBlocks:['1교시','2교시','3교시','4교시','5교시','6교시','7교시','방과후','야자 1차시','야자 2차시'],
   defaultWeekendBlocks:['아침','오전','오후','늦은 오후','저녁','밤'],
   defaultWeekdaySub:'1교시 ~ 야자 2차시',defaultWeekendSub:'아침 ~ 밤',
-  defaultSchedNote:'기본은 일반적인 고등학생 하루다. 수정을 눌러 내 하루에 맞게 고쳐 쓰면 그때부터 내 시간표가 되고, 기본은 저절로 꺼진다. 지워지지는 않으니 언제든 다시 켤 수 있다.',
+  defaultSchedNote:'처음 값은 일반적인 고등학생 하루다. 수정을 눌러 칸과 시각을 내 하루에 맞게 바꾸면 이 시간대가 그대로 바뀐다. 원래 값으로 되돌리는 버튼은 수정 화면 안에 있다.',
   schedOn:'켬',schedOff:'끔',aSchedToggle:n=>n+' 켜고 끄기',
   editedMark:'고침',
-  defaultEditTitle:n=>n+' 기본 시간대 수정',
-  defaultEditLead:'칸을 더하거나 지우고 시각을 내 하루에 맞게 바꾸면 된다. 그대로 저장해도 된다. 이건 기본 시간대를 고치는 것이고, 따로 쓰는 시간표는 나중에 새 시간표로 만든다.',
-  defaultSaved:'기본 시간대를 고쳤다',
-  defaultReset:'원래 기본값으로 되돌리기',defaultResetDone:'원래 기본값으로 되돌렸다',
+  defaultEditTitle:n=>n+' 시간대 수정',
+  defaultEditLead:'적용할 요일을 고르고, 칸을 더하거나 지우고 시각을 내 하루에 맞게 바꾸면 된다. 그대로 저장해도 된다. 시간표가 새로 생기는 게 아니라 이 벌의 내용이 바뀐다.',
+  defaultSaved:'시간대를 고쳤다',
+  defaultReset:'원래 값으로 되돌리기',defaultResetDone:'원래 값으로 되돌렸다',
   schedAllOff:'켜 둔 시간대가 없어 하루 전체가 보인다',
   myScheds:'내 시간표',
   legacy:['점호','아침조례','1교시','2교시','3교시','4교시','5교시','6교시','7교시','8교시','야자 1차시','야자 2차시'],
@@ -649,13 +649,13 @@ const L=KO?{
   needName:'이름을 적어줘',needDate:'날짜를 골라줘',
   goalEdit:'하위 목표 수정',goalAdd:'하위 목표 추가',goalPh:'예: 3단원 문제집 1회독',needText:'내용을 적어줘',
   everyDay:'매일',weekdays:'평일',weekends:'주말',noDays:'적용 요일 없음',
-  edit:'수정',blockCount:n=>'시간대 '+n+'개',
+  edit:'수정',blockCount:n=>n+'칸',
   schedNone:'아직 만든 시간표가 없다.<br>모든 요일을 24시간으로 보여준다.',
-  schedTitle:'시간표 설정',
-  schedLead:'아무것도 만들지 않으면 기본 시간대가 하루를 나눠 준다. 내 시간표를 만들면 기본은 저절로 꺼지고, 스위치로 언제든 켜고 끌 수 있다.',
+  schedTitle:'시간대',
+  schedLead:'시간대는 하나다. 평일 한 벌과 주말 한 벌을 갖고 있고, 어느 요일에 어느 벌을 쓸지도 바꿀 수 있다. 수정한 내용은 이 시간대 자체에 남는다.',
   schedFree:'24시간 보기: ',schedFreeNote:'시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.',
   schedNew:'새 시간표',schedEdit:'시간표 수정',schedName:'시간표 이름',schedNamePh:'예: 학교, 토요일 학원',
-  schedDays:'적용 요일 · 비워두면 24시간',clearDays:'모두 해제',
+  schedDays:'적용 요일 · 비우면 그 요일은 24시간',clearDays:'모두 해제',
   blocks:'시간대',loadExample:'학교 예시 불러오기',name:'이름',blockNamePh:'예: 1교시',end:'끝',
   aBlockDel:'시간대 삭제',addBlock:'+ 시간대 추가',reallyDel:'정말 삭제하기',schedDel:'시간표 삭제',
   needSchedName:'시간표 이름을 적어줘',needBlock:'시간대를 하나 이상 만들어줘',needBlockNames:'시간대 이름을 모두 적어줘',
@@ -673,7 +673,7 @@ const L=KO?{
   bakRestored:n=>'백업으로 되돌렸다 — 할일 '+n+'개',bakUnreadable:'백업을 읽지 못했다',saveFail:'저장 실패',
   noImportBak:'가져오기 전 백업이 없다',importRestored:'가져오기 전 상태로 되돌렸다',
   dataTitle:'데이터',
-  dataCount:(t,s,r,c)=>'할일 <b>'+t+'</b>개 · 목표 <b>'+s+'</b>개 · 반복 <b>'+r+'</b>개 · 시간표 <b>'+c+'</b>개',
+  dataCount:(t,s,r,c)=>'할일 <b>'+t+'</b>개 · 목표 <b>'+s+'</b>개 · 반복 <b>'+r+'</b>개 · 시간대 <b>'+c+'</b>칸',
   dataNote:'내보내기 파일에는 시간표 설정까지 모두 들어간다.',
   exportBtn:'내보내기',importBtn:'가져오기',importUndo:n=>'가져오기 전 상태로 되돌리기 · 할일 '+n+'개',
   backup:'백업',repRules:'반복 규칙',h24:'24시간',noRules:'등록된 반복이 없다',
@@ -700,11 +700,11 @@ const L=KO?{
   defaultWeekdayBlocks:['Period 1','Period 2','Period 3','Period 4','Period 5','Period 6','Period 7','After school','Study hall 1','Study hall 2'],
   defaultWeekendBlocks:['Early','Morning','Afternoon','Late afternoon','Evening','Night'],
   defaultWeekdaySub:'Period 1 → Study hall 2',defaultWeekendSub:'Early → Night',
-  defaultSchedNote:'The default is an ordinary school day. Tap Edit, shape it to your own hours, and it becomes your schedule — the default switches off by itself. Nothing is deleted, so you can turn it back on.',
+  defaultSchedNote:'It starts as an ordinary school day. Tap Edit and reshape the blocks and times — this schedule changes in place. The reset button lives inside the edit screen.',
   schedOn:'On',schedOff:'Off',aSchedToggle:n=>'Turn '+n+' on or off',
   editedMark:'edited',
   defaultEditTitle:n=>'Edit the '+n.toLowerCase()+' default',
-  defaultEditLead:'Add or drop blocks and move the times to match your day. Saving it unchanged is fine. This edits the default itself — a separate schedule of your own is made later with New schedule.',
+  defaultEditLead:'Pick the days it covers, then add or drop blocks and move the times. Saving it unchanged is fine. Nothing new is created — this set changes in place.',
   defaultSaved:'Default schedule updated',
   defaultReset:'Reset to the original default',defaultResetDone:'Reset to the original default',
   schedAllOff:'No schedule is on, so the whole day is shown',
@@ -747,7 +747,7 @@ const L=KO?{
   edit:'Edit',blockCount:n=>n===1?'1 block':n+' blocks',
   schedNone:'No schedules yet.<br>Every day shows the full 24 hours.',
   schedTitle:'Schedule settings',
-  schedLead:'With nothing of your own, the default day splits your hours for you. Build your own and the default switches off — the toggles turn any of them on or off.',
+  schedLead:'There is one schedule. It holds a weekday set and a weekend set, and you choose which days use which. Edits change this schedule itself.',
   schedFree:'24-hour view: ',schedFreeNote:'Days without a schedule let you place tasks anywhere in the day.',
   schedNew:'New schedule',schedEdit:'Edit schedule',schedName:'Schedule name',schedNamePh:'e.g. School, Saturday class',
   schedDays:'Days it applies to · empty means 24-hour',clearDays:'Clear all',
@@ -768,7 +768,7 @@ const L=KO?{
   bakRestored:n=>'Restored from backup — '+n+' tasks',bakUnreadable:'Could not read the backup',saveFail:'Could not save',
   noImportBak:'No pre-import backup',importRestored:'Restored to the pre-import state',
   dataTitle:'Data',
-  dataCount:(t,s,r,c)=>'<b>'+t+'</b> tasks · <b>'+s+'</b> goals · <b>'+r+'</b> repeats · <b>'+c+'</b> schedules',
+  dataCount:(t,s,r,c)=>'<b>'+t+'</b> tasks · <b>'+s+'</b> goals · <b>'+r+'</b> repeats · <b>'+c+'</b> time blocks',
   dataNote:'The export file includes your schedule settings too.',
   exportBtn:'Export',importBtn:'Import',importUndo:n=>'Undo the import · '+n+' tasks',
   backup:'Backup',repRules:'Repeat rules',h24:'24h',noRules:'No repeats set up',
@@ -844,22 +844,31 @@ const DEFAULT_WEEKEND=[
   ['wev',  M(19,0), M(21,0), 4],
   ['wnig', M(21,30),M(23,30),5],
 ];
-function isWeekendDay(ds){const d=parseD(ds).getDay();return d===0||d===6;}
-/* 기본 시간대를 고치면 '내 시간표'가 되는 게 아니라 기본 시간대의 고친 버전이 된다.
-   DB.s.defaultBlocks 에 따로 담고, 비어 있으면 코드에 있는 원래 값을 쓴다.
-   내 시간표는 나중에 '새 시간표'로 따로 만드는 것이다. */
-function defaultKindOf(ds){return isWeekendDay(ds)?'weekend':'weekday';}
-function defaultEdited(kind){
-  const d=DB.s&&DB.s.defaultBlocks;return !!(d&&Array.isArray(d[kind])&&d[kind].length);}
-function defaultProfile(kind){
-  const w=kind==='weekend';
-  const custom=DB.s&&DB.s.defaultBlocks&&DB.s.defaultBlocks[kind];
-  const blocks=(Array.isArray(custom)&&custom.length)
-    ?custom.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e}))
+/* 시간대는 하나뿐이다. 그 하나가 평일 한 벌과 주말 한 벌을 갖고, 어느 요일에 어느
+   벌을 쓸지는 사용자가 정한다. 고쳐도 목록에 하나가 더 생기지 않고 그 하나의 내용이
+   바뀐다. blocks 가 비어 있으면 코드에 있는 원래 값을 쓴다. */
+function freshSched(){return {off:false,weekday:{days:[1,2,3,4,5],blocks:null},weekend:{days:[0,6],blocks:null}};}
+function schedRoot(){if(!DB.s.sched)DB.s.sched=freshSched();return DB.s.sched;}
+function schedOn(){return !schedRoot().off;}
+function schedSet(kind){
+  const v=schedRoot()[kind]||{},w=kind==='weekend';
+  const days=Array.isArray(v.days)?v.days.slice():(w?[0,6]:[1,2,3,4,5]);
+  const blocks=(Array.isArray(v.blocks)&&v.blocks.length)
+    ?v.blocks.map(x=>({id:x.id,name:x.name,s:x.s,e:x.e}))
     :(w?DEFAULT_WEEKEND:DEFAULT_WEEKDAY).map(x=>({id:x[0],s:x[1],e:x[2],
-      name:(w?L.defaultWeekendBlocks:L.defaultWeekdayBlocks)[x[3]]}));
-  return {id:w?'default-weekend':'default-weekday',name:w?L.defaultWeekend:L.defaultWeekday,blocks};}
-function defaultSchedOn(){return !(DB.s&&DB.s.defaultSchedOff);}
+        name:(w?L.defaultWeekendBlocks:L.defaultWeekdayBlocks)[x[3]]}));
+  return {days,blocks};
+}
+function schedEdited(kind){const v=schedRoot()[kind]||{};return !!(Array.isArray(v.blocks)&&v.blocks.length);}
+function schedProfile(kind){
+  return {id:'sched-'+kind,name:kind==='weekend'?L.defaultWeekend:L.defaultWeekday,blocks:schedSet(kind).blocks};}
+/* 그 요일이 어느 벌에 속하는지. 어느 쪽에도 없으면 그 날은 24시간 보기다. */
+function schedKindOf(ds){
+  const d=parseD(ds).getDay();
+  if(schedSet('weekday').days.indexOf(d)>=0)return 'weekday';
+  if(schedSet('weekend').days.indexOf(d)>=0)return 'weekend';
+  return null;
+}
 const LEGACY_PROFILE_ID='default-school';
 function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:L.schoolName,blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
 /* 빈 구간 이름. 점심·저녁은 정확한 분이 아니라 시간대 범위로 잡는다.
@@ -882,13 +891,10 @@ function buildScheduleBlocks(profile){
   if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:gapName(cur,1440),cls:false});
   return out;
 }
-/* 그 요일에 켜진 사용자 시간표가 있으면 그것, 없으면 켜져 있는 기본 시간대,
-   둘 다 없으면 하루 전체 24시간 보기다. */
 function scheduleProfile(ds){
-  const id=DB.s.dayProfiles&&DB.s.dayProfiles[String(parseD(ds).getDay())];
-  const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);
-  if(p&&!p.off)return p;
-  return defaultSchedOn()?defaultProfile(defaultKindOf(ds)):null;
+  if(!schedOn())return null;
+  const k=schedKindOf(ds);
+  return k?schedProfile(k):null;
 }
 function scheduleBlocks(ds){const p=scheduleProfile(ds);return p?buildScheduleBlocks(p):[];}
 function default24(ds){return !scheduleProfile(ds);}
@@ -922,8 +928,7 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 
 /* ═════ 2. 저장소 ═════ */
 const KEY='planner_v3';
-function freshSettings(){return {force24:{},theme:'sys',scheduleProfiles:[],dayProfiles:{},
-  defaultSchedOff:false,defaultBlocks:{},tutorialSeen:false,introDone:false};}
+function freshSettings(){return {force24:{},theme:'sys',sched:freshSched(),tutorialSeen:false,introDone:false};}
 function normalizeProfile(p){
   const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||L.blockFallback),
@@ -937,34 +942,47 @@ function legacyDuration(min){
   if(!b)return 60;if(!b.cls&&b.e-b.s>120)return Math.min(60,b.e-Math.floor(min/60)*60);
   return b.e-b.s;
 }
+/* 옛 저장값(여러 개의 시간표 + 요일 연결)을 하나뿐인 시간대로 옮긴다.
+   평일에 가장 많이 걸려 있던 시간표를 평일 벌로, 주말에 걸려 있던 것을 주말 벌로 삼는다.
+   어느 쪽에도 없던 요일은 예전처럼 24시간 보기가 되도록 요일 목록에서 뺀다. */
+function migrateSched(raw,legacy,hasPlannerData){
+  const norm=v=>normalizeProfile({blocks:v}).blocks;
+  const days=v=>Array.isArray(v)?[...new Set(v.map(Number).filter(x=>x>=0&&x<=6))].sort((a,b)=>a-b):null;
+  if(raw.sched&&typeof raw.sched==='object'){
+    const g=k=>{const v=raw.sched[k]||{},b=norm(v.blocks);
+      return {days:days(v.days)||(k==='weekend'?[0,6]:[1,2,3,4,5]),blocks:b.length?b:null};};
+    return {off:raw.sched.off===true,weekday:g('weekday'),weekend:g('weekend')};
+  }
+  const out=freshSched();
+  out.off=raw.defaultSchedOff===true;
+  if(raw.defaultBlocks&&typeof raw.defaultBlocks==='object')['weekday','weekend'].forEach(k=>{
+    const b=norm(raw.defaultBlocks[k]);if(b.length)out[k].blocks=b;});
+  const profs=Array.isArray(raw.scheduleProfiles)?raw.scheduleProfiles.map(normalizeProfile):[];
+  const dp=(raw.dayProfiles&&typeof raw.dayProfiles==='object')?raw.dayProfiles:{};
+  const daysOf=id=>[0,1,2,3,4,5,6].filter(i=>String(dp[String(i)]||'')===id);
+  const live=profs.filter(pr=>!pr.off&&daysOf(pr.id).length);
+  if(live.length){
+    const score=pr=>daysOf(pr.id).filter(x=>x>=1&&x<=5).length;
+    const sorted=live.slice().sort((x,y)=>score(y)-score(x));
+    const wd=sorted[0];
+    const we=sorted.find(pr=>pr!==wd&&daysOf(pr.id).some(x=>x===0||x===6))||null;
+    out.off=false;
+    out.weekday={days:daysOf(wd.id),blocks:wd.blocks.length?wd.blocks:null};
+    out.weekend=we?{days:daysOf(we.id),blocks:we.blocks.length?we.blocks:null}:{days:[],blocks:null};
+  }else if(legacy&&hasPlannerData&&!raw.defaultBlocks&&raw.defaultSchedOff===undefined&&!Array.isArray(raw.scheduleProfiles)){
+    // v4 이하: 요일 정보가 아예 없던 저장값에는 평일용 학교 시간표를 넣어 준다
+    out.weekday.blocks=legacyProfile().blocks;
+  }
+  return out;
+}
 function normalizeDB(d,legacy){
   d=d&&typeof d==='object'?d:{};const raw=d.s&&typeof d.s==='object'?d.s:{};
-  const hasSchedules=Array.isArray(raw.scheduleProfiles)&&raw.dayProfiles&&typeof raw.dayProfiles==='object';
   const hasPlannerData=(Array.isArray(d.tasks)&&d.tasks.length)||(Array.isArray(d.subjects)&&d.subjects.length)||(Array.isArray(d.repeats)&&d.repeats.length);
   const s=freshSettings();s.force24=raw.force24&&typeof raw.force24==='object'?Object.assign({},raw.force24):{};
   s.theme=['sys','light','dark'].includes(raw.theme)?raw.theme:'sys';s.tutorialSeen=raw.tutorialSeen===true;
   s.introDone=raw.introDone===true;
-  if(hasSchedules){
-    s.scheduleProfiles=raw.scheduleProfiles.map(normalizeProfile);
-    const ids=new Set(s.scheduleProfiles.map(p=>p.id));
-    Object.keys(raw.dayProfiles).forEach(k=>{const id=String(raw.dayProfiles[k]||'');if(/^[0-6]$/.test(k)&&ids.has(id))s.dayProfiles[k]=id;});
-  }else if(legacy&&hasPlannerData){
-    const p=legacyProfile();s.scheduleProfiles=[p];
-    ['1','2','3','4','5'].forEach(k=>s.dayProfiles[k]=p.id);
-    Object.keys(s.force24).forEach(ds=>{if(s.force24[ds]===false){const wd=String(new Date(ds+'T00:00:00').getDay());s.dayProfiles[wd]=p.id;}});
-  }
-  // 내용 없는 구버전 저장값에 과거 마이그레이션이 자동으로 넣은 학교 예시는 빈 기본값으로 되돌린다.
-  const onlyAutoSchool=!hasPlannerData&&s.scheduleProfiles.length===1&&s.scheduleProfiles[0].id===LEGACY_PROFILE_ID&&
-    Object.keys(s.dayProfiles).sort().join('')==='12345'&&Object.values(s.dayProfiles).every(id=>id===LEGACY_PROFILE_ID)&&
-    !Object.keys(s.force24).length;
-  if(onlyAutoSchool){s.scheduleProfiles=[];s.dayProfiles={};}
-  // 기본 시간대는 새 사용자에게 켜져 있고, 이미 자기 시간표를 만든 사람에게는 꺼져 있다.
-  s.defaultSchedOff=raw.defaultSchedOff===undefined?s.scheduleProfiles.length>0:raw.defaultSchedOff===true;
-  // 기본 시간대를 고친 값. 없으면 코드에 있는 원래 값을 쓴다.
-  s.defaultBlocks={};
-  if(raw.defaultBlocks&&typeof raw.defaultBlocks==='object')['weekday','weekend'].forEach(k=>{
-    const b=normalizeProfile({blocks:raw.defaultBlocks[k]}).blocks;if(b.length)s.defaultBlocks[k]=b;});
-  const out={v:6,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  s.sched=migrateSched(raw,legacy,hasPlannerData);
+  const out={v:7,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
     if(t.min!=null)t.min=((Math.round(Number(t.min)||0)%1440)+1440)%1440;
@@ -1005,7 +1023,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast
 function plannerUntouched(){
   const s=DB.s||{};
   return !DB.tasks.length&&!DB.subjects.length&&!DB.repeats.length&&
-    !(s.scheduleProfiles||[]).length&&!Object.keys(s.dayProfiles||{}).length&&
+    !schedEdited('weekday')&&!schedEdited('weekend')&&schedOn()&&
     !Object.keys(s.force24||{}).length&&(s.theme||'sys')==='sys';
 }
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -2136,161 +2154,118 @@ function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!
   save();closeSheet();paint();}
 
 /* ═════ 14. 요일별 시간표 ═════ */
-function profileDays(id){return DOW.map((_,i)=>DB.s.dayProfiles[String(i)]===id?i:null).filter(i=>i!=null);}
 function daysText(days){
-  const a=days.slice().sort((a,b)=>a-b);
-  if(a.length===7)return L.everyDay;if(a.length===5&&[1,2,3,4,5].every(x=>a.includes(x)))return L.weekdays;
-  if(a.length===2&&a.includes(0)&&a.includes(6))return L.weekends;return a.length?a.map(i=>DOW[i]).join(' · '):L.noDays;
+  const a=days.slice().sort((x,y)=>x-y);
+  if(!a.length)return L.noDays;
+  if(a.length===7)return L.everyDay;
+  if(a.length===5&&[1,2,3,4,5].every(x=>a.includes(x)))return L.weekdays;
+  if(a.length===2&&a.includes(0)&&a.includes(6))return L.weekends;
+  return a.map(i=>DOW[i]).join(' · ');
 }
 function switchHTML(on,label,onclick){
   return '<button class="swt'+(on?' on':'')+'" role="switch" aria-checked="'+(on?'true':'false')+'" '+
     'aria-label="'+esc(label)+'" onclick="'+onclick+'"><i></i></button>';
 }
-/* 카드 본문을 누르면 고르기만 하고, 실제 수정은 오른쪽 '수정' 버튼으로만 연다.
-   이름 부분을 눌렀다고 편집기가 열리면 눌러 본 사람이 당황한다. */
+/* 카드 본문을 누르면 고르기만 하고, 실제 수정은 오른쪽 '수정' 버튼으로만 연다. */
 let _schedSel=null;
 function selectSchedRow(id){_schedSel=(_schedSel===id?null:id);openScheduleSettings();}
-function schedRowHTML(id,name,sub,opts){
-  const sel=_schedSel===id?' sel':'',off=opts.off?' off':'';
-  return '<div class="schedrow'+off+sel+'" id="'+id+'">'+
+function schedRow(kind,withSwitch){
+  const id='sched'+(kind==='weekend'?'Weekend':'Weekday')+'Row';
+  const set=schedSet(kind),on=schedOn();
+  const dayTxt=set.days.length?set.days.slice().sort((a,b)=>a-b).map(i=>DOW[i]).join('·'):L.noDays;
+  const sub=dayTxt+' · '+L.blockCount(set.blocks.length)+(schedEdited(kind)?' · '+L.editedMark:'');
+  return '<div class="schedrow'+(on?'':' off')+(_schedSel===id?' sel':'')+'" id="'+id+'">'+
     '<button class="schedsum" onclick="selectSchedRow(\''+id+'\')">'+
-    '<div><b>'+esc(name)+'</b><span>'+esc(sub)+'</span></div></button>'+
-    '<button class="schedbadge" onclick="'+opts.edit+'">'+esc(L.edit)+'</button>'+
-    (opts.toggle?switchHTML(!opts.off,opts.toggleLabel,opts.toggle):'<i class="swtpad"></i>')+
+    '<div><b>'+esc(kind==='weekend'?L.defaultWeekend:L.defaultWeekday)+'</b><span>'+esc(sub)+'</span></div></button>'+
+    '<button class="schedbadge" onclick="editSchedSet(\''+kind+'\')">'+esc(L.edit)+'</button>'+
+    (withSwitch?switchHTML(on,L.aSchedToggle(L.defaultSchedName),'toggleSched()'):'<i class="swtpad"></i>')+
     '</div>';
 }
-function defaultRow(kind,withSwitch){
-  const pr=defaultProfile(kind),on=defaultSchedOn();
-  const sub=(kind==='weekend'?L.defaultWeekendSub:L.defaultWeekdaySub)+' · '+L.blockCount(pr.blocks.length)+
-    (defaultEdited(kind)?' · '+L.editedMark:'');
-  return schedRowHTML(kind==='weekend'?'defaultWeekendRow':'defaultSchedRow',pr.name,sub,
-    {off:!on,edit:'editScheduleFromDefault(\''+kind+'\')',
-     toggle:withSwitch?'toggleDefaultSchedule()':null,toggleLabel:L.aSchedToggle(L.defaultSchedName)});
-}
 function openScheduleSettings(){
-  const profiles=DB.s.scheduleProfiles||[];
-  let list='<div class="fl">'+esc(L.defaultSchedName)+'</div>'+
-    defaultRow('weekday',true)+defaultRow('weekend',false);
-  if(profiles.length)list+='<div class="fl">'+esc(L.myScheds)+'</div>'+profiles.map(p=>
-    schedRowHTML('sched-'+p.id,p.name,daysText(profileDays(p.id))+' · '+L.blockCount(p.blocks.length),
-      {off:!!p.off,edit:'editSchedule(\''+p.id+'\')',
-       toggle:'toggleSchedule(\''+p.id+'\')',toggleLabel:L.aSchedToggle(p.name)})).join('');
-  // 지금 어떤 요일이 24시간으로 보이는지 알려준다
-  const wide=DOW.map((d,i)=>{
-    const id=DB.s.dayProfiles[String(i)],pr=profiles.find(x=>x.id===id);
-    return (pr&&!pr.off)||defaultSchedOn()?null:d;}).filter(d=>d!=null);
-  // 사용법 중에는 새 시간표를 만들지 않는다. 새 사용자는 기본 또는 기본의 수정본으로 시작한다.
-  const newBtn=_tourActive?'':'<div class="row2"><button class="btn p" onclick="editSchedule(null)">'+esc(L.schedNew)+'</button></div>';
-  openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+list+
+  const wide=DOW.map((d,i)=>(schedOn()&&(schedSet('weekday').days.indexOf(i)>=0||schedSet('weekend').days.indexOf(i)>=0))?null:d).filter(d=>d!=null);
+  openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+
+    schedRow('weekday',true)+schedRow('weekend',false)+
     '<div class="fullnote">'+(wide.length
       ?esc(L.schedFree)+esc(wide.join(' · '))+'<br>'+esc(L.schedFreeNote)
-      :esc(L.defaultSchedNote))+'</div>'+newBtn);
+      :esc(L.defaultSchedNote))+'</div>');
 }
-/* 기본 시간대를 고친다. 결과는 '내 시간표'가 아니라 기본 시간대의 고친 버전이다.
-   내 시간표는 나중에 '새 시간표'로 따로 만든다. */
-function editScheduleFromDefault(kind){
-  const pr=defaultProfile(kind);
-  _sched={id:null,defaultKind:kind,name:pr.name,days:kind==='weekend'?[0,6]:[1,2,3,4,5],
-    blocks:pr.blocks.map(b=>({id:uid(),name:b.name,s:b.s,e:b.e})),deleteArmed:false};
-  scheduleEditor();
-}
-function toggleDefaultSchedule(){
-  DB.s.defaultSchedOff=defaultSchedOn();save();paint();openScheduleSettings();
-  toast(L.defaultSchedName+' · '+(defaultSchedOn()?L.schedOn:L.schedOff));
-}
-function toggleSchedule(id){
-  const p=(DB.s.scheduleProfiles||[]).find(x=>x.id===id);if(!p)return;
-  p.off=!p.off;save();paint();openScheduleSettings();
-  toast(p.name+' · '+(p.off?L.schedOff:L.schedOn));
+function toggleSched(){
+  schedRoot().off=schedOn();save();paint();openScheduleSettings();
+  toast(L.defaultSchedName+' · '+(schedOn()?L.schedOn:L.schedOff));
 }
 let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.split(':').map(Number),m=a[0]*60+a[1];return end&&m===0?1440:m;}
-function editSchedule(id){
-  const p=id?(DB.s.scheduleProfiles||[]).find(x=>x.id===id):null;
-  _sched=p?{id:p.id,name:p.name,days:profileDays(p.id),blocks:p.blocks.map(b=>Object.assign({},b)),deleteArmed:false}:
-    {id:null,name:'',days:[1,2,3,4,5],blocks:[{id:uid(),name:L.firstBlock,s:M(9,0),e:M(10,0)}],deleteArmed:false};
+/* 하나뿐인 시간대의 한 벌을 고친다. 저장하면 그 벌의 내용이 바뀔 뿐,
+   시간표가 하나 더 생기지 않는다. */
+function editSchedSet(kind){
+  const set=schedSet(kind);
+  _sched={kind,name:kind==='weekend'?L.defaultWeekend:L.defaultWeekday,
+    days:set.days.slice(),blocks:set.blocks.map(b=>({id:uid(),name:b.name,s:b.s,e:b.e}))};
   scheduleEditor();
 }
 function syncScheduleForm(){
-  const n=$('#schName');if(n&&!_sched.defaultKind)_sched.name=n.value;
   document.querySelectorAll('.blockrow[data-bi]').forEach(row=>{const b=_sched.blocks[Number(row.dataset.bi)];if(!b)return;
     b.name=row.querySelector('.bname').value;b.s=parseTime(row.querySelector('.bstart').value,false);b.e=parseTime(row.querySelector('.bend').value,true);});
 }
 function scheduleEditor(){
-  const dk=_sched.defaultKind;
-  // 기본 시간대를 고칠 때는 이름과 적용 요일이 정해져 있다. 칸만 고친다.
-  const head=dk
-    ?'<div class="sh2">'+esc(L.defaultEditTitle(_sched.name))+'</div>'+
-     '<div class="sheetlead">'+esc(L.defaultEditLead)+'</div>'
-    :'<div class="sh2">'+esc(_sched.id?L.schedEdit:L.schedNew)+'</div>'+
-     '<div class="fl">'+esc(L.schedName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedNamePh)+'" value="'+esc(_sched.name)+'">'+
-     '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'weekday\')">'+esc(L.weekdays)+'</button> · <button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
-     '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>';
-  const h=head+
-    '<div class="fl"><span>'+esc(L.blocks)+'</span>'+(dk?'':'<button onclick="loadScheduleExample()">'+esc(L.loadExample)+'</button>')+'</div>'+
+  const h='<div class="sh2">'+esc(L.defaultEditTitle(_sched.name))+'</div>'+
+    '<div class="sheetlead">'+esc(L.defaultEditLead)+'</div>'+
+    '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'preset\')">'+
+      esc(_sched.kind==='weekend'?L.weekends:L.weekdays)+'</button> · <button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
+    '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
+    '<div class="fl">'+esc(L.blocks)+'</div>'+
     _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>'+esc(L.name)+'</label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
       '<div class="blocktimes"><div><label>'+esc(L.start)+'</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
       '<div><label>'+esc(L.end)+'</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
       '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
     '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button>'+
     '<div class="row2"><button class="btn p" onclick="saveSchedule()">'+esc(L.save)+'</button></div>'+
-    (dk?(defaultEdited(dk)?'<div class="row2"><button class="btn d" onclick="resetDefaultSchedule()">'+esc(L.defaultReset)+'</button></div>':'')
-       :(_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedule()">'+esc(_sched.deleteArmed?L.reallyDel:L.schedDel)+'</button></div>':''));
+    (schedEdited(_sched.kind)?'<div class="row2"><button class="btn d" onclick="resetSchedSet()">'+esc(L.defaultReset)+'</button></div>':'');
   openSheet(h);
 }
 function toggleScheduleDay(i){syncScheduleForm();const p=_sched.days.indexOf(i);if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);scheduleEditor();}
-function setScheduleDays(kind){syncScheduleForm();_sched.days=kind==='weekday'?[1,2,3,4,5]:[];scheduleEditor();}
+function setScheduleDays(kind){syncScheduleForm();
+  _sched.days=kind==='preset'?(_sched.kind==='weekend'?[0,6]:[1,2,3,4,5]):[];scheduleEditor();}
 function addScheduleBlock(){
   syncScheduleForm();const last=_sched.blocks.slice().sort((a,b)=>a.e-b.e).pop(),s=last&&Number.isFinite(last.e)?Math.min(1380,last.e+10):M(9,0);
   _sched.blocks.push({id:uid(),name:L.newBlock,s,e:Math.min(1440,s+60)});scheduleEditor();
 }
 function removeScheduleBlock(i){syncScheduleForm();_sched.blocks.splice(i,1);scheduleEditor();}
-function loadScheduleExample(){syncScheduleForm();_sched.blocks=defaultProfile('weekday').blocks.map(b=>Object.assign({},b,{id:uid()}));scheduleEditor();}
 function saveSchedule(){
-  syncScheduleForm();const name=_sched.name.trim(),days=[...new Set(_sched.days)].sort((a,b)=>a-b);
+  syncScheduleForm();
+  const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
   const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)})).sort((a,b)=>a.s-b.s);
-  if(!name){toast(L.needSchedName);return;}if(!blocks.length){toast(L.needBlock);return;}
+  if(!blocks.length){toast(L.needBlock);return;}
   for(let i=0;i<blocks.length;i++){
     const b=blocks[i];if(!b.name){toast(L.needBlockNames);return;}
     if(!Number.isFinite(b.s)||!Number.isFinite(b.e)||b.s<0||b.e>1440||b.e<=b.s){toast(L.checkTimes);return;}
     if(i&&b.s<blocks[i-1].e){toast(L.overlapping);return;}
   }
-  if(_sched.defaultKind){
-    // 고친 결과는 기본 시간대의 수정본이다. 내 시간표 목록에 넣지 않는다.
-    DB.s.defaultBlocks=DB.s.defaultBlocks||{};
-    DB.s.defaultBlocks[_sched.defaultKind]=blocks;
-    DB.s.defaultSchedOff=false;
-    save();paint();openScheduleSettings();toast(L.defaultSaved);
-    tourSignal('schedule-saved');return;
-  }
-  const id=_sched.id||uid(),p={id,name,blocks};const at=DB.s.scheduleProfiles.findIndex(x=>x.id===id);
-  if(at>=0)DB.s.scheduleProfiles[at]=p;else DB.s.scheduleProfiles.push(p);
-  // 내 시간표가 생기면 기본 시간대는 저절로 꺼진다. 지우지는 않으므로 다시 켤 수 있다.
-  if(at<0&&DB.s.scheduleProfiles.length===1)DB.s.defaultSchedOff=true;
-  Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
-  days.forEach(i=>DB.s.dayProfiles[String(i)]=id);save();paint();openScheduleSettings();toast(L.schedSaved);
+  const root=schedRoot(),kind=_sched.kind,other=kind==='weekend'?'weekday':'weekend';
+  // 한 요일이 두 벌에 동시에 속할 수 없다. 새로 가져간 요일은 다른 벌에서 뺀다.
+  const otherDays=(Array.isArray(root[other].days)?root[other].days:[]).filter(d=>days.indexOf(d)<0);
+  root[other]=Object.assign({},root[other],{days:otherDays});
+  root[kind]={days,blocks};
+  root.off=false;
+  save();paint();openScheduleSettings();toast(L.defaultSaved);
   tourSignal('schedule-saved');
 }
-function resetDefaultSchedule(){
-  const k=_sched.defaultKind;if(!k)return;
-  if(DB.s.defaultBlocks)delete DB.s.defaultBlocks[k];
+function resetSchedSet(){
+  const kind=_sched.kind,root=schedRoot(),other=kind==='weekend'?'weekday':'weekend';
+  const days=kind==='weekend'?[0,6]:[1,2,3,4,5];
+  // 되돌린 요일이 다른 벌에 남아 있으면 한 요일이 두 벌에 걸린다
+  root[other]=Object.assign({},root[other],
+    {days:(Array.isArray(root[other].days)?root[other].days:[]).filter(d=>days.indexOf(d)<0)});
+  root[kind]={days,blocks:null};
   save();paint();openScheduleSettings();toast(L.defaultResetDone);
-}
-function deleteSchedule(){
-  if(!_sched.deleteArmed){syncScheduleForm();_sched.deleteArmed=true;scheduleEditor();return;}
-  const id=_sched.id,days=profileDays(id);DB.s.scheduleProfiles=DB.s.scheduleProfiles.filter(p=>p.id!==id);
-  Object.keys(DB.s.dayProfiles).forEach(k=>{if(DB.s.dayProfiles[k]===id)delete DB.s.dayProfiles[k];});
-  Object.keys(DB.s.force24).forEach(ds=>{if(days.includes(parseD(ds).getDay())&&DB.s.force24[ds]===false)delete DB.s.force24[ds];});
-  if(!DB.s.scheduleProfiles.length)DB.s.defaultSchedOff=false;
-  save();paint();openScheduleSettings();toast(L.schedDeleted);
 }
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=53';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=53';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=53';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=54';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=54';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=54';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2329,7 +2304,7 @@ function showMascotSay(){
   });
 }
 function hideMascotSay(){const b=$('#mascotSay');if(b)b.classList.remove('on');}
-function replayFromMascot(){hideMascotSay();openTutorial(0);}
+function replayFromMascot(){hideMascotSay();openTutorial(0,true);}
 document.addEventListener('click',e=>{
   const b=$('#mascotSay');if(!b||!b.classList.contains('on'))return;
   if(e.target.closest('#mascotSay')||e.target.closest('#mascotHome'))return;
@@ -2340,7 +2315,7 @@ document.addEventListener('click',e=>{
    시간대 만들기만 넘길 수 있고 나머지는 직접 해야 다음으로 간다.
    hintKind 는 강조 상자 말고 어떻게 움직여 보여줄지다 — press(눌러라)/drag(끌어라)/grab(손잡이) */
 const TOUR_STEPS=[
-  {id:'sched',scene:'schedule-list',selector:['#sheet.on .blockrow','#defaultSchedRow .schedbadge'],hintKind:'press',
+  {id:'sched',scene:'schedule-list',selector:['#sheet.on .blockrow','#schedWeekdayRow .schedbadge'],hintKind:'press',
    btn:'skip',allow:['#sheet'],hint:''},
   {id:'goal',scene:'subject',selector:['#sheet.on #f_sname','#mainFab'],hintKind:'press',
    signal:'subject-saved',allow:['#mainFab','#sheet']},
@@ -2378,6 +2353,9 @@ let _tourStep=0,_tourActive=false,_tourLanding=false,_tourReturnStep=null,_tourP
 // 끝내기 착지는 여러 프레임에 걸쳐 진행된다. 그 사이에 튜토리얼을 다시 열면 세대 번호가 올라가고
 // 옛 착지 절차는 새 화면을 건드리지 않고 조용히 물러난다.
 let _tourLandGen=0,_tourLandTimer=null,_tourIntro=false,_tourTypeTimer=null,_tourTypeDone=null;
+/* 처음 보는 사람은 직접 해내야 넘어가지만, 다시 보는 사람은 원하는 부분만 보고 싶다.
+   다시보기에서는 모든 단계에 이전·다음·끝내기를 열어 준다. */
+let _tourReplay=false;
 /* 안내 글을 한 글자씩 적어 나간다. <strong> 표시는 유지한 채 보이는 글자 수만 늘린다.
    높이는 먼저 완성본으로 재서 고정해 두므로 타자 도중에 말풍선이 흔들리지 않는다. */
 /* 말풍선 폭을 대사에 맞춘다. max-content 로 두면 긴 문장이 한 줄로 재어져
@@ -2515,7 +2493,7 @@ function prepareTourScene(scene){
   if(scene==='modal')return;
   if(scene==='today')setTourTab('today');
   else if(scene==='subject')setTourTab('subj');
-  else if(scene==='schedule-list'){if(!tourSheetHas('#defaultSchedRow'))openScheduleSettings();}
+  else if(scene==='schedule-list'){if(!tourSheetHas('#schedWeekdayRow'))openScheduleSettings();}
 }
 function getTourTarget(s){
   if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar .unrow');
@@ -2634,18 +2612,21 @@ function ensureTourDOM(){
   const root=$('#tour');if(root.querySelector('.tourguide'))return;
   root.innerHTML='<div class="tourspot"></div><div id="tourdemo"></div><div class="tourguide">'+
     '<div class="tourbubble"><div class="tourmark"></div>'+
+    '<button class="tourskip" onclick="finishTutorial()">'+esc(L.tourEnd)+'</button>'+
     '<div class="tourbody"><h2></h2><p></p><div class="tourhint"></div></div>'+
-    '<div class="tourfoot"><div class="tourprog"></div><button class="tourbtn" onclick="tourNext()"></button></div></div>'+
+    '<div class="tourfoot"><button class="tourback" onclick="tourMove(-1)">'+esc(L.tourBack)+'</button>'+
+    '<div class="tourprog"></div><button class="tourbtn" onclick="tourNext()"></button></div></div>'+
     '<i class="tourtail"></i></div>'+
     '<div class="tourfly"><img src="'+MASCOT_LOOP+'" alt="'+esc(L.altMascot)+'"></div>';
 }
-function openTutorial(i){
+function openTutorial(i,replay){
   _tourReturnStep=null;cancelTourTracking();closeSheet();clearTimeout(_homeMascotTimer);_homeMascotUntil=0;
   // 끝내기 착지가 아직 진행 중이면 예약된 정리를 무효로 만든다.
   // 취소하지 않으면 뒤늦게 터진 타이머가 방금 연 튜토리얼의 #tour를 통째로 비운다.
   _tourLandGen++;clearTimeout(_tourLandTimer);_tourLandTimer=null;_tourIntro=false;
   clearTimeout(_tourTypeTimer);_tourTypeTimer=null;_tourTypeDone=null;
-  _tourActive=true;_tourLanding=false;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
+  _tourActive=true;_tourLanding=false;_tourReplay=!!replay;
+  _tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,Number(i)||0));
   const root=$('#tour');root.innerHTML='';root.className='on';ensureTourDOM();
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
 }
@@ -2662,12 +2643,19 @@ function renderTutorial(){
     guide.querySelector('h2').textContent=copy.t||'';tourType(guide.querySelector('p'),copy.x||'');
     const hint=guide.querySelector('.tourhint');
     // 넘길 수 있는 단계가 아니면 '직접 해 봐야 넘어간다'는 사실을 분명히 적는다.
-    hint.textContent=s.hint!=null?s.hint:(s.btn?'':L.tourDoHint);
+    hint.textContent=_tourReplay?'':(s.hint!=null?s.hint:(s.btn?'':L.tourDoHint));
     hint.style.display=hint.textContent?'block':'none';
-    const btn=guide.querySelector('.tourbtn');
-    if(s.btn){btn.style.display='';btn.classList.toggle('final',s.btn==='finish');
-      btn.textContent=copy.n||(s.btn==='finish'?L.tourStart:L.tourSkip);}
-    else{btn.style.display='none';btn.classList.remove('final');btn.textContent='';}
+    const btn=guide.querySelector('.tourbtn'),last=_tourStep===TOUR_STEPS.length-1;
+    if(s.btn||_tourReplay){
+      btn.style.display='';btn.classList.toggle('final',s.btn==='finish');
+      btn.textContent=s.btn?(copy.n||(s.btn==='finish'?L.tourStart:L.tourSkip))
+        :(last?L.tourStart:L.tourNext);
+    }else{btn.style.display='none';btn.classList.remove('final');btn.textContent='';}
+    // 끝내기·이전은 다시보기에서만 연다. 처음 보는 사람은 필수 단계를 건너뛸 수 없다.
+    const skip=guide.querySelector('.tourskip'),back=guide.querySelector('.tourback');
+    skip.style.display=_tourReplay?'':'none';
+    back.style.display=_tourReplay?'':'none';
+    back.style.visibility=_tourStep?'visible':'hidden';
     guide.querySelector('.tourprog').textContent=(_tourStep+1)+' / '+TOUR_STEPS.length;
     guide.classList.remove('changing');clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,30);
   },90);
@@ -2831,7 +2819,7 @@ function applyTourHint(s,t,rect){
 }
 function tourMove(n){if(!_tourActive)return;_tourStep=Math.max(0,Math.min(TOUR_STEPS.length-1,_tourStep+n));renderTutorial();}
 function tourNext(){const s=TOUR_STEPS[_tourStep];
-  if(s.final||_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}
+  if((s.final&&!_tourReplay)||_tourStep===TOUR_STEPS.length-1){finishTutorial();return;}
   tourMove(1);}
 /* 단계는 사용자가 실제로 해냈을 때만 넘어간다. 저장 한 번으로 부족한 단계는
    need 조건까지 만족해야 한다(할 일 두 개, 같은 칸에 두 개 등). */
@@ -2864,6 +2852,7 @@ function finishTutorial(){
 }
 function completeTutorialLanding(gen){
   if(gen!=null&&gen!==_tourLandGen)return;      // 옛 착지 타이머가 새로 연 튜토리얼을 지우지 못하게 한다
+  _tourReplay=false;
   clearTimeout(_tourLandTimer);_tourLandTimer=null;_tourIntro=false;
   clearTimeout(_tourTypeTimer);_tourTypeTimer=null;_tourTypeDone=null;
   cancelTourTracking();clearTourHint();document.body.classList.remove('tour-sheet-space');_tourActive=false;_tourLanding=false;const root=$('#tour');root.className='';root.innerHTML='';
@@ -2889,7 +2878,7 @@ function bakHTML(){
 }
 function importBakInfo(){
   const r=localStorage.getItem(IMPORT_BAK);if(!r)return null;
-  try{const d=JSON.parse(r);return {tasks:(d.tasks||[]).length,schedules:(d.s&&d.s.scheduleProfiles||[]).length};}catch(e){return null;}
+  try{const d=JSON.parse(r);return {tasks:(d.tasks||[]).length};}catch(e){return null;}
 }
 function restoreImportBackup(){
   const r=localStorage.getItem(IMPORT_BAK);if(!r){toast(L.noImportBak);return;}
@@ -2900,7 +2889,7 @@ function dataSheet(){
   const ib=importBakInfo();
   openSheet('<div class="sh2">'+esc(L.dataTitle)+'</div>'+
     '<div style="font-size:14px;font-weight:650;color:var(--ink2);line-height:1.7">'+
-    L.dataCount(DB.tasks.length,DB.subjects.length,DB.repeats.length,DB.s.scheduleProfiles.length)+'<br>'+
+    L.dataCount(DB.tasks.length,DB.subjects.length,DB.repeats.length,schedSet('weekday').blocks.length+schedSet('weekend').blocks.length)+'<br>'+
     '<span style="color:var(--ink3);font-size:13px">'+esc(L.dataNote)+'</span></div>'+
     '<div class="row2"><button class="btn p" onclick="doExport()">'+esc(L.exportBtn)+'</button>'+
     '<button class="btn s" onclick="document.getElementById(\'fileIn\').click()">'+esc(L.importBtn)+'</button></div>'+
@@ -2950,7 +2939,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=53').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=54').catch(()=>{});
 </script>
 </body>
 </html>
