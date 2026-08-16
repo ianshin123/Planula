@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=67">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=67">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=67">
-<link rel="apple-touch-icon" href="icon-192.png?v=67">
+<link rel="manifest" href="manifest.webmanifest?v=68">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=68">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=68">
+<link rel="apple-touch-icon" href="icon-192.png?v=68">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -141,7 +141,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 /* 미리보기 칩이 떠 있는 동안에는 '끌어와서 미배정' 안내를 감춘다.
    비어 있을 때의 가운데 정렬도 풀어야 미리보기가 진짜 칩과 같은 폭으로 보인다. */
 .unrow.hasghost .unph{display:none}
-.unbar.empty .unrow.hasghost{align-items:stretch;justify-content:flex-start}
+/* 점선 테두리까지 걷어야 미리보기가 진짜 칩과 똑같은 자리·폭에 놓인다.
+   테두리를 남기면 그 두께만큼 안쪽으로 밀려 이름 줄이 어긋난다. */
+.unbar.empty .unrow.hasghost{align-items:stretch;justify-content:flex-start;border-width:0}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
@@ -151,8 +153,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 /* 꾹 눌러 잡힌 순간 카드가 떠오른다. 평평하게 두면 잡혔는지 알 수 없다.
    미배정 목록은 스크롤 영역이라 그 안에서 키우면 커진 만큼 잘린다.
    잡히는 순간 목록에서 꺼내(absolute) 레일 위로 띄운다 — 기준은 .unbar 다. */
+/* 칩은 키우지 않고 띄우기만 한다. 조금이라도 키우면 그 칩의 이름만 줄이 어긋나
+   목록의 다른 이름·미리보기와 나란하지 않게 보인다. 목록에서 꺼내 그림자로 띄우는
+   것만으로도 잡혔다는 건 충분히 보인다. */
 .uchip.lift{position:absolute;border-color:var(--ac);background:var(--ac-s);box-shadow:var(--shadow-lg);
-  transform:scale(1.07);z-index:40}
+  transform:translateY(-2px);z-index:40}
 .uchip.dragging{opacity:.3}
 .uchip.done{background:var(--done-bg)}
 .uchip.done .ut{opacity:.56}
@@ -213,6 +218,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .ev.done{opacity:1;background:var(--done-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .ev.done .evb{opacity:.55}
 .ev.done .evt{text-decoration:line-through}
+/* 손이 닿으면 주황 불이 잠깐 들어온다. 미배정 칩과 같은 반응이라야
+   두 번 톡톡 하는 동안 '눌리고 있다'가 그리드에서도 보인다. */
+.ev:active,.ev.done:active{background:var(--ac-s);border-color:var(--ac-b)}
 .ev.act{z-index:12;overflow:visible;box-shadow:var(--shadow-md);border-color:var(--ac);touch-action:none}
 /* 꾹 눌러 잡힌 카드는 살짝 떠오른다 */
 .ev.lift{z-index:20;transform:scale(1.035);box-shadow:var(--shadow-lg)}
@@ -1730,10 +1738,13 @@ function bindGrid(root){
      기준만 .unbar 로 바꾸므로 눈에는 제자리에서 떠오른 것으로 보인다. */
   const liftOut=chip=>{
     const bar=unbar();if(!bar||!chip)return;
-    const r=chip.getBoundingClientRect(),br=bar.getBoundingClientRect();
-    chip.style.width=Math.round(r.width)+'px';
-    chip.style.left=Math.round(r.left-br.left)+'px';
-    chip.style.top=Math.round(r.top-br.top)+'px';
+    const r=chip.getBoundingClientRect(),br=bar.getBoundingClientRect(),cs=getComputedStyle(bar);
+    // 절대 위치의 기준은 테두리 안쪽(패딩 상자)이다. 테두리 두께를 빼지 않으면
+    // 그만큼 오른쪽·아래로 밀려 이름 줄이 옆 칩과 어긋난다. 반올림도 하지 않는다.
+    const bl=parseFloat(cs.borderLeftWidth)||0,bt=parseFloat(cs.borderTopWidth)||0;
+    chip.style.width=r.width.toFixed(2)+'px';
+    chip.style.left=(r.left-br.left-bl).toFixed(2)+'px';
+    chip.style.top=(r.top-br.top-bt).toFixed(2)+'px';
     lifted=chip;};
   /* 꺼낸 그 칩만 되돌린다. 아무 요소나 되돌리면 안 된다 — 배정 카드의
      top·height 는 인라인 스타일이라, 지우는 순간 카드가 그리드 맨 위로
@@ -2431,9 +2442,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=67';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=67';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=67';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=68';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=68';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=68';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2497,7 +2508,7 @@ const TOUR_STEPS=[
    signal:'task-edited',allow:['.unbar','#sheet','#subsheet']},
   {id:'place',scene:'today',target:'grid',hintKind:'drag',keepClear:['.unbar'],
    signal:'task-placed',need:'onePlaced',allow:['#gridwrap .grid','.unbar']},
-  {id:'split',scene:'today',target:'grid',hintKind:'drag',keepClear:['.unbar'],
+  {id:'split',scene:'today',target:'grid',cell:'shared',hintKind:'drag',keepClear:['.unbar'],
    signal:'task-placed',need:'shareBand',allow:['#gridwrap .grid','.unbar']},
   {id:'resize',scene:'today',target:'edge',hintKind:'grab',keepClear:['.unbar'],
    signal:'task-resized',allow:['#gridwrap .grid']},
@@ -2733,8 +2744,24 @@ function tourTargetRect(s,t,allowScroll){
       const h0=Math.max(0,Math.min(1380,Math.floor(cm/60)*60));
       return span(h0,h0+60);
     };
-    let c=cellAt((visibleTop+visibleBottom)/2);
-    if(c.t<visibleTop||c.b>visibleBottom){         // 화면 밖으로 삐져나오면 위·아래 칸을 살펴본다
+    /* 분할 단계는 '이미 놓인 일이 있는 그 칸'을 가리켜야 한다. 보이는 가운데 칸을
+       가리키면 안내한 칸과 실제로 넣어야 하는 칸이 달라져 사용자가 헤맨다. */
+    let c=null;
+    if(s.cell==='shared'){
+      const t0=tasksOf(ds).filter(x=>x.min!=null).sort((a,b)=>a.min-b.min)[0];
+      if(t0){
+        const bd=autoSlotBand(t0)||(is24(ds)?null:bandAt(ds,t0.min));
+        if(bd){const rs=rel(bd.s);c=span(rs,Math.min(1440,rs+(bd.e-bd.s)));}
+        else{const h0=Math.max(0,Math.min(1380,Math.floor(rel(t0.min)/60)*60));c=span(h0,h0+60);}}
+      if(c&&(c.t<visibleTop-2||c.b>visibleBottom+2)&&allowScroll!==false&&scroll){
+        // 그 칸이 화면 밖이면 다른 칸을 고르지 말고 그 칸으로 데려간다
+        scroll.scrollTop+=((c.t+c.b)/2-(visibleTop+visibleBottom)/2);
+        clearTimeout(_tourPlaceTimer);
+        _tourPlaceTimer=setTimeout(()=>placeTutorial(false),190);return null;}
+    }
+    if(!c)c=cellAt((visibleTop+visibleBottom)/2);
+    else if(c.t>=visibleTop&&c.b<=visibleBottom){/* 그대로 쓴다 */}
+    if(s.cell!=='shared'&&(c.t<visibleTop||c.b>visibleBottom)){   // 화면 밖으로 삐져나오면 위·아래 칸을 살펴본다
       [visibleTop+30,visibleBottom-30].some(y=>{
         const alt=cellAt(y);
         if(alt.t>=visibleTop&&alt.b<=visibleBottom){c=alt;return true;}
@@ -2859,7 +2886,10 @@ function placeTutorial(allowScroll){
   let hintRect=null,spotRect=null;
   if(s.scene==='modal'||!t){
     spot.style.opacity='0';clearTourHint();
-    gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));
+    // 강조할 곳이 없더라도 시트가 열려 있으면 말풍선은 비켜서 위로 올라간다.
+    // 이걸 빼면 시간대 단계처럼 강조가 없는 단계에서 말풍선이 시트 한가운데를 덮는다.
+    if(sheetEl){gx=safe;gy=safe;}
+    else gy=Math.max(safe,Math.min(Math.max(120,innerHeight*.24),dockTop-gh-12));
   }else{
     const rect=tourTargetRect(s,t,allowScroll!==false);
     if(!rect)return;
@@ -3133,7 +3163,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=67').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=68').catch(()=>{});
 </script>
 </body>
 </html>
