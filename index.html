@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=62">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=62">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=62">
-<link rel="apple-touch-icon" href="icon-192.png?v=62">
+<link rel="manifest" href="manifest.webmanifest?v=63">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=63">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=63">
+<link rel="apple-touch-icon" href="icon-192.png?v=63">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -655,6 +655,7 @@ const L=KO?{
   aBlockDel:'칸 삭제',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
   needBlock:'칸을 하나 이상 만들어줘',needBlockNames:'칸 이름을 모두 적어줘',
   checkTimes:'시작·끝 시간을 확인해줘',overlapping:'겹치는 칸이 있어',
+  sampleGoal:'수학',sampleDday:'중간고사',sampleTasks:['영어 단어 외우기','수학 문제집 풀기'],
   sayAsk:'사용법을 다시 볼까?',sayReplay:'튜토리얼 다시 보기',sayClose:'닫기',
   tourEnd:'끝내기',tourBack:'이전',tourSkip:'건너뛰기',tourStart:'시작하기',tourNext:'다음',
   tourTapHint:'주황빛으로 표시된 곳을 눌러 주세요',tourSaveHint:'저장하면 다음 안내로 자연스럽게 이어져요',
@@ -678,9 +679,9 @@ const L=KO?{
   tour:{
     install:{t:'먼저 홈 화면에 추가해',x:'<strong>iPhone · iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 홈 화면에 추가 → 설치\n\n홈 화면의 Planula 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',n:'추가했으면 계속'},
     sched:{t:'하루를 네 시간표에 맞춰',x:'기본은 일반적인 고등학생 하루야. <strong>수정</strong>을 눌러 칸과 시각을 바꿔 봐. <strong>평일과 주말 각각</strong> 고칠 수 있고, 그대로 둬도 돼.',n:'시간표 다 정했어'},
-    goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>로 이름과 색을 정해 저장해 줘.'},
-    dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 하나 넣자.'},
-    task:{t:'할 일을 두 개 만들어',x:'<strong>+</strong>로 만들면 시간 없이 오른쪽 미배정에 쌓여. 나란히 놓아 볼 거라 <strong>두 개</strong>가 필요해.'},
+    goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>를 눌러 저장만 해도 돼. 이름은 미리 넣어 뒀어.'},
+    dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 저장해 봐. 이름과 날짜는 채워 뒀어.'},
+    task:{t:'할 일을 두 개 만들어',x:'<strong>+</strong>로 만들면 시간 없이 오른쪽 미배정에 쌓여. 나란히 놓아 볼 거라 <strong>두 개</strong>가 필요해. 이름은 미리 들어가 있어.'},
     edit:{t:'한 번 눌러 고르고, 다시 눌러 고쳐',x:'미배정을 <strong>한 번 눌러 선택</strong>, <strong>다시 누르면</strong> 수정 창이야. 배치된 일도 똑같아.'},
     place:{t:'시간 위로 끌어다 놓아',x:'선택한 일을 칸으로 <strong>끌어다 놓아</strong>. 5분 간격으로 붙어.'},
     split:{t:'같은 칸에 하나 더',x:'남은 하나를 <strong>같은 칸</strong>에 놓으면 칸을 나눠 써. 하나가 빠지면 남은 일이 다시 채워.'},
@@ -754,6 +755,7 @@ const L=KO?{
   aBlockDel:'Delete block',addBlock:'+ Add block',reallyDel:'Really delete',
   needBlock:'Add at least one block',needBlockNames:'Name every block',
   checkTimes:'Check the start and end times',overlapping:'Some blocks overlap',
+  sampleGoal:'Maths',sampleDday:'Midterm',sampleTasks:['Learn 30 words','Workbook unit 3'],
   sayAsk:'Want to see how it works again?',sayReplay:'Replay the tutorial',sayClose:'Close',
   tourEnd:'Done',tourBack:'Back',tourSkip:'Skip',tourStart:'Get started',tourNext:'Next',
   tourTapHint:'Tap the spot outlined in orange',tourSaveHint:'Save and the guide moves on by itself',
@@ -777,9 +779,9 @@ const L=KO?{
   tour:{
     install:{t:'Add it to your home screen first',x:'<strong>iPhone · iPad (Safari)</strong>\nShare → More → Add to Home Screen\n\n<strong>Android (Chrome)</strong>\nThree dots (⋮) → Add to home screen → Install\n\nOpen it from the Planula icon afterwards and it runs like an app, with no address bar.',n:'Added it, continue'},
     sched:{t:'Shape the day to your own hours',x:'The default is an ordinary school day. Tap <strong>Edit</strong> to add or drop blocks and move the times. <strong>Weekday and weekend</strong> are edited separately, and leaving them as they are is fine.',n:'Schedules are set'},
-    goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong>, set a name and a color, and save.'},
-    dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and add one.'},
-    task:{t:'Now make two tasks',x:'Made with the <strong>+ at the bottom right</strong>, a task starts with no time and waits in the unassigned rail. You need <strong>two</strong> — we will put them side by side in a moment.'},
+    goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong> and just save — the name is filled in for you.'},
+    dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and save — name and date are filled in.'},
+    task:{t:'Now make two tasks',x:'Made with the <strong>+ at the bottom right</strong>, a task starts with no time and waits in the unassigned rail. You need <strong>two</strong> — names are filled in already.'},
     edit:{t:'Tap once to select, tap again to edit',x:'Tap an unassigned task <strong>once to select</strong> it, then <strong>tap it again</strong> to open the editor. Placed tasks work the same way. Change something and save.'},
     place:{t:'Drag it onto the day',x:'Drag the selected task <strong>onto a block</strong> and it drops in, snapping to 5-minute steps. Try it like this.'},
     split:{t:'Now drop the other one in the same block',x:'Drag the remaining task <strong>into the block you just used</strong>. They split it evenly, and if one leaves the other fills the block again.'},
@@ -2019,7 +2021,7 @@ function finishTaskSheet(){
 }
 let _ed={},_adv=false;
 function newTask(ds,min){
-  _ed={id:null,title:'',date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,rep:null,repId:null};
+  _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,rep:null,repId:null};
   _adv=false;taskSheet();
 }
 function openTask(id){
@@ -2140,8 +2142,17 @@ function delTask(all){
 
 /* ═════ 13. 과목·디데이·목표 ═════ */
 let _sj={};
+/* 사용법에서는 직접 타이핑하는 게 포인트가 아니라 만들어 보고 옮겨 보는 경험이
+   포인트다. 그래서 사용법 중에 새로 만들 때만 이름을 미리 채워 둔다. */
+function tourSample(kind){
+  if(!_tourActive)return '';
+  if(kind==='goal')return L.sampleGoal;
+  if(kind==='dday')return L.sampleDday;
+  const n=tasksOf(TODAY()).filter(t=>t.min==null).length;
+  return L.sampleTasks[Math.min(n,L.sampleTasks.length-1)];
+}
 function editSubject(id){const s=id?subjOf(id):null;
-  _sj=s?{id:s.id,name:s.name,color:s.color}:{id:null,name:'',color:PALETTE[DB.subjects.length%PALETTE.length]};
+  _sj=s?{id:s.id,name:s.name,color:s.color}:{id:null,name:tourSample('goal'),color:PALETTE[DB.subjects.length%PALETTE.length]};
   sjSheet();}
 function sjSheet(){
   const s=_sj;
@@ -2167,7 +2178,8 @@ let _dd={};
 function editDday(sid,did){
   const s=subjOf(sid);if(!s)return;
   const d=did?(s.ddays||[]).find(x=>x.id===did):null;
-  _dd=d?{sid,id:d.id,title:d.title,date:d.date}:{sid,id:null,title:'',date:TODAY()};
+  _dd=d?{sid,id:d.id,title:d.title,date:d.date}
+      :{sid,id:null,title:tourSample('dday'),date:_tourActive?addDays(TODAY(),7):TODAY()};
   let h='<div class="sh2">'+esc(d?L.ddayEdit:L.ddayAdd)+'</div>'+
     '<input class="fi" id="f_ddt" placeholder="'+esc(L.ddayPh)+'" value="'+esc(_dd.title)+'">'+
     '<div class="fl">'+esc(L.date)+'</div><input class="fi" type="date" id="f_ddd" value="'+_dd.date+'">'+
@@ -2321,9 +2333,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=62';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=62';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=62';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=63';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=63';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=63';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3014,7 +3026,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=62').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=63').catch(()=>{});
 </script>
 </body>
 </html>
