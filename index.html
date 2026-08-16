@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=72">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=72">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=72">
-<link rel="apple-touch-icon" href="icon-192.png?v=72">
+<link rel="manifest" href="manifest.webmanifest?v=73">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=73">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=73">
+<link rel="apple-touch-icon" href="icon-192.png?v=73">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -136,7 +136,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   height:var(--railh,calc(100dvh - var(--st) - var(--dockh) - 98px));min-height:150px;
   display:flex;flex-direction:column;transition:box-shadow .16s}
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
-.unbar.empty .unrow{min-height:120px;border:1.5px dashed var(--line);border-radius:11px}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
@@ -2442,9 +2441,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=72';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=72';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=72';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=73';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=73';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=73';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3156,14 +3155,10 @@ setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on')
    처리할 때마다 상태를 다시 쌓아 다음 뒤로가기도 받을 수 있게 한다. */
 function navPush(){try{history.pushState({p:1},'');}catch(e){}}
 try{history.replaceState({p:0},'');navPush();}catch(e){}
-window.addEventListener('popstate',()=>{
-  if(subSheetOn()){closeSubSheet();navPush();return;}
-  if($('#sheet').classList.contains('on')){closeSheet(true);navPush();return;}
-  if(_tourActive){navPush();return;}          // 사용법 중에는 나가지 않는다
-  if(tab!=='today'){go('today');navPush();return;}
-  // 더 닫을 것이 없으면 그대로 앱을 나간다
-});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=72').catch(()=>{});
+/* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
+   탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
+window.addEventListener('popstate',()=>{navPush();});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=73').catch(()=>{});
 </script>
 </body>
 </html>
