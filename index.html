@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=68">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=68">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=68">
-<link rel="apple-touch-icon" href="icon-192.png?v=68">
+<link rel="manifest" href="manifest.webmanifest?v=69">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=69">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=69">
+<link rel="apple-touch-icon" href="icon-192.png?v=69">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -150,15 +150,19 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   transition:transform .16s cubic-bezier(.2,1.5,.4,1),box-shadow .16s ease}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
-/* 꾹 눌러 잡힌 순간 카드가 떠오른다. 평평하게 두면 잡혔는지 알 수 없다.
-   미배정 목록은 스크롤 영역이라 그 안에서 키우면 커진 만큼 잘린다.
-   잡히는 순간 목록에서 꺼내(absolute) 레일 위로 띄운다 — 기준은 .unbar 다. */
+/* 선택 표시 */
+.uchip.sel{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);background:var(--ac-s)}
+/* 끌기 시작하면 목록 밖으로 꺼내(absolute) 레일 위로 띄운다. 목록은 스크롤 영역이라
+   그 안에 두면 커진 만큼 잘린다. 기준은 .unbar 다. */
 /* 칩은 키우지 않고 띄우기만 한다. 조금이라도 키우면 그 칩의 이름만 줄이 어긋나
    목록의 다른 이름·미리보기와 나란하지 않게 보인다. 목록에서 꺼내 그림자로 띄우는
    것만으로도 잡혔다는 건 충분히 보인다. */
 .uchip.lift{position:absolute;border-color:var(--ac);background:var(--ac-s);box-shadow:var(--shadow-lg);
   transform:translateY(-2px);z-index:40}
+/* 끌기 시작하면 꺼내 둔 원래 칩은 감춘다. 목록 밖으로 꺼내 띄운 것이라
+   흐리게만 두면 제자리에 남은 것처럼 보여, 미리보기와 함께 같은 일이 둘로 보인다. */
 .uchip.dragging{opacity:.3}
+.uchip.lift.dragging{opacity:0}
 .uchip.done{background:var(--done-bg)}
 .uchip.done .ut{opacity:.56}
 .uchip.done .ut>i{text-decoration:line-through}
@@ -222,7 +226,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
    두 번 톡톡 하는 동안 '눌리고 있다'가 그리드에서도 보인다. */
 .ev:active,.ev.done:active{background:var(--ac-s);border-color:var(--ac-b)}
 .ev.act{z-index:12;overflow:visible;box-shadow:var(--shadow-md);border-color:var(--ac);touch-action:none}
-/* 꾹 눌러 잡힌 카드는 살짝 떠오른다 */
+/* 선택된 카드 */
+.ev.sel{z-index:11;overflow:visible;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);touch-action:none}
+/* 잡혀서 움직이는 카드는 살짝 떠오른다 */
 .ev.lift{z-index:20;transform:scale(1.035);box-shadow:var(--shadow-lg)}
 .evb{flex:1;min-width:0;padding:4px 40px 4px 9px;overflow:hidden;border-radius:10px}
 .evtitle{display:flex;align-items:center;gap:6px;min-width:0}
@@ -240,16 +246,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .ev.sm .evm{display:none}
 .ev.sm .evb{padding:1px 34px 1px 7px}
 .ev.sm .evt{font-size:12.5px}
-/* 경계 토글 — 맞닿은 두 일 사이(마지막 일이면 그 끝)에 저절로 생긴다.
-   카드 안이 아니라 그리드 위에 따로 둔다. 카드 안에 넣으면 overflow:hidden 에 잘린다.
-   폭을 가운데 104px 로 잡아 오른쪽 완료 버튼과 겹치지 않게 한다. */
-.bnd{position:absolute;left:50%;width:104px;height:26px;margin:-13px 0 0 -52px;z-index:7;
-  display:flex;align-items:center;justify-content:center}
-.bnd::after{content:'';display:block;width:52px;height:6px;border-radius:4px;background:var(--ac);
-  opacity:.4;box-shadow:0 1px 3px rgba(75,48,34,.18);
-  transition:opacity .15s ease,transform .15s cubic-bezier(.2,1.5,.4,1)}
-.bnd.pair::after{width:66px;opacity:.62}
-.bnd.hot::after{opacity:1;transform:scaleY(1.7) scaleX(1.06)}
+/* 선택하면 나오는 위·아래 손잡이. 보이는 막대는 그대로 두고 잡히는 범위만 넓힌다 —
+   9px 막대만으로는 손가락이 자꾸 빗나간다. */
+.evh{position:absolute;left:0;right:0;height:28px;z-index:5;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .16s}
+.evh.t{top:-14px}
+.evh.b{bottom:-14px}
+.evh i{position:relative;display:block;width:58px;height:9px;border-radius:5px;background:var(--ac);
+  box-shadow:0 2px 5px rgba(75,48,34,.2);pointer-events:none}
+.evh i::before{content:'';position:absolute;left:-26px;right:-26px;top:-13px;bottom:-13px}
+.ev.sel .evh,.ev.act .evh{opacity:1}
+.ev.sel .evh i,.ev.act .evh i{pointer-events:auto}
 .evtime{position:absolute;right:8px;bottom:3px;font-size:11px;font-weight:850;color:var(--ac);
   font-variant-numeric:tabular-nums;opacity:0;transition:opacity .14s;pointer-events:none;
   background:var(--bg2);padding:0 4px;border-radius:5px}
@@ -1104,6 +1111,12 @@ const PALETTE=['#E07A4F','#EDA359','#C99B3E','#8CB059','#46A571','#3F9CB5','#5A8
 
 /* ═════ 3. 상태 ═════ */
 let tab='today', calM=new Date(), popDate=null, _anim=false;
+let SEL=null;   // 선택된 일정 id — 선택해야 옮기고 늘릴 수 있다
+/* 사용법(튜토리얼)은 지금 꺼 둔다. 혼자 쓰는 앱이라 시작 질문·단계 안내·다시보기·
+   예시 데이터가 필요 없다. 코드는 그대로 두고 이 스위치로만 끈다. */
+const TOUR_ON=false;
+/* 시간대 묶음은 평일·주말 둘만 쓴다. 추가 버튼은 감추고 수정만 남긴다. */
+const SCHED_ADD_ON=false;
 load();
 /* 노치·상태표시줄 영역은 theme-color 가 칠한다. 지금 보고 있는 테마의
    배경색과 같게 두지 않으면 그 부분만 다른 색으로 떠 어색하다. */
@@ -1331,15 +1344,17 @@ function timeMap(ds){
 function evHTML(it,map){
   const t=it.t,h=Math.max(MIN_EVENT_PX,map.y(it.e)-map.y(it.s)),sm=h<40;
   const sj=t.subj?subjOf(t.subj):null, end=abs(it.e);
-  const done=t.done?' done':'', small=sm?' sm':'';
+  const done=t.done?' done':'', small=sm?' sm':'', selc=(SEL===t.id)?' sel':'';
   const ck='<button class="evck'+(t.done?' on':'')+'">'+
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
-  return '<div class="ev'+done+small+'" data-id="'+t.id+'" '+
+  return '<div class="ev'+done+small+selc+'" data-id="'+t.id+'" '+
     'style="top:'+map.y(it.s)+'px;height:'+h+'px;left:3px;right:3px">'+
+    '<div class="evh t"><i></i></div>'+
     '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
     (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
     '<div class="evm">'+hhmm(t.min)+'~'+hhmm(end)+' \u00b7 '+durTxt(it.e-it.s)+(t.repId?' \u00b7 '+L.repeatShort:'')+'</div></div>'+
-    '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+'</div>';
+    '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+
+    '<div class="evh b"><i></i></div></div>';
 }
 function renderDay(ds){
   const map=timeMap(ds),H=map.height;
@@ -1358,24 +1373,7 @@ function renderDay(ds){
   if(ds===TODAY()){
     const now=new Date(),nm=rel(now.getHours()*60+now.getMinutes());
     h+='<div class="nowl" style="top:'+map.y(nm)+'px"></div>';}
-  const items=gridItems(ds);
-  items.forEach(it=>{h+=evHTML(it,map);});
-  /* 경계 토글 — 일정마다 아래 모서리에 하나씩 저절로 생긴다. 바로 아래 일과 맞닿아 있고
-     둘이 같은 칸에 있을 때만 나눠 쓰는 경계(pair)라, 꾹 눌러 끌면 총 길이를 지키며
-     경계만 움직인다. 칸이 다르면 붙어 있어도 따라오지 않고 제 끝만 움직인다.
-     같은 높이에 둘이 겹치면 하나만 둔다. */
-  const bandOf=t=>autoSlotBand(t)||bandAt(ds,t.min);
-  const seenY={};
-  items.forEach(it=>{
-    const y=Math.round(map.y(it.e));
-    if(seenY[y])return;seenY[y]=1;
-    const ba=bandOf(it.t);
-    const nx=items.find(o=>{
-      if(o.t.id===it.t.id||Math.abs(o.s-it.e)>=.5)return false;
-      const bb=bandOf(o.t);
-      return (!ba&&!bb)||sameBand(ba,bb);});
-    h+='<div class="bnd'+(nx?' pair':'')+'" style="top:'+y+'px" data-a="'+it.t.id+'"'+
-       (nx?' data-b="'+nx.t.id+'"':'')+'></div>';});
+  gridItems(ds).forEach(it=>{h+=evHTML(it,map);});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">'+L.unassigned+(un.length?' '+un.length:'')+'</div>'+
     '<div class="unrow">'+(un.length?un.map(t=>uchipHTML(t)).join('')
@@ -1386,7 +1384,7 @@ function renderDay(ds){
    이름만 있는 상자를 보여주면 어떤 모양으로 들어가는지 알 수 없다. */
 function uchipHTML(t,extra){
   const sj=t.subj?subjOf(t.subj):null;
-  return '<div class="uchip'+(t.done?' done':'')+(extra||'')+'" data-id="'+t.id+'">'+
+  return '<div class="uchip'+(t.done?' done':'')+(SEL===t.id?' sel':'')+(extra||'')+'" data-id="'+t.id+'">'+
     '<button class="uck'+(t.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
     '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
     '<div class="gr"><b></b><b></b><b></b></div></div>';
@@ -1488,7 +1486,7 @@ function fitCalendar(){
   if(hh>150)g.style.height=Math.min(hh,430)+'px';
 }
 function openDay(ds){
-  popDate=ds;closeSubSheet();
+  popDate=ds;SEL=null;closeSubSheet();
   const d=parseD(ds),isT=ds===TODAY();
   const h='<div class="popnav">'+
     '<button class="ib" onclick="popMove(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'+
@@ -1624,7 +1622,7 @@ function carryAction(id,action){
     }
     if(oldBand){if(oldBand.auto)splitAutoSlot(oldDate,oldBand,true);else splitBand(oldDate,oldBand,true);}
   }else return;
-  save();buzz(10);paint();
+  SEL=null;save();buzz(10);paint();
   toast(action==='done'?L.carryDone:action==='delete'?L.carryDeleted:L.carryMoved);
 }
 function refresh(){
@@ -1639,22 +1637,50 @@ function quickAdd(){
   if(tab==='cal'){openDay(TODAY());return;}
   newTask(TODAY(),null);
 }
+$('#scroll').addEventListener('click',e=>{
+  if(!SEL)return;
+  if(e.target.closest('.ev,.uchip,button,input,textarea,select,.cell,.sj,.dd,.gl'))return;
+  SEL=null;refresh();
+});
+$('#sheet').addEventListener('click',e=>{
+  if(!popDate||subSheetOn()||!SEL)return;
+  if(e.target.closest('.ev,.uchip,button,input,textarea,select,.popnav'))return;
+  SEL=null;refresh();
+});
+
+/* ═════ 10. 스와이프 — 가로로 쓸어 탭을 넘긴다 ═════ */
+(function(){
+  const S=$('#scroll');let x0=null,y0=null,decided=false,horiz=false;
+  S.addEventListener('touchstart',e=>{if(_anim||GD.on){x0=null;return;}
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;decided=false;horiz=false;},{passive:true});
+  S.addEventListener('touchmove',e=>{
+    if(x0==null||GD.on)return;
+    const dx=e.touches[0].clientX-x0,dy=e.touches[0].clientY-y0;
+    if(!decided&&(Math.abs(dx)>10||Math.abs(dy)>10)){decided=true;horiz=Math.abs(dx)>Math.abs(dy)*1.6;}
+    if(horiz&&e.cancelable){e.preventDefault();const v=$('#view');v.style.transition='none';
+      v.style.transform='translateX('+(dx*.28)+'px)';v.style.opacity=String(Math.max(.55,1-Math.abs(dx)/620));}
+  },{passive:false});
+  const end=e=>{if(x0==null)return;const v=$('#view');
+    if(horiz){const dx=(e.changedTouches?e.changedTouches[0].clientX:x0)-x0;
+      const order=['today','cal','subj'],i=order.indexOf(tab);
+      v.style.transition='transform .26s cubic-bezier(.3,1.1,.4,1),opacity .24s';
+      v.style.transform='translateX(0)';v.style.opacity='1';
+      if(dx<-58&&i<order.length-1)go(order[i+1]);else if(dx>58&&i>0)go(order[i-1]);}
+    x0=null;decided=false;horiz=false;};
+  S.addEventListener('touchend',end);S.addEventListener('touchcancel',end);
+})();
+
 /* ═════ 11. 그리드 조작 — 이동 / 크기 / 경계 / 미배정 끌어놓기 ═════ */
 const GD={on:false,endedAt:0};
 /* 손가락은 가만히 눌러도 몇 px 흔들린다. 이 값보다 적게 움직이면 탭, 넘으면 끌기다.
    너무 작으면 선택된 일정을 다시 눌러 수정하려 할 때마다 끌기로 새어 나간다. */
 const TAP_SLOP=12;
-/* 꾹 누르기로 인정하는 시간. 이보다 짧으면 탭이다. */
-const LONG_MS=300;
-/* 두 번째 탭이 이 안에 들어와야 수정이다. 느리게 두 번 누른 건 아무 일도 아니다. */
-const DBL_MS=320;
-/* 제스처
-   · 꾹 눌러 끌기        → 이동. 미배정 칩도 같다. 잡히는 순간 카드가 떠오르고 진동한다
-   · 빠르게 두 번 톡톡    → 수정
-   · 경계 토글 꾹 눌러 끌기 → 맞닿은 두 일의 경계를 민다(총 길이는 그대로).
-                          맞닿은 게 없으면 그 일의 끝만 움직인다
-   · 미배정 위로 끌면     → 미배정으로 되돌린다
-   선택해 두고 뭘 하는 방식은 없다. 한 번 누르는 것으로는 아무 일도 일어나지 않는다. */
+/* 제스처 — 고르고 나서 한다
+   · 탭            → 선택. 위·아래 손잡이가 나온다
+   · 선택된 걸 탭   → 수정 창
+   · 선택된 걸 끌기 → 이동 (도착 자리는 반투명 주황 유령이 보여준다)
+   · 손잡이 끌기    → 길이 조절. 같은 칸에서 맞닿은 이웃이 있으면 경계를 함께 민다
+   · 미배정 위로 끌면 → 미배정으로 되돌린다 (들어갈 자리에 칩 미리보기가 선다) */
 function bindGrid(root){
   // 한 노드에 딱 한 번만 붙인다. _b 를 되돌려 다시 부르면 같은 노드에 리스너가 겹쳐
   // 완료 토글이 짝수 번 실행되고(= 아무 일도 안 일어난다) 리스너가 배로 불어난다.
@@ -1671,7 +1697,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let pending=null,pressTimer=null,bndEl=null,lastTapId=null,lastTapAt=0,unGhost=null,unIndex=null,lifted=null;
+  let armed=false,prevT=null,prevBase=0,unGhost=null,unIndex=null,lifted=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1685,6 +1711,7 @@ function bindGrid(root){
     hits.sort((a,b)=>{
       const da=Math.abs(py-(map.y(a.s)+map.y(a.e))/2),db=Math.abs(py-(map.y(b.s)+map.y(b.e))/2);
       if(Math.abs(da-db)>.01)return da-db;
+      if(a.t.id===SEL)return -1;if(b.t.id===SEL)return 1;
       return (a.t.ord||0)-(b.t.ord||0);});
     return hits[0]||null;};
   const inDoneZone=(cx)=>{const r=grid().getBoundingClientRect();return cx>=r.right-44;};
@@ -1733,7 +1760,6 @@ function bindGrid(root){
     g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
     g.classList.toggle('sm',h<40);
     const m=g.querySelector('.evm');if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
-  const cancelPress=()=>{clearTimeout(pressTimer);pressTimer=null;pending=null;};
   /* 미배정 칩을 목록 밖으로 꺼내 레일 위에 띄운다. 지금 자리 그대로 두되
      기준만 .unbar 로 바꾸므로 눈에는 제자리에서 떠오른 것으로 보인다. */
   const liftOut=chip=>{
@@ -1752,36 +1778,17 @@ function bindGrid(root){
   const dropIn=()=>{
     if(!lifted)return;
     lifted.style.width='';lifted.style.left='';lifted.style.top='';lifted=null;};
-  /* 꾹 누르는 동안은 아무 일도 없다가, 시간을 채우면 그때 잡힌다.
-     잡힌 티를 내야 한다 — 카드는 떠오르고 경계 토글은 두꺼워지고 진동이 온다. */
-  const startPress=m=>{
-    cancelPress();pending=m;
-    pressTimer=setTimeout(()=>{
-      pressTimer=null;
-      if(!pending||!el||blocked){pending=null;return;}
-      mode=pending;pending=null;GD.on=true;
-      if(mode==='rb'){el.classList.add('act');if(bndEl)bndEl.classList.add('hot');}
-      else{
-        if(mode==='new')liftOut(el);
-        el.classList.add('act','lift');}
-      buzz(18);
-    },LONG_MS);};
   const clearAll=()=>{
-    cancelPress();
     if(el)el.classList.remove('act','dragging','lift');
     dropIn();
-    if(bndEl)bndEl.classList.remove('hot');
     if(ghost){ghost.remove();ghost=null;}
     if(unGhost){const r=unGhost.parentElement;unGhost.remove();unGhost=null;
       if(r)r.classList.remove('hasghost');}
     unIndex=null;
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;bndEl=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
+    mode=null;el=null;tid=null;armed=false;prevT=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
     GD.on=false;GD.endedAt=Date.now();};
-  // 두 번째 탭이면 뒤따라올 유령 click 을 미리 막는다. 이게 없으면 방금 열린
-  // 수정 시트 위의 스크림에 그 click 이 떨어져 시트가 곧바로 닫힌다.
-  const dblArmed=id=>id&&lastTapId===id&&Date.now()-lastTapAt<=DBL_MS;
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
     return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom;};
@@ -1796,43 +1803,55 @@ function bindGrid(root){
   root.addEventListener('touchstart',e=>{
     map=timeMap(dateOf());
     const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;virtualDoneId=null;
-    cancelPress();
     if(e.target.closest('.evck,.uck')){
-      blocked=true;mode=null;el=null;tid=null;bndEl=null;dropIndex=null;
+      blocked=true;mode=null;el=null;tid=null;armed=false;dropIndex=null;
       return;}
-    blocked=false;bndEl=null;
-    const bnd=e.target.closest('.bnd');
+    blocked=false;
+    // 보이는 주황 막대 자체를 잡았을 때만 크기를 조절한다.
+    const handle=e.target.closest('.evh i')?.parentElement||null;
     let ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
 
     // 실제 카드 밖을 눌러도 22px 안의 가장 가까운 일정이 잡힌다.
-    if(!bnd&&!ev&&!uc){
+    if(!handle&&!ev&&!uc){
       const picked=pickAt(t.clientX,t.clientY);
       if(picked){
         ev=root.querySelector('.ev[data-id="'+picked.t.id+'"]');
         if(inDoneZone(t.clientX)){
           virtualDoneId=picked.t.id;blocked=true;
-          mode=null;el=null;tid=null;dropIndex=null;
+          mode=null;el=null;tid=null;armed=false;dropIndex=null;
           return;}}}
 
-    if(bnd){                                  // 경계 토글 — 꾹 누르면 경계가 잡힌다
-      const ds=dateOf(),task=DB.tasks.find(x=>x.id===bnd.dataset.a);if(!task||task.min==null)return;
-      bndEl=bnd;el=root.querySelector('.ev[data-id="'+task.id+'"]');tid=task.id;
-      baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
-      prevBand=autoSlotBand(task);
-      nextT=bnd.dataset.b?(DB.tasks.find(x=>x.id===bnd.dataset.b)||null):null;
-      if(nextT)nextBase=Math.max(SNAP,taskDur(nextT,ds));
-      startPress('rb');
-      // 토글은 카드 아래 모서리를 덮는다. 짧게 누르면 그 아래 일정의 탭으로 넘긴다.
-      if(dblArmed(tid)&&e.cancelable)e.preventDefault();
-      return;}
-
-    if(uc){
+    if(uc){                                   // 미배정도 먼저 고른 뒤에만 끌린다
       el=uc;tid=uc.dataset.id;prevBand=null;
       const task=DB.tasks.find(x=>x.id===tid);
       baseD=task&&task.dur?task.dur:60;curD=baseD;
-      startPress('new');
-      if(dblArmed(tid)&&e.cancelable)e.preventDefault();
+      // 고른 것을 다시 누를 때는 뒤따라올 유령 click 을 막는다. 이게 없으면
+      // 방금 열린 수정 시트 위의 스크림에 그 click 이 떨어져 시트가 곧바로 닫힌다.
+      if(SEL===tid){mode='new';armed=true;if(e.cancelable)e.preventDefault();}
+      return;}
+
+    if(handle&&ev&&SEL===ev.dataset.id){       // 선택된 일정의 손잡이만 길이 조절
+      const ds=dateOf(),task=DB.tasks.find(x=>x.id===ev.dataset.id);if(!task)return;
+      el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
+      baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
+      prevBand=autoSlotBand(task);
+      /* 경계를 함께 미는 건 같은 칸에 있는 이웃끼리만이다. 칸이 다르면 붙어 있어도
+         남남이라 제 끝만 움직인다. */
+      const myBand=autoSlotBand(task)||bandAt(ds,task.min);
+      const sameCell=o=>{const b=autoSlotBand(o)||bandAt(ds,o.min);
+        return (!myBand&&!b)||sameBand(myBand,b);};
+      if(mode==='rt'){
+        prevT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&
+          Math.abs(rel(x.min)+taskDur(x,ds)-baseS)<.5&&sameCell(x))||null;
+        if(prevT)prevBase=Math.max(SNAP,taskDur(prevT,ds));
+      }else{
+        const endR=baseS+baseD;
+        nextT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&
+          Math.abs(rel(x.min)-endR)<.5&&sameCell(x))||null;
+        if(nextT)nextBase=Math.max(SNAP,taskDur(nextT,ds));}
+      GD.on=true;el.classList.add('act');
+      if(e.cancelable)e.preventDefault();
       return;}
 
     if(ev){
@@ -1840,8 +1859,7 @@ function bindGrid(root){
       el=ev;tid=task.id;
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
       prevBand=autoSlotBand(task)||bandAt(ds,task.min);
-      startPress('move');
-      if(dblArmed(tid)&&e.cancelable)e.preventDefault();
+      if(SEL===task.id){mode='move';armed=true;if(e.cancelable)e.preventDefault();}
     }
   },{passive:false});
 
@@ -1849,14 +1867,14 @@ function bindGrid(root){
     const t=e.touches[0];
     moved=Math.max(moved,Math.abs(t.clientX-sx)+Math.abs(t.clientY-sy));
     if(!GD.on){
-      // 꾹 누르기가 익기 전에 손가락이 움직였다 = 스크롤이다. 끌기 후보를 버린다.
-      if(pressTimer&&moved>TAP_SLOP)cancelPress();
-      return;}
+      if(armed&&moved>TAP_SLOP){
+        GD.on=true;buzz(12);
+        if(el){el.classList.add('act');
+          if(mode==='new'){liftOut(el);el.classList.add('lift');}}}
+      else return;}
     if(e.cancelable)e.preventDefault();
-    // 끌기 시작 — 원래 자리는 흐려지고 도착 자리는 반투명 주황 카드가 보여준다.
-    // 미배정에서 올 때든 이미 배정된 걸 옮길 때든 똑같다.
-    if((mode==='move'||mode==='new')&&el&&!el.classList.contains('dragging')){
-      el.classList.add('dragging');el.classList.remove('lift');}
+    // 끌기 시작 — 원래 자리는 흐려지고 도착 자리는 반투명 주황 유령이 보여준다
+    if((mode==='move'||mode==='new')&&el&&!el.classList.contains('dragging'))el.classList.add('dragging');
     const ds=dateOf(),r=relAt(t.clientY);
 
     if(mode==='move'||mode==='new'){
@@ -1901,30 +1919,38 @@ function bindGrid(root){
       paintGhost(sM,d);
       showTag(hhmm(abs(sM))+' ~ '+hhmm(abs(sM+d))+' \u00b7 '+durTxt(d),t.clientY);
     }else{
-      // \uacbd\uacc4 \u2014 \ub9de\ub2ff\uc740 \ub2e4\uc74c \uc77c\uc774 \uc788\uc73c\uba74 \uadf8 \uc2dc\uc791\uc774 \ub530\ub77c\uc624\uace0 \ub458\uc758 \ucd1d \uae38\uc774\ub294 \uadf8\ub300\ub85c\ub2e4
+      // 길이 조절 — 같은 칸에서 맞닿은 이웃이 있으면 경계를 함께 밀어 총 길이를 지킨다
       autoScroll(t.clientY);
-      const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
-      let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
-      curS=baseS;curD=en-baseS;paintEl(curS,curD);
-      showTag((nextT?L.edgeTag:'')+hhmm(abs(en))+' \u00b7 '+durTxt(curD),t.clientY);
+      if(mode==='rt'){
+        const minS=prevT?baseS-prevBase+SNAP:0;
+        let sM=snap(r);sM=Math.max(minS,Math.min(baseS+baseD-SNAP,sM));
+        curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
+        showTag((prevT?L.edgeTag:'')+hhmm(abs(curS))+L.startsAt+' \u00b7 '+durTxt(curD),t.clientY);
+      }else{
+        const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
+        let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
+        curS=baseS;curD=en-baseS;paintEl(curS,curD);
+        showTag((nextT?L.edgeTag:'')+hhmm(abs(en))+' \u00b7 '+durTxt(curD),t.clientY);}
     }
   },{passive:false});
 
   const commit=()=>{
-    cancelPress();
     if(blocked){
       const doneId=virtualDoneId,shouldToggle=doneId&&moved<=TAP_SLOP;
       blocked=false;virtualDoneId=null;
       if(shouldToggle)toggleDone(doneId);
       return;}
-    if(!GD.on){                                // 꾹 누르지 않았다 = 탭
-      const id=tid,ok=!!(el&&tid&&moved<=TAP_SLOP),dbl=ok&&dblArmed(id);
-      clearAll();
-      if(!ok){lastTapId=null;return;}
-      if(dbl){                                 // 빠르게 두 번 → 수정
-        lastTapId=null;GD.endedAt=Date.now();buzz(8);openTask(id);
-      }else{lastTapId=id;lastTapAt=Date.now();}
-      return;}
+    // 손잡이는 잡히는 범위를 넓혀 놨다. 짧은 카드에서는 그 범위가 카드를 거의 덮어
+    // 수정하려고 눌러도 길이 조절로 잡힌다. 손가락이 움직이지 않았으면 탭으로 본다.
+    if((mode==='rt'||mode==='rb')&&moved<=TAP_SLOP){
+      const id=tid;clearAll();GD.endedAt=Date.now();openTask(id);return;}
+    if(!GD.on){                                // 끌지 않았다 = 탭
+      if(el&&tid&&moved<=TAP_SLOP){
+        const id=tid,wasSel=(SEL===id);clearAll();
+        if(wasSel){GD.endedAt=Date.now();openTask(id);}   // 고른 걸 또 탭 → 수정
+        else{SEL=id;buzz(8);refresh();}                   // 처음 탭 → 선택
+        return;}
+      clearAll();return;}
     // 꾹 눌러 잡기만 하고 손가락을 움직이지 않았다. 어디로도 옮기지 않는다.
     // (이걸 빼면 도착 좌표가 정해지지 않은 채 커밋돼 엉뚱한 시각에 놓인다)
     if(moved<=TAP_SLOP){clearAll();refresh();return;}
@@ -1932,17 +1958,20 @@ function bindGrid(root){
     const leftBand=prevBand;
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
-        task.min=null;task.dur=null;task.autoSlot=null;
+        task.min=null;task.dur=null;task.autoSlot=null;if(SEL===task.id)SEL=null;
         // 미리보기가 서 있던 자리에 그대로 끼워 넣는다
         const list=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id)
           .sort((a,b)=>(a.ord||0)-(b.ord||0));
         list.splice(Math.max(0,Math.min(list.length,unIndex==null?list.length:unIndex)),0,task);
         list.forEach((x,i)=>{x.ord=i;});
+      }else if(mode==='rt'&&prevT){
+        clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(prevT));
+        resizeLinked(task,mode,baseS,baseD,curS,curD,prevT,prevBase);
       }else if(mode==='rb'&&nextT){
         clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(nextT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,nextT,nextBase);
       }else{
-        if(mode==='rb')clearAutoSlot(ds,leftBand);
+        if(mode==='rt'||mode==='rb')clearAutoSlot(ds,leftBand);
         task.min=abs(curS);task.dur=Math.max(SNAP,curD);
         const b=bandAt(ds,task.min);
         if(dropBand&&(mode==='move'||mode==='new')){
@@ -1952,7 +1981,8 @@ function bindGrid(root){
         }else task.autoSlot=null;
         /* 칸 나누기는 그 칸에서 시작하는 일만 센다. 옆 칸에서 늘어나 걸쳐 있는 일은
            세지 못해 새로 놓은 일 위에 그대로 덮인다. 놓은 뒤 한 번 정리해 그 꼬리를 자른다. */
-        resolveOverlaps(ds,task.id);}
+        resolveOverlaps(ds,task.id);
+        SEL=task.id;}
       // 원래 칸을 떠나면 남은 일정이 반드시 칸 전체를 다시 채운다.
       // 동적 새벽 1시간 슬롯도 s/e로 비교해야 같은 큰 gap id에 속한 다른 시간을 구분할 수 있다.
       if((mode==='move'||mode==='new')&&leftBand){
@@ -1963,7 +1993,7 @@ function bindGrid(root){
       save();buzz(11);
       // 사용법 중에는 '실제로 해냈다'를 이 자리에서 알린다.
       if((mode==='move'||mode==='new')&&!overUn&&task.min!=null)tourSignal('task-placed');
-      if(mode==='rb')tourSignal('task-resized');}
+      if(mode==='rt'||mode==='rb')tourSignal('task-resized');}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
   root.addEventListener('touchcancel',()=>{clearAll();refresh();});
@@ -1974,13 +2004,18 @@ function bindGrid(root){
     if(e.target.closest('.uck')){
       const uc=e.target.closest('.uchip');if(uc){e.stopPropagation();toggleDone(uc.dataset.id);}return;}
   });
-  /* 손가락은 위에서 다 처리한다. 여기는 마우스로 볼 때뿐이다 —
-     터치가 만든 합성 click 은 GD.endedAt 로 걸러 두 번 세지 않게 한다. */
-  root.addEventListener('dblclick',e=>{
-    if(GD.on||Date.now()-GD.endedAt<500)return;
+  /* 터치가 만든 합성 click 은 GD.endedAt 로 걸러 두 번 세지 않게 한다.
+     여기는 마우스로 볼 때의 선택·수정 경로다. */
+  root.addEventListener('click',e=>{
+    if(GD.on||Date.now()-GD.endedAt<300)return;
     const ev=e.target.closest('.ev'),uc=e.target.closest('.uchip');
-    const hit=(ev&&!ev.classList.contains('dropghost'))?ev:uc;
-    if(hit&&hit.dataset.id)openTask(hit.dataset.id);
+    if(ev&&!ev.classList.contains('dropghost')){
+      const id=ev.dataset.id;
+      if(SEL===id)openTask(id);else{SEL=id;buzz(8);refresh();}return;}
+    if(uc&&!uc.classList.contains('dropghost')){
+      const id=uc.dataset.id;
+      if(SEL===id)openTask(id);else{SEL=id;buzz(8);refresh();}return;}
+    if(SEL){SEL=null;refresh();}          // 일정이 없는 곳을 누르면 선택 해제
   });
 }
 function bindGoalDrag(){
@@ -2095,6 +2130,7 @@ function openTaskSheet(html){
   if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody'))openSubSheet(html);else openSheet(html);
 }
 function finishTaskSheet(){
+  SEL=null;
   if(subSheetOn()){
     closeSubSheet();
     if(popDate&&$('#popbody')){$('#popbody').innerHTML=renderDay(popDate);
@@ -2350,7 +2386,7 @@ function openScheduleSettings(){
   const sets=schedSets();
   const used={};sets.forEach(x=>setDays(x).forEach(d=>{used[d]=1;}));
   const wide=DOW.map((d,i)=>used[i]?null:d).filter(d=>d!=null);
-  const addBtn='<div class="row2"><button class="btn s" onclick="editSchedSet(null)">'+esc(L.schedAdd)+'</button></div>';
+  const addBtn=SCHED_ADD_ON?'<div class="row2"><button class="btn s" onclick="editSchedSet(null)">'+esc(L.schedAdd)+'</button></div>':'';
   openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+
     sets.map(schedRowHTML).join('')+
     '<div class="fullnote">'+(wide.length
@@ -2442,9 +2478,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=68';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=68';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=68';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=69';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=69';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=69';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2454,6 +2490,7 @@ function mascotHTML(place){
     '<img id="mascotHomeImg" src="'+(playing?MASCOT_ONCE:MASCOT_IDLE)+'" alt="'+esc(L.altMascot)+'"></button>';
 }
 function playHomeMascot(withSay){
+  if(!TOUR_ON)withSay=false;      // 말풍선은 사용법 다시보기 입구라 같이 끈다
   if(_tourActive)return;const home=$('#mascotHome'),img=$('#mascotHomeImg');if(!home||!img)return;
   if(withSay)showMascotSay();else hideMascotSay();
   const token=++_homeMascotToken;_homeMascotUntil=Date.now()+MASCOT_CYCLE_MS;
@@ -2680,8 +2717,7 @@ function prepareTourScene(scene){
 function getTourTarget(s){
   if(s.target==='unassigned')return document.querySelector('.uchip')||document.querySelector('.unbar .unrow');
   if(s.target==='grid')return document.querySelector('#gridwrap .grid');
-  // 비율을 바꾸는 곳은 카드가 아니라 둘이 맞닿은 경계 토글이다
-  if(s.target==='edge')return document.querySelector('#gridwrap .bnd.pair')||document.querySelector('#gridwrap .bnd');
+  if(s.target==='edge')return document.querySelector('#gridwrap .ev.sel')||document.querySelector('#gridwrap .ev');
   if(!s.selector)return null;
   // 목표를 여러 개 적으면 지금 화면에 실제로 있는 첫 번째를 쓴다.
   // 시트가 한 층 더 뜨면 강조 박스가 사라진 버튼에 남지 않고 새 입력창으로 옮겨간다.
@@ -3148,7 +3184,7 @@ function delRule(id){
 /* ═════ 15. 부팅 ═════ */
 firstPaint();
 // 재등장 기준은 오직 '만든 데이터가 하나도 없는 상태'다. 전에 답한 적이 있어도 다시 묻는다.
-if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
+if(TOUR_ON&&(!DB.s.tutorialSeen||plannerUntouched()))setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
@@ -3163,7 +3199,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=68').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=69').catch(()=>{});
 </script>
 </body>
 </html>
