@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=71">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=71">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=71">
-<link rel="apple-touch-icon" href="icon-192.png?v=71">
+<link rel="manifest" href="manifest.webmanifest?v=72">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=72">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=72">
+<link rel="apple-touch-icon" href="icon-192.png?v=72">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -890,8 +890,11 @@ function schedRoot(){
   return st.sched;
 }
 function schedSets(){return schedRoot().sets;}
+/* 이름은 어느 묶음이든 고칠 수 있다. 평일·주말 씨앗은 고치기 전까지만
+   정해진 이름을 쓰고, 고치면 그 이름이 그대로 남는다. */
 function setName(x){
-  return x.kind==='weekday'?L.defaultWeekday:x.kind==='weekend'?L.defaultWeekend:(x.name||L.schedSetFallback);}
+  if(x.name)return x.name;
+  return x.kind==='weekday'?L.defaultWeekday:x.kind==='weekend'?L.defaultWeekend:L.schedSetFallback;}
 function setBlocks(x){
   if(Array.isArray(x.blocks)&&x.blocks.length)return x.blocks.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e}));
   const src=x.kind==='weekday'?DEFAULT_WEEKDAY:x.kind==='weekend'?DEFAULT_WEEKEND:null;
@@ -900,7 +903,7 @@ function setBlocks(x){
   return src.map(v=>({id:v[0],s:v[1],e:v[2],name:names[v[3]]}));
 }
 function setDays(x){return Array.isArray(x.days)?x.days.slice().sort((a,b)=>a-b):[];}
-function setEdited(x){return !!(Array.isArray(x.blocks)&&x.blocks.length);}
+function setEdited(x){return !!((Array.isArray(x.blocks)&&x.blocks.length)||x.name);}
 function findSet(id){return schedSets().find(x=>x.id===id)||null;}
 const LEGACY_PROFILE_ID='default-school';
 function legacyProfile(){return {id:LEGACY_PROFILE_ID,name:L.schoolName,blocks:LEGACY_CLASSES.map(x=>({id:x[0],s:x[1],e:x[2],name:x[3]}))};}
@@ -2372,16 +2375,13 @@ function editSchedSet(id){
   scheduleEditor();
 }
 function syncScheduleForm(){
-  const n=$('#schName');if(n&&!_sched.kind)_sched.name=n.value;
+  const n=$('#schName');if(n)_sched.name=n.value;
   document.querySelectorAll('.blockrow[data-bi]').forEach(row=>{const b=_sched.blocks[Number(row.dataset.bi)];if(!b)return;
     b.name=row.querySelector('.bname').value;b.s=parseTime(row.querySelector('.bstart').value,false);b.e=parseTime(row.querySelector('.bend').value,true);});
 }
 function scheduleEditor(){
-  const seed=!!_sched.kind;
-  const head=seed
-    ?'<div class="sh2">'+esc(L.defaultEditTitle(_sched.name))+'</div>'
-    :'<div class="sh2">'+esc(_sched.id?L.schedSetEdit:L.schedSetNew)+'</div>'+
-     '<div class="fl">'+esc(L.schedSetName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedSetNamePh)+'" value="'+esc(_sched.name)+'">';
+  const head='<div class="sh2">'+esc(_sched.id?L.schedSetEdit:L.schedSetNew)+'</div>'+
+    '<div class="fl">'+esc(L.schedSetName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedSetNamePh)+'" value="'+esc(_sched.name)+'">';
   const h=head+
     '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
     '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
@@ -2392,7 +2392,7 @@ function scheduleEditor(){
       '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
     '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button>'+
     '<div class="row2"><button class="btn p" onclick="saveSchedule()">'+esc(L.save)+'</button></div>'+
-    (seed
+    (_sched.kind
       ?(setEdited(findSet(_sched.id)||{})?'<div class="row2"><button class="btn d" onclick="resetSchedSet()">'+esc(L.defaultReset)+'</button></div>':'')
       :(_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedSet()">'+esc(_sched.delArmed?L.reallyDel:L.setDel)+'</button></div>':''));
   openSheet(h);
@@ -2413,7 +2413,7 @@ function saveSchedule(){
   const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
   const name=String(_sched.name||'').trim();
   const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)})).sort((a,b)=>a.s-b.s);
-  if(!_sched.kind&&!name){toast(L.needSetName);return;}
+  if(!name){toast(L.needSetName);return;}
   if(!blocks.length){toast(L.needBlock);return;}
   for(let i=0;i<blocks.length;i++){
     const b=blocks[i];if(!b.name){toast(L.needBlockNames);return;}
@@ -2423,14 +2423,14 @@ function saveSchedule(){
   let x=_sched.id?findSet(_sched.id):null;
   if(!x){x={id:uid(),kind:null,name,days:[],blocks:null};schedSets().push(x);}
   claimDays(days,x.id);
-  x.days=days;x.blocks=blocks;if(!x.kind)x.name=name;
+  x.days=days;x.blocks=blocks;x.name=name;
   save();paint();openScheduleSettings();toast(L.defaultSaved);
   tourSignal('schedule-saved');
 }
 function resetSchedSet(){
   const x=findSet(_sched.id);if(!x)return;
   const days=x.kind==='weekend'?[0,6]:[1,2,3,4,5];
-  claimDays(days,x.id);x.days=days;x.blocks=null;
+  claimDays(days,x.id);x.days=days;x.blocks=null;x.name='';
   save();paint();openScheduleSettings();toast(L.defaultResetDone);
 }
 function deleteSchedSet(){
@@ -2442,9 +2442,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=71';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=71';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=71';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=72';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=72';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=72';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3163,7 +3163,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=71').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=72').catch(()=>{});
 </script>
 </body>
 </html>
