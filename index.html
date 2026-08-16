@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=70">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=70">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=70">
-<link rel="apple-touch-icon" href="icon-192.png?v=70">
+<link rel="manifest" href="manifest.webmanifest?v=71">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=71">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=71">
+<link rel="apple-touch-icon" href="icon-192.png?v=71">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1424,7 +1424,7 @@ function topHTML(){
   if(tab==='today'){
     const d=parseD(TODAY());
     return '<div class="hrow"><div class="h1"><small>'+esc(fmtMDW(d))+'</small><span class="hname">'+esc(L.headToday)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+
-      '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
+      '<button class="ib'+(is24(TODAY())?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
   if(tab==='cal')return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
   return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCat)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
@@ -1484,7 +1484,7 @@ function openDay(ds){
     '<button class="ib" onclick="popMove(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'+
     '<div class="popt"><div class="p1">'+esc(fmtMDWShort(d))+'</div>'+(isT?'<div class="p2">'+esc(L.todayMark)+'</div>':'')+'</div>'+
     '<div style="display:flex;gap:6px">'+
-      '<button class="ib'+(is24(ds)?' on':'')+'" aria-label="'+esc(L.a24)+'" onclick="popToggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+
+      '<button class="ib'+(is24(ds)?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="popToggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+
       '<button class="ib" onclick="popMove(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button></div></div>'+
     '<div id="popbody">'+renderDay(ds)+'</div>';
   openSheet(h);
@@ -1598,6 +1598,8 @@ function go(t){
   buzz(8);
 }
 function moveMonth(n){calM=new Date(calM.getFullYear(),calM.getMonth()+n,1);paint();}
+/* 시계 버튼의 불은 '시간대(시간표) 보기'를 뜻한다. 24시간 보기면 불이 꺼진다.
+   오늘 탭 헤더와 날짜 팝업이 같은 규칙을 쓴다. */
 function toggle24(){const ds=TODAY();if(setDateViewMode(ds)){paint();toast(is24(ds)?L.view24:L.viewSched);}}
 function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
 function carryAction(id,action){
@@ -2440,9 +2442,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=70';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=70';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=70';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=71';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=71';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=71';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3161,7 +3163,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=70').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=71').catch(()=>{});
 </script>
 </body>
 </html>
