@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=56">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=56">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=56">
-<link rel="apple-touch-icon" href="icon-192.png?v=56">
+<link rel="manifest" href="manifest.webmanifest?v=57">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=57">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=57">
+<link rel="apple-touch-icon" href="icon-192.png?v=57">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -34,6 +34,7 @@
   --shadow-md:0 10px 28px rgba(63,49,36,.12); --shadow-lg:0 18px 52px rgba(47,35,24,.18);
   --r:20px; --r2:16px; --r3:12px;
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+  --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
   --dockh:78px; --wrap:780px; --gut:50px; --unw:144px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -95,7 +96,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 
 #app{height:100%;display:flex;flex-direction:column}
-#top{padding:calc(var(--st) + 14px) 20px 8px;flex:none}
+#top{padding:calc(var(--st) + 14px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
 #topin{max-width:var(--wrap);margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 /* 마스코트가 탭을 옮겨도 같은 자리에 있도록 제목이 남는 폭을 먹고 버튼 영역 폭을 고정한다.
@@ -118,7 +119,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .soon span{white-space:nowrap}
 .soon b{font-weight:850}
 #scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  padding:4px 20px calc(var(--sb) + var(--dockh) + 26px)}
+  padding:4px calc(var(--sr) + 20px) calc(var(--sb) + var(--dockh) + 26px) calc(var(--sl) + 20px)}
 #view{width:100%;max-width:var(--wrap);margin:0 auto;will-change:transform}
 
 /* 미배정 — 오른쪽 세로 레일 */
@@ -319,7 +320,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   :root{--gut:44px;--unw:104px}
   /* 헤더와 본문의 좌우 여백은 항상 같은 값이어야 화면 중앙에 맞는다. */
   #top{padding-left:14px;padding-right:14px}
-  #scroll{padding-left:14px;padding-right:14px}
+  #scroll{padding-left:calc(var(--sl) + 14px);padding-right:calc(var(--sr) + 14px)}
+  #top{padding-left:calc(var(--sl) + 14px);padding-right:calc(var(--sr) + 14px)}
   .daylayout{gap:8px}
   .unbar{padding:8px 6px}
   .unbar .uh{font-size:10px;letter-spacing:0}
@@ -2290,9 +2292,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=56';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=56';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=56';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=57';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=57';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=57';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2966,7 +2968,7 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=56').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=57').catch(()=>{});
 </script>
 </body>
 </html>
