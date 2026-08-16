@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=60">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=60">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=60">
-<link rel="apple-touch-icon" href="icon-192.png?v=60">
+<link rel="manifest" href="manifest.webmanifest?v=61">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=61">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=61">
+<link rel="apple-touch-icon" href="icon-192.png?v=61">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -661,6 +661,9 @@ const L=KO?{
   tourDoHint:'직접 해 보면 넘어가요',
   introTitle:'Planula를 처음 쓰나요?',
   introText:'처음이라면 화면을 따라가며 사용법을 익힐 수 있어.\n써 본 적이 있다면 바로 시작해도 좋아.',
+  installedTitle:'Planula 앱으로 잘 열렸어',
+  installedText:'홈 화면 아이콘으로 열었네. 이제 주소창 없이 앱처럼 쓸 수 있어.\n표시되는 곳을 직접 눌러 보며 익혀 보자.',
+  installedNext:'계속',
   introFirst:'처음이에요 · 사용법 보기',introAgain:'써 봤어요 · 바로 시작',
   noBak:'백업이 없다',bakInfo:(t,s,r)=>'타임그리드로 바꾸기 전 원본 · 할일 <b>'+t+'</b>개 · 목표 <b>'+s+'</b>개 · 반복 <b>'+r+'</b>개',
   bakReally:'정말 되돌린다 — 지금 데이터는 사라진다',bakRestore:'백업으로 되돌리기',
@@ -673,6 +676,7 @@ const L=KO?{
   backup:'백업',repRules:'반복 규칙',h24:'24시간',noRules:'등록된 반복이 없다',
   exported:'내보냈다',imported:n=>'가져왔다 — 할일 '+n+'개',fileUnreadable:'파일을 읽지 못했다',repDeleted:'반복을 지웠다',
   tour:{
+    install:{t:'먼저 홈 화면에 추가해',x:'<strong>iPhone · iPad (Safari)</strong>\n공유 → 더보기 → 홈 화면에 추가\n\n<strong>Android (Chrome)</strong>\n점 세 개(⋮) → 홈 화면에 추가 → 설치\n\n홈 화면의 Planula 아이콘으로 열면 주소창 없이 앱처럼 쓸 수 있어.',n:'추가했으면 계속'},
     sched:{t:'하루를 네 시간표에 맞춰',x:'기본은 일반적인 고등학생 하루야. <strong>수정</strong>을 눌러 칸과 시각을 바꿔 봐. <strong>평일과 주말 각각</strong> 고칠 수 있고, 그대로 둬도 돼.',n:'시간표 다 정했어'},
     goal:{t:'목표를 하나 만들자',x:'할 일을 묶는 단위야. <strong>오른쪽 아래 +</strong>로 이름과 색을 정해 저장해 줘.'},
     dday:{t:'그 목표에 디데이를 붙여',x:'남은 날이 헤더와 달력에 떠. <strong>디데이</strong>를 눌러 하나 넣자.'},
@@ -756,6 +760,9 @@ const L=KO?{
   tourDoHint:'Do it once and the guide moves on',
   introTitle:'First time with Planula?',
   introText:'If it’s your first time, I’ll walk you through the app.\nIf you’ve used it before, jump straight in.',
+  installedTitle:'You opened the Planula app',
+  installedText:'You opened it from the home screen icon. No address bar, just the app.\nTap the spots I point at and you’ll pick it up fast.',
+  installedNext:'Continue',
   introFirst:'First time · show me around',introAgain:'Used it before · just start',
   noBak:'No backup saved',bakInfo:(t,s,r)=>'Original before the time grid · <b>'+t+'</b> tasks · <b>'+s+'</b> goals · <b>'+r+'</b> repeats',
   bakReally:'Yes, restore it — today’s data will be lost',bakRestore:'Restore from backup',
@@ -768,6 +775,7 @@ const L=KO?{
   backup:'Backup',repRules:'Repeat rules',h24:'24h',noRules:'No repeats set up',
   exported:'Exported',imported:n=>'Imported — '+n+' tasks',fileUnreadable:'Could not read the file',repDeleted:'Repeat deleted',
   tour:{
+    install:{t:'Add it to your home screen first',x:'<strong>iPhone · iPad (Safari)</strong>\nShare → More → Add to Home Screen\n\n<strong>Android (Chrome)</strong>\nThree dots (⋮) → Add to home screen → Install\n\nOpen it from the Planula icon afterwards and it runs like an app, with no address bar.',n:'Added it, continue'},
     sched:{t:'Shape the day to your own hours',x:'The default is an ordinary school day. Tap <strong>Edit</strong> to add or drop blocks and move the times. <strong>Weekday and weekend</strong> are edited separately, and leaving them as they are is fine.',n:'Schedules are set'},
     goal:{t:'Make one goal first',x:'A goal is what tasks hang off. A school subject, a project, training — anything. Tap the <strong>+ at the bottom right</strong>, set a name and a color, and save.'},
     dday:{t:'Give that goal a D-day',x:'Add an exam or a deadline and the days left show up in red under the header and on the calendar. Tap <strong>D-day</strong> and add one.'},
@@ -2311,9 +2319,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=60';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=60';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=60';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=61';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=61';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=61';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2363,6 +2371,7 @@ document.addEventListener('click',e=>{
    시간대 만들기만 넘길 수 있고 나머지는 직접 해야 다음으로 간다.
    hintKind 는 강조 상자 말고 어떻게 움직여 보여줄지다 — press(눌러라)/drag(끌어라)/grab(손잡이) */
 const TOUR_STEPS=[
+  {id:'install',scene:'modal',hintKind:'none',btn:'skip',hint:''},
   {id:'sched',scene:'schedule-list',selector:['#sheet.on .blockrow','#sheet.on .schedrow[data-first] .schedbadge'],hintKind:'press',
    btn:'skip',allow:['#sheet'],hint:''},
   {id:'goal',scene:'subject',selector:['#sheet.on #f_sname','#mainFab'],hintKind:'press',
@@ -2519,6 +2528,7 @@ function introPick(first){
 /* 시트는 올라오면서 움직인다. 그 동안 강조 박스가 옛 자리에 남지 않게 따라가고,
    말풍선이 시트를 덮지 않게 시트 높이를 줄인다. 장면 이름이 아니라 '지금 시트가
    열려 있는가'로 판단해야 어떤 단계에서 시트가 떠도 항상 맞는다. */
+function standaloneMode(){return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function tourSheetEl(){
   const sub=$('#subsheet'),sh=$('#sheet');
   if(sub&&sub.classList.contains('on'))return sub;
@@ -2680,7 +2690,9 @@ function openTutorial(i,replay){
 }
 function renderTutorial(){
   if(!_tourActive||_tourLanding)return;
-  const s=TOUR_STEPS[_tourStep],copy=tourCopy(s),guide0=$('#tour .tourguide');
+  const s=TOUR_STEPS[_tourStep],guide0=$('#tour .tourguide');
+  const copy=(s.id==='install'&&standaloneMode())
+    ?{t:L.installedTitle,x:L.installedText,n:L.installedNext}:tourCopy(s);
   cancelTourTracking();clearTourHint();
   setTourSceneSpace();prepareTourScene(s.scene);ensureTourDOM();setTourSceneSpace();startTourTracking();
   const guide=$('#tour .tourguide');
@@ -3000,7 +3012,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=60').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=61').catch(()=>{});
 </script>
 </body>
 </html>
