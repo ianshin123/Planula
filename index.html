@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" id="tcolor" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=58">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=58">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=58">
-<link rel="apple-touch-icon" href="icon-192.png?v=58">
+<link rel="manifest" href="manifest.webmanifest?v=59">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=59">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=59">
+<link rel="apple-touch-icon" href="icon-192.png?v=59">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1074,9 +1074,17 @@ function applyTheme(){
   const t=DB.s.theme||'sys';
   if(t==='sys')document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme',t);
+  syncThemeColor();
+}
+/* 안드로이드는 상태표시줄을 theme-color 로 칠한다. 시트가 열려 화면이 스크림에
+   덮이면 그 색도 같이 어둡게 해야 노치 부분만 밝게 떠 보이지 않는다. */
+function syncThemeColor(){
+  const t=DB.s.theme||'sys';
   const dark=t==='dark'||(t==='sys'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+  const sc=document.getElementById('scrim'),sub=document.getElementById('subscrim');
+  const dim=(sc&&sc.classList.contains('on'))||(sub&&sub.classList.contains('on'));
   const m=document.getElementById('tcolor');
-  if(m)m.setAttribute('content',dark?'#181613':'#F7F5F1');
+  if(m)m.setAttribute('content',dark?(dim?'#1A1611':'#181613'):(dim?'#ADA9A4':'#F7F5F1'));
 }
 if(window.matchMedia)try{window.matchMedia('(prefers-color-scheme:dark)')
   .addEventListener('change',()=>applyTheme());}catch(e){}
@@ -1960,11 +1968,11 @@ function openSheet(html){$('#sheet').innerHTML='<div class="grab"></div>'+html;
   closeSubSheet();
   $('#scrim').classList.add('on');$('#sheet').classList.add('on');
   $('#popfab').classList.remove('on');
-  tourRelayout();}                       // 시트를 다시 그리면 강조 대상 노드도 새로 생긴다
+  syncThemeColor();tourRelayout();}                       // 시트를 다시 그리면 강조 대상 노드도 새로 생긴다
 function closeSheet(fromScrim){
   const resume=_tourReturnStep;_tourReturnStep=null;
   closeSubSheet();$('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
-  $('#popfab').classList.remove('on');popDate=null;
+  $('#popfab').classList.remove('on');popDate=null;syncThemeColor();
   if(resume!=null)setTimeout(()=>openTutorial(resume),90);
   else if(fromScrim&&_tourActive&&!_tourLanding)setTimeout(()=>{if(_tourActive&&!_tourLanding)renderTutorial();},90);
 }
@@ -2299,9 +2307,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=58';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=58';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=58';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=59';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=59';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=59';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2702,7 +2710,9 @@ function placeTutorial(allowScroll){
   const s=_tourIntro?{scene:'modal'}:TOUR_STEPS[_tourStep],t=_tourIntro?null:getTourTarget(s);
   const guide=$('#tour .tourguide'),fly=$('#tour .tourfly'),spot=$('#tour .tourspot'),tail=$('#tour .tourtail');
   if(!guide||!fly||!spot)return;
-  const gw=guide.offsetWidth,gh=guide.offsetHeight,fw=fly.offsetWidth,fh=fly.offsetHeight,safe=14;
+  const gw=guide.offsetWidth,gh=guide.offsetHeight,fw=fly.offsetWidth,fh=fly.offsetHeight;
+  const stPx=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--st'))||0;
+  const safe=14+stPx;
   const dock=$('.dock'),dockTop=dock?dock.getBoundingClientRect().top:innerHeight-safe;
   let gx=Math.max(safe,(innerWidth-gw)/2),gy=Math.max(245,innerHeight*.53);
   // 캐릭터가 덮으면 안 되는 곳 — 강조 대상과 단계가 지정한 자리
@@ -2771,7 +2781,7 @@ function placeTutorial(allowScroll){
     if(!pick||score<pick.score)pick={score,...c,x:cx,y:cy};
   });
   const mx=Math.max(8,Math.min(innerWidth-fw-8,pick.x));
-  const my=Math.max(8,Math.min(Math.max(8,dockTop-fh-4),pick.y));
+  const my=Math.max(8+stPx,Math.min(Math.max(8+stPx,dockTop-fh-4),pick.y));
 
   guide.style.transform='translate3d('+Math.round(gx)+'px,'+Math.round(gy)+'px,0)';
   fly.style.transform='translate3d('+Math.round(mx)+'px,'+Math.round(my)+'px,0)';
@@ -2986,7 +2996,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=58').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=59').catch(()=>{});
 </script>
 </body>
 </html>
