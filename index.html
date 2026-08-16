@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=69">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=69">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=69">
-<link rel="apple-touch-icon" href="icon-192.png?v=69">
+<link rel="manifest" href="manifest.webmanifest?v=70">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=70">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=70">
+<link rel="apple-touch-icon" href="icon-192.png?v=70">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -136,14 +136,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   height:var(--railh,calc(100dvh - var(--st) - var(--dockh) - 98px));min-height:150px;
   display:flex;flex-direction:column;transition:box-shadow .16s}
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
-.unbar.empty .unrow{min-height:120px;display:flex;align-items:center;justify-content:center;
-  border:1.5px dashed var(--line);border-radius:11px;font-size:12px;font-weight:700;color:var(--ink3)}
-/* 미리보기 칩이 떠 있는 동안에는 '끌어와서 미배정' 안내를 감춘다.
-   비어 있을 때의 가운데 정렬도 풀어야 미리보기가 진짜 칩과 같은 폭으로 보인다. */
-.unrow.hasghost .unph{display:none}
-/* 점선 테두리까지 걷어야 미리보기가 진짜 칩과 똑같은 자리·폭에 놓인다.
-   테두리를 남기면 그 두께만큼 안쪽으로 밀려 이름 줄이 어긋난다. */
-.unbar.empty .unrow.hasghost{align-items:stretch;justify-content:flex-start;border-width:0}
+.unbar.empty .unrow{min-height:120px;border:1.5px dashed var(--line);border-radius:11px}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
@@ -1115,8 +1108,8 @@ let SEL=null;   // 선택된 일정 id — 선택해야 옮기고 늘릴 수 있
 /* 사용법(튜토리얼)은 지금 꺼 둔다. 혼자 쓰는 앱이라 시작 질문·단계 안내·다시보기·
    예시 데이터가 필요 없다. 코드는 그대로 두고 이 스위치로만 끈다. */
 const TOUR_ON=false;
-/* 시간대 묶음은 평일·주말 둘만 쓴다. 추가 버튼은 감추고 수정만 남긴다. */
-const SCHED_ADD_ON=false;
+/* 시간대 묶음은 평일·주말 말고도 더 넣을 수 있다. */
+const SCHED_ADD_ON=true;
 load();
 /* 노치·상태표시줄 영역은 theme-color 가 칠한다. 지금 보고 있는 테마의
    배경색과 같게 두지 않으면 그 부분만 다른 색으로 떠 어색하다. */
@@ -1376,8 +1369,7 @@ function renderDay(ds){
   gridItems(ds).forEach(it=>{h+=evHTML(it,map);});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">'+L.unassigned+(un.length?' '+un.length:'')+'</div>'+
-    '<div class="unrow">'+(un.length?un.map(t=>uchipHTML(t)).join('')
-      :'<span class="unph">'+L.unDrop+'</span>')+'</div></div></div>';
+    '<div class="unrow">'+un.map(t=>uchipHTML(t)).join('')+'</div></div></div>';
   return h;
 }
 /* 미배정 칩 한 장. 끌어다 놓는 미리보기도 이걸 그대로 쓴다 —
@@ -1434,8 +1426,8 @@ function topHTML(){
     return '<div class="hrow"><div class="h1"><small>'+esc(fmtMDW(d))+'</small><span class="hname">'+esc(L.headToday)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+
       '<button class="ib'+(is24(TODAY())?' on':'')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
-  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>'+esc(L.headCalSub)+'</small><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
-  return '<div class="hrow"><div class="h1"><small>'+esc(L.headCatSub)+'</small><span class="hname">'+esc(L.headCat)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  if(tab==='cal')return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCat)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
 }
 function cycleTheme(){
   const o=['sys','light','dark'],i=o.indexOf(DB.s.theme||'sys');
@@ -1697,7 +1689,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let armed=false,prevT=null,prevBase=0,unGhost=null,unIndex=null,lifted=null;
+  let armed=false,prevT=null,prevBase=0,lifted=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1736,25 +1728,6 @@ function bindGrid(root){
     ghost.innerHTML='<div class="evb"><div class="evtitle"><div class="evt">'+esc(task?task.title:'')+'</div>'+
       (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div><div class="evm"></div></div>';
     grid().appendChild(ghost);return ghost;};
-  /* 미배정으로 갈 때도 칸만 밝히지 않는다. 진짜 칩과 똑같이 생긴 미리보기를
-     목록 안 실제로 끼어들 자리에 넣어, 어떤 모양으로 어디에 들어가는지 보여준다. */
-  const paintUnGhost=cy=>{
-    const row=root.querySelector('.unrow');if(!row)return;
-    if(!unGhost){
-      const task=DB.tasks.find(x=>x.id===tid);if(!task)return;
-      const box=document.createElement('div');
-      box.innerHTML=uchipHTML(task,' dropghost');
-      unGhost=box.firstElementChild;unGhost.removeAttribute('data-id');
-      row.classList.add('hasghost');row.appendChild(unGhost);}
-    // 손가락 높이로 끼어들 자리를 정한다
-    const rows=[].slice.call(row.querySelectorAll('.uchip')).filter(c=>c!==unGhost&&c!==el);
-    let idx=rows.length;
-    for(let i=0;i<rows.length;i++){
-      const rr=rows[i].getBoundingClientRect();
-      if(cy<rr.top+rr.height/2){idx=i;break;}}
-    unIndex=idx;
-    const before=rows[idx]||null;
-    if(unGhost.nextElementSibling!==before||unGhost.parentElement!==row)row.insertBefore(unGhost,before);};
   const paintGhost=(sMin,dMin)=>{
     const g=ensureGhost(),top=map.y(sMin),h=Math.max(MIN_EVENT_PX,map.y(Math.min(1440,sMin+dMin))-top);
     g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
@@ -1782,9 +1755,6 @@ function bindGrid(root){
     if(el)el.classList.remove('act','dragging','lift');
     dropIn();
     if(ghost){ghost.remove();ghost=null;}
-    if(unGhost){const r=unGhost.parentElement;unGhost.remove();unGhost=null;
-      if(r)r.classList.remove('hasghost');}
-    unIndex=null;
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
     mode=null;el=null;tid=null;armed=false;prevT=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
@@ -1881,12 +1851,8 @@ function bindGrid(root){
       overUn=inUnbar(t.clientX,t.clientY);
       const u=unbar();if(u)u.classList.toggle('tgt',overUn);
       autoScroll(t.clientY);
-      if(overUn){
-        if(ghost){ghost.remove();ghost=null;}
-        paintUnGhost(t.clientY);
-        showTag(L.dropToUn,t.clientY);return;}
-      if(unGhost){const rw=unGhost.parentElement;unGhost.remove();unGhost=null;unIndex=null;
-        if(rw)rw.classList.remove('hasghost');}
+      // 미배정 위에서는 레일 전체가 밝아진다(.tgt). 그 안에 미리보기를 세우지 않는다.
+      if(overUn){if(ghost){ghost.remove();ghost=null;}showTag(L.dropToUn,t.clientY);return;}
       const task=DB.tasks.find(x=>x.id===tid),point=placeSnap(r);
       let d=(task&&task.autoSlot!=null)?60:baseD,sM=placeSnap(r-d/2);
       dropBand=null;
@@ -1959,11 +1925,8 @@ function bindGrid(root){
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
         task.min=null;task.dur=null;task.autoSlot=null;if(SEL===task.id)SEL=null;
-        // 미리보기가 서 있던 자리에 그대로 끼워 넣는다
-        const list=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id)
-          .sort((a,b)=>(a.ord||0)-(b.ord||0));
-        list.splice(Math.max(0,Math.min(list.length,unIndex==null?list.length:unIndex)),0,task);
-        list.forEach((x,i)=>{x.ord=i;});
+        // 되돌린 것은 미배정 목록 맨 아래로 간다
+        task.ord=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id).length;
       }else if(mode==='rt'&&prevT){
         clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(prevT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,prevT,prevBase);
@@ -2155,7 +2118,7 @@ function detailHTML(){
   const when=e.min==null?L.unassigned:hhmm(e.min)+' ~ '+hhmm(eEnd)+' · '+durTxt(eEnd-e.min);
   let h='<div class="fl">'+esc(L.curPlace)+'</div><div style="padding:13px 15px;border-radius:var(--r3);background:var(--muted);'+
     'font-size:14px;font-weight:800;color:var(--ink2)">'+when+
-    '<div style="margin-top:4px;font-size:11.5px;font-weight:650;color:var(--ink3)">'+esc(L.curPlaceSub)+'</div></div>';
+    '</div>';
   if(DB.subjects.length)h+='<div class="fl">'+esc(L.cat)+'</div><div class="seg"><button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">'+esc(L.none)+'</button>'+
     DB.subjects.map(s=>'<button class="sg'+(e.subj===s.id?' on':'')+'" onclick="setSubj(\''+s.id+'\')">'+esc(s.name)+'</button>').join('')+'</div>';
   h+='<div class="fl">'+esc(L.repeat)+'</div><div class="seg">'+
@@ -2387,11 +2350,10 @@ function openScheduleSettings(){
   const used={};sets.forEach(x=>setDays(x).forEach(d=>{used[d]=1;}));
   const wide=DOW.map((d,i)=>used[i]?null:d).filter(d=>d!=null);
   const addBtn=SCHED_ADD_ON?'<div class="row2"><button class="btn s" onclick="editSchedSet(null)">'+esc(L.schedAdd)+'</button></div>':'';
-  openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div><div class="sheetlead">'+esc(L.schedLead)+'</div>'+
+  // 처음 보는 사람에게 설명하던 안내 줄은 두지 않는다. 24시간으로 도는 요일만 짧게 적는다.
+  openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div>'+
     sets.map(schedRowHTML).join('')+
-    '<div class="fullnote">'+(wide.length
-      ?esc(L.schedFree)+esc(wide.join(' · '))+'<br>'+esc(L.schedFreeNote)
-      :esc(L.defaultSchedNote))+'</div>'+addBtn);
+    (wide.length?'<div class="fullnote">'+esc(L.schedFree)+esc(wide.join(' · '))+'</div>':'')+addBtn);
 }
 let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
@@ -2418,7 +2380,7 @@ function scheduleEditor(){
     ?'<div class="sh2">'+esc(L.defaultEditTitle(_sched.name))+'</div>'
     :'<div class="sh2">'+esc(_sched.id?L.schedSetEdit:L.schedSetNew)+'</div>'+
      '<div class="fl">'+esc(L.schedSetName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedSetNamePh)+'" value="'+esc(_sched.name)+'">';
-  const h=head+'<div class="sheetlead" style="margin-top:10px">'+esc(L.defaultEditLead)+'</div>'+
+  const h=head+
     '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
     '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
     '<div class="fl">'+esc(L.blocks)+'</div>'+
@@ -2478,9 +2440,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=69';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=69';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=69';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=70';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=70';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=70';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3199,7 +3161,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=69').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=70').catch(()=>{});
 </script>
 </body>
 </html>
