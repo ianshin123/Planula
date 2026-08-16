@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=66">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=66">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=66">
-<link rel="apple-touch-icon" href="icon-192.png?v=66">
+<link rel="manifest" href="manifest.webmanifest?v=67">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=67">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=67">
+<link rel="apple-touch-icon" href="icon-192.png?v=67">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1663,7 +1663,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let pending=null,pressTimer=null,bndEl=null,lastTapId=null,lastTapAt=0,unGhost=null,unIndex=null;
+  let pending=null,pressTimer=null,bndEl=null,lastTapId=null,lastTapAt=0,unGhost=null,unIndex=null,lifted=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1733,8 +1733,14 @@ function bindGrid(root){
     const r=chip.getBoundingClientRect(),br=bar.getBoundingClientRect();
     chip.style.width=Math.round(r.width)+'px';
     chip.style.left=Math.round(r.left-br.left)+'px';
-    chip.style.top=Math.round(r.top-br.top)+'px';};
-  const dropIn=chip=>{if(chip){chip.style.width='';chip.style.left='';chip.style.top='';}};
+    chip.style.top=Math.round(r.top-br.top)+'px';
+    lifted=chip;};
+  /* 꺼낸 그 칩만 되돌린다. 아무 요소나 되돌리면 안 된다 — 배정 카드의
+     top·height 는 인라인 스타일이라, 지우는 순간 카드가 그리드 맨 위로
+     날아가 화면에서 사라진 것처럼 보인다. */
+  const dropIn=()=>{
+    if(!lifted)return;
+    lifted.style.width='';lifted.style.left='';lifted.style.top='';lifted=null;};
   /* 꾹 누르는 동안은 아무 일도 없다가, 시간을 채우면 그때 잡힌다.
      잡힌 티를 내야 한다 — 카드는 떠오르고 경계 토글은 두꺼워지고 진동이 온다. */
   const startPress=m=>{
@@ -1751,7 +1757,8 @@ function bindGrid(root){
     },LONG_MS);};
   const clearAll=()=>{
     cancelPress();
-    if(el){el.classList.remove('act','dragging','lift');dropIn(el);}
+    if(el)el.classList.remove('act','dragging','lift');
+    dropIn();
     if(bndEl)bndEl.classList.remove('hot');
     if(ghost){ghost.remove();ghost=null;}
     if(unGhost){const r=unGhost.parentElement;unGhost.remove();unGhost=null;
@@ -2424,9 +2431,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=66';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=66';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=66';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=67';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=67';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=67';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3126,7 +3133,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=66').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=67').catch(()=>{});
 </script>
 </body>
 </html>
