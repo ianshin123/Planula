@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#F7F5F1">
+<meta name="theme-color" id="tcolor" content="#F7F5F1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=57">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=57">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=57">
-<link rel="apple-touch-icon" href="icon-192.png?v=57">
+<link rel="manifest" href="manifest.webmanifest?v=58">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=58">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=58">
+<link rel="apple-touch-icon" href="icon-192.png?v=58">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1068,11 +1068,18 @@ const PALETTE=['#E07A4F','#EDA359','#C99B3E','#8CB059','#46A571','#3F9CB5','#5A8
 let tab='today', calM=new Date(), popDate=null, _anim=false;
 let SEL=null;   // 선택된 일정 id — 선택하면 위아래 손잡이가 나온다
 load();
+/* 노치·상태표시줄 영역은 theme-color 가 칠한다. 지금 보고 있는 테마의
+   배경색과 같게 두지 않으면 그 부분만 다른 색으로 떠 어색하다. */
 function applyTheme(){
   const t=DB.s.theme||'sys';
   if(t==='sys')document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme',t);
+  const dark=t==='dark'||(t==='sys'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+  const m=document.getElementById('tcolor');
+  if(m)m.setAttribute('content',dark?'#181613':'#F7F5F1');
 }
+if(window.matchMedia)try{window.matchMedia('(prefers-color-scheme:dark)')
+  .addEventListener('change',()=>applyTheme());}catch(e){}
 applyTheme();
 
 /* ═════ 4. 반복 ═════ */
@@ -2292,9 +2299,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=57';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=57';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=57';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=58';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=58';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=58';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2968,7 +2975,18 @@ if(!DB.s.tutorialSeen||plannerUntouched())setTimeout(()=>openIntro(),420);
 window.addEventListener('resize',()=>{placeThumb();fitRail();if(tab==='cal')setTimeout(fitCalendar,50);
   if(_tourActive&&!_tourLanding){clearTimeout(_tourPlaceTimer);_tourPlaceTimer=setTimeout(placeTutorial,60);}});
 setInterval(()=>{if(tab==='today'&&!GD.on&&!$('#sheet').classList.contains('on'))paint();},60000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=57').catch(()=>{});
+/* 뒤로가기는 앱을 나가기 전에 열려 있는 것부터 닫고, 다른 탭이면 오늘로 돌아온다.
+   처리할 때마다 상태를 다시 쌓아 다음 뒤로가기도 받을 수 있게 한다. */
+function navPush(){try{history.pushState({p:1},'');}catch(e){}}
+try{history.replaceState({p:0},'');navPush();}catch(e){}
+window.addEventListener('popstate',()=>{
+  if(subSheetOn()){closeSubSheet();navPush();return;}
+  if($('#sheet').classList.contains('on')){closeSheet(true);navPush();return;}
+  if(_tourActive){navPush();return;}          // 사용법 중에는 나가지 않는다
+  if(tab!=='today'){go('today');navPush();return;}
+  // 더 닫을 것이 없으면 그대로 앱을 나간다
+});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=58').catch(()=>{});
 </script>
 </body>
 </html>
