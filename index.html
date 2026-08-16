@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=65">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=65">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=65">
-<link rel="apple-touch-icon" href="icon-192.png?v=65">
+<link rel="manifest" href="manifest.webmanifest?v=66">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=66">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=66">
+<link rel="apple-touch-icon" href="icon-192.png?v=66">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -138,17 +138,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
 .unbar.empty .unrow{min-height:120px;display:flex;align-items:center;justify-content:center;
   border:1.5px dashed var(--line);border-radius:11px;font-size:12px;font-weight:700;color:var(--ink3)}
-/* 미리보기 칩이 떠 있는 동안에는 '끌어와서 미배정' 안내를 감춘다 */
+/* 미리보기 칩이 떠 있는 동안에는 '끌어와서 미배정' 안내를 감춘다.
+   비어 있을 때의 가운데 정렬도 풀어야 미리보기가 진짜 칩과 같은 폭으로 보인다. */
 .unrow.hasghost .unph{display:none}
+.unbar.empty .unrow.hasghost{align-items:stretch;justify-content:flex-start}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   transition:transform .16s cubic-bezier(.2,1.5,.4,1),box-shadow .16s ease}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
-/* 꾹 눌러 잡힌 순간 카드가 떠오른다. 평평하게 두면 잡혔는지 알 수 없다. */
-.uchip.lift{border-color:var(--ac);background:var(--ac-s);box-shadow:var(--shadow-md);
-  transform:scale(1.07);z-index:20}
+/* 꾹 눌러 잡힌 순간 카드가 떠오른다. 평평하게 두면 잡혔는지 알 수 없다.
+   미배정 목록은 스크롤 영역이라 그 안에서 키우면 커진 만큼 잘린다.
+   잡히는 순간 목록에서 꺼내(absolute) 레일 위로 띄운다 — 기준은 .unbar 다. */
+.uchip.lift{position:absolute;border-color:var(--ac);background:var(--ac-s);box-shadow:var(--shadow-lg);
+  transform:scale(1.07);z-index:40}
 .uchip.dragging{opacity:.3}
 .uchip.done{background:var(--done-bg)}
 .uchip.done .ut{opacity:.56}
@@ -1366,12 +1370,18 @@ function renderDay(ds){
        (nx?' data-b="'+nx.t.id+'"':'')+'></div>';});
   h+='</div></div><div class="unbar glass'+(un.length?'':' empty')+'" data-un="1">'+
     '<div class="uh">'+L.unassigned+(un.length?' '+un.length:'')+'</div>'+
-    '<div class="unrow">'+(un.length?un.map(t=>{const sj=t.subj?subjOf(t.subj):null;return '<div class="uchip'+(t.done?' done':'')+'" data-id="'+t.id+'">'+
-      '<button class="uck'+(t.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
-      '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
-      '<div class="gr"><b></b><b></b><b></b></div></div>';}).join('')
+    '<div class="unrow">'+(un.length?un.map(t=>uchipHTML(t)).join('')
       :'<span class="unph">'+L.unDrop+'</span>')+'</div></div></div>';
   return h;
+}
+/* 미배정 칩 한 장. 끌어다 놓는 미리보기도 이걸 그대로 쓴다 —
+   이름만 있는 상자를 보여주면 어떤 모양으로 들어가는지 알 수 없다. */
+function uchipHTML(t,extra){
+  const sj=t.subj?subjOf(t.subj):null;
+  return '<div class="uchip'+(t.done?' done':'')+(extra||'')+'" data-id="'+t.id+'">'+
+    '<button class="uck'+(t.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
+    '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
+    '<div class="gr"><b></b><b></b><b></b></div></div>';
 }
 /* 2주 이내 마감 — 작은 빨간 글씨 */
 function dcount(date){return Math.round((parseD(date)-parseD(TODAY()))/86400000);}
@@ -1653,7 +1663,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let pending=null,pressTimer=null,bndEl=null,lastTapId=null,lastTapAt=0,unGhost=null;
+  let pending=null,pressTimer=null,bndEl=null,lastTapId=null,lastTapAt=0,unGhost=null,unIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1691,22 +1701,40 @@ function bindGrid(root){
     ghost.innerHTML='<div class="evb"><div class="evtitle"><div class="evt">'+esc(task?task.title:'')+'</div>'+
       (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div><div class="evm"></div></div>';
     grid().appendChild(ghost);return ghost;};
-  /* 미배정으로 되돌릴 때도 칸만 밝히지 않는다. 실제로 들어갈 자리에
-     같은 모양의 칩을 하나 띄워 어떻게 들어가는지 보여준다. */
-  const paintUnGhost=()=>{
-    if(unGhost)return unGhost;
-    const row=root.querySelector('.unrow');if(!row)return null;
-    const task=DB.tasks.find(x=>x.id===tid),sj=task&&task.subj?subjOf(task.subj):null;
-    unGhost=document.createElement('div');unGhost.className='uchip dropghost';
-    unGhost.innerHTML='<div class="ut"><i>'+esc(task?task.title:'')+'</i>'+
-      (sj?'<span class="ucat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>';
-    row.classList.add('hasghost');row.appendChild(unGhost);return unGhost;};
+  /* 미배정으로 갈 때도 칸만 밝히지 않는다. 진짜 칩과 똑같이 생긴 미리보기를
+     목록 안 실제로 끼어들 자리에 넣어, 어떤 모양으로 어디에 들어가는지 보여준다. */
+  const paintUnGhost=cy=>{
+    const row=root.querySelector('.unrow');if(!row)return;
+    if(!unGhost){
+      const task=DB.tasks.find(x=>x.id===tid);if(!task)return;
+      const box=document.createElement('div');
+      box.innerHTML=uchipHTML(task,' dropghost');
+      unGhost=box.firstElementChild;unGhost.removeAttribute('data-id');
+      row.classList.add('hasghost');row.appendChild(unGhost);}
+    // 손가락 높이로 끼어들 자리를 정한다
+    const rows=[].slice.call(row.querySelectorAll('.uchip')).filter(c=>c!==unGhost&&c!==el);
+    let idx=rows.length;
+    for(let i=0;i<rows.length;i++){
+      const rr=rows[i].getBoundingClientRect();
+      if(cy<rr.top+rr.height/2){idx=i;break;}}
+    unIndex=idx;
+    const before=rows[idx]||null;
+    if(unGhost.nextElementSibling!==before||unGhost.parentElement!==row)row.insertBefore(unGhost,before);};
   const paintGhost=(sMin,dMin)=>{
     const g=ensureGhost(),top=map.y(sMin),h=Math.max(MIN_EVENT_PX,map.y(Math.min(1440,sMin+dMin))-top);
     g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
     g.classList.toggle('sm',h<40);
     const m=g.querySelector('.evm');if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
   const cancelPress=()=>{clearTimeout(pressTimer);pressTimer=null;pending=null;};
+  /* 미배정 칩을 목록 밖으로 꺼내 레일 위에 띄운다. 지금 자리 그대로 두되
+     기준만 .unbar 로 바꾸므로 눈에는 제자리에서 떠오른 것으로 보인다. */
+  const liftOut=chip=>{
+    const bar=unbar();if(!bar||!chip)return;
+    const r=chip.getBoundingClientRect(),br=bar.getBoundingClientRect();
+    chip.style.width=Math.round(r.width)+'px';
+    chip.style.left=Math.round(r.left-br.left)+'px';
+    chip.style.top=Math.round(r.top-br.top)+'px';};
+  const dropIn=chip=>{if(chip){chip.style.width='';chip.style.left='';chip.style.top='';}};
   /* 꾹 누르는 동안은 아무 일도 없다가, 시간을 채우면 그때 잡힌다.
      잡힌 티를 내야 한다 — 카드는 떠오르고 경계 토글은 두꺼워지고 진동이 온다. */
   const startPress=m=>{
@@ -1716,16 +1744,19 @@ function bindGrid(root){
       if(!pending||!el||blocked){pending=null;return;}
       mode=pending;pending=null;GD.on=true;
       if(mode==='rb'){el.classList.add('act');if(bndEl)bndEl.classList.add('hot');}
-      else el.classList.add('act','lift');
+      else{
+        if(mode==='new')liftOut(el);
+        el.classList.add('act','lift');}
       buzz(18);
     },LONG_MS);};
   const clearAll=()=>{
     cancelPress();
-    if(el)el.classList.remove('act','dragging','lift');
+    if(el){el.classList.remove('act','dragging','lift');dropIn(el);}
     if(bndEl)bndEl.classList.remove('hot');
     if(ghost){ghost.remove();ghost=null;}
     if(unGhost){const r=unGhost.parentElement;unGhost.remove();unGhost=null;
       if(r)r.classList.remove('hasghost');}
+    unIndex=null;
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
     mode=null;el=null;tid=null;bndEl=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
@@ -1816,9 +1847,9 @@ function bindGrid(root){
       autoScroll(t.clientY);
       if(overUn){
         if(ghost){ghost.remove();ghost=null;}
-        if(mode==='move')paintUnGhost();
+        paintUnGhost(t.clientY);
         showTag(L.dropToUn,t.clientY);return;}
-      if(unGhost){const rw=unGhost.parentElement;unGhost.remove();unGhost=null;
+      if(unGhost){const rw=unGhost.parentElement;unGhost.remove();unGhost=null;unIndex=null;
         if(rw)rw.classList.remove('hasghost');}
       const task=DB.tasks.find(x=>x.id===tid),point=placeSnap(r);
       let d=(task&&task.autoSlot!=null)?60:baseD,sM=placeSnap(r-d/2);
@@ -1884,6 +1915,11 @@ function bindGrid(root){
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
         task.min=null;task.dur=null;task.autoSlot=null;
+        // 미리보기가 서 있던 자리에 그대로 끼워 넣는다
+        const list=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id)
+          .sort((a,b)=>(a.ord||0)-(b.ord||0));
+        list.splice(Math.max(0,Math.min(list.length,unIndex==null?list.length:unIndex)),0,task);
+        list.forEach((x,i)=>{x.ord=i;});
       }else if(mode==='rb'&&nextT){
         clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(nextT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,nextT,nextBase);
@@ -2177,8 +2213,12 @@ let _sj={};
 /* 사용법에서 만든 것은 예시일 뿐이라 끝나면 지운다. 남겨 두면 진짜 계획과 섞인다.
    사용법 중에 새로 만든 것만 기억해 둔다 — 원래 있던 것은 건드리지 않는다. */
 let _tourMade=null;
+/* '사용법을 실제로 보고 있는 중'은 시작 질문에 답한 뒤부터 끝내기 전까지다.
+   `_tourActive`는 시작 질문이 떠 있을 때와 캐릭터가 날아가는 동안에도 서 있어서,
+   그것만 보면 사용법을 고르지 않은 사람에게도 예시 이름이 들어간다. */
+function tourRunning(){return _tourActive&&!_tourIntro&&!_tourLanding;}
 function tourMadeReset(){_tourMade={task:[],subj:[],dday:[]};}
-function tourMade(kind,id){if(_tourMade&&id)_tourMade[kind].push(id);}
+function tourMade(kind,id){if(_tourMade&&id&&tourRunning())_tourMade[kind].push(id);}
 function clearTourSamples(){
   const m=_tourMade;_tourMade=null;
   if(!m||!(m.task.length||m.subj.length||m.dday.length))return false;
@@ -2190,7 +2230,10 @@ function clearTourSamples(){
   save();return true;
 }
 function tourSample(kind){
-  if(!_tourActive)return '';
+  if(!tourRunning())return '';
+  // 지금 안내하는 단계가 그걸 만들라는 단계일 때만 채운다.
+  const s=TOUR_STEPS[_tourStep];
+  if(!s||s.id!==kind)return '';
   if(kind==='goal')return L.sampleGoal;
   if(kind==='dday')return L.sampleDday;
   const n=tasksOf(TODAY()).filter(t=>t.min==null).length;
@@ -2224,8 +2267,10 @@ let _dd={};
 function editDday(sid,did){
   const s=subjOf(sid);if(!s)return;
   const d=did?(s.ddays||[]).find(x=>x.id===did):null;
+  // 예시 이름이 들어갈 때만 날짜도 일주일 뒤로 채운다 — 저장하면 바로 D-7이 보인다
+  const smp=d?'':tourSample('dday');
   _dd=d?{sid,id:d.id,title:d.title,date:d.date}
-      :{sid,id:null,title:tourSample('dday'),date:_tourActive?addDays(TODAY(),7):TODAY()};
+      :{sid,id:null,title:smp,date:smp?addDays(TODAY(),7):TODAY()};
   let h='<div class="sh2">'+esc(d?L.ddayEdit:L.ddayAdd)+'</div>'+
     '<input class="fi" id="f_ddt" placeholder="'+esc(L.ddayPh)+'" value="'+esc(_dd.title)+'">'+
     '<div class="fl">'+esc(L.date)+'</div><input class="fi" type="date" id="f_ddd" value="'+_dd.date+'">'+
@@ -2379,9 +2424,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=65';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=65';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=65';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=66';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=66';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=66';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2752,7 +2797,9 @@ function openTutorial(i,replay){
   const home=$('#mascotHome');if(home)home.classList.add('tour-away');renderTutorial();
 }
 function renderTutorial(){
-  if(!_tourActive||_tourLanding)return;
+  // 시작 질문 화면에는 단계 말풍선의 요소들(진행 표시·힌트 줄)이 없다.
+  // 그 위에 단계를 그리려 들면 없는 자리에 글자를 넣다가 터진다.
+  if(!_tourActive||_tourLanding||_tourIntro)return;
   const s=TOUR_STEPS[_tourStep],guide0=$('#tour .tourguide');
   const copy=(s.id==='install'&&standaloneMode())
     ?{t:L.installedTitle,x:L.installedText,n:L.installedNext}:tourCopy(s);
@@ -3079,7 +3126,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=65').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=66').catch(()=>{});
 </script>
 </body>
 </html>
