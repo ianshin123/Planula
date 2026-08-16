@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=61">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=61">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=61">
-<link rel="apple-touch-icon" href="icon-192.png?v=61">
+<link rel="manifest" href="manifest.webmanifest?v=62">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=62">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=62">
+<link rel="apple-touch-icon" href="icon-192.png?v=62">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1759,7 +1759,9 @@ function bindGrid(root){
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
       prevBand=autoSlotBand(task)||bandAt(ds,task.min);
       // 첫 탭은 선택만 한다. 선택된 카드의 본문만 이동 영역으로 활성화한다.
-      if(SEL===task.id){mode='move';armed=true;}
+      // preventDefault 로 뒤따라오는 유령 click 을 막는다. 이게 없으면 수정 시트가
+      // 열린 직후 그 click 이 스크림에 떨어져 시트가 곧바로 닫힌다.
+      if(SEL===task.id){mode='move';armed=true;if(e.cancelable)e.preventDefault();}
     }
   },{passive:false});
 
@@ -2319,9 +2321,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=61';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=61';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=61';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=62';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=62';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=62';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3012,7 +3014,7 @@ window.addEventListener('popstate',()=>{
   if(tab!=='today'){go('today');navPush();return;}
   // 더 닫을 것이 없으면 그대로 앱을 나간다
 });
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=61').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=62').catch(()=>{});
 </script>
 </body>
 </html>
