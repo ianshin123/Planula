@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=73">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=73">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=73">
-<link rel="apple-touch-icon" href="icon-192.png?v=73">
+<link rel="manifest" href="manifest.webmanifest?v=74">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=74">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=74">
+<link rel="apple-touch-icon" href="icon-192.png?v=74">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -663,7 +663,7 @@ const L=KO?{
   start:'시작',endOpen:'종료 (비우면 계속)',
   taskEdit:'할일 수정',taskNew:'새 할일',taskPh:'무엇을 할까',
   goesTo:w=>w+'에 들어간다',more:'자세히 ▾',less:'간단히 ▴',
-  copyToUn:'미배정으로 복사',save:'저장',add:'추가',delOnlyThis:'이것만 삭제',del:'삭제',delAllRep:'반복 전체 삭제',
+  copyToUn:'미배정으로 복사',nextDay:'다음날로 옮기기',movedNextDay:'다음날로 옮겼다',save:'저장',add:'추가',delOnlyThis:'이것만 삭제',del:'삭제',delAllRep:'반복 전체 삭제',
   needTaskName:'할일 이름을 적어줘',copiedToUn:'미배정에 복사했다',edited:'수정했다',added:'추가했다',
   delAllRepDone:'반복 전체를 지웠다',deleted:'지웠다',
   catEdit:'목표 수정',catNew:'새 목표',catPh:'예: 수학, 동아리, 운동',color:'색상',catDel:'목표 삭제',
@@ -763,7 +763,7 @@ const L=KO?{
   start:'Start',endOpen:'End (leave empty to keep going)',
   taskEdit:'Edit task',taskNew:'New task',taskPh:'What needs doing?',
   goesTo:w=>'Goes into '+w,more:'Details ▾',less:'Simple ▴',
-  copyToUn:'Copy to unassigned',save:'Save',add:'Add',delOnlyThis:'Delete just this one',del:'Delete',delAllRep:'Delete every repeat',
+  copyToUn:'Copy to unassigned',nextDay:'Move to tomorrow',movedNextDay:'Moved to the next day',save:'Save',add:'Add',delOnlyThis:'Delete just this one',del:'Delete',delAllRep:'Delete every repeat',
   needTaskName:'Give the task a name',copiedToUn:'Copied to unassigned',edited:'Saved',added:'Added',
   delAllRepDone:'Deleted the whole repeat',deleted:'Deleted',
   catEdit:'Edit goal',catNew:'New goal',catPh:'e.g. Maths, club, training',color:'Color',catDel:'Delete goal',
@@ -1693,7 +1693,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let armed=false,prevT=null,prevBase=0,lifted=null;
+  let armed=false,prevT=null,prevBase=0,lifted=null,unIndex=null;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1761,7 +1761,7 @@ function bindGrid(root){
     if(ghost){ghost.remove();ghost=null;}
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;armed=false;prevT=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
+    mode=null;el=null;tid=null;armed=false;unIndex=null;prevT=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
     GD.on=false;GD.endedAt=Date.now();};
   const inUnbar=(cx,cy)=>{const u=unbar();if(!u)return false;
     const r=u.getBoundingClientRect();
@@ -1856,7 +1856,18 @@ function bindGrid(root){
       const u=unbar();if(u)u.classList.toggle('tgt',overUn);
       autoScroll(t.clientY);
       // 미배정 위에서는 레일 전체가 밝아진다(.tgt). 그 안에 미리보기를 세우지 않는다.
-      if(overUn){if(ghost){ghost.remove();ghost=null;}showTag(L.dropToUn,t.clientY);return;}
+      // 대신 손가락 높이로 목록에서 끼어들 자리를 정해 둔다 — 미배정끼리 순서를 바꾼다.
+      if(overUn){
+        if(ghost){ghost.remove();ghost=null;}
+        const row=root.querySelector('.unrow');
+        if(row){
+          const rows=[].slice.call(row.querySelectorAll('.uchip')).filter(c=>c!==el);
+          let idx=rows.length;
+          for(let i=0;i<rows.length;i++){const rr=rows[i].getBoundingClientRect();
+            if(t.clientY<rr.top+rr.height/2){idx=i;break;}}
+          unIndex=idx;}
+        showTag(L.dropToUn,t.clientY);return;}
+      unIndex=null;
       const task=DB.tasks.find(x=>x.id===tid),point=placeSnap(r);
       let d=(task&&task.autoSlot!=null)?60:baseD,sM=placeSnap(r-d/2);
       dropBand=null;
@@ -1928,9 +1939,12 @@ function bindGrid(root){
     const leftBand=prevBand;
     if(task){
       if((mode==='move'||mode==='new')&&overUn){
-        task.min=null;task.dur=null;task.autoSlot=null;if(SEL===task.id)SEL=null;
-        // 되돌린 것은 미배정 목록 맨 아래로 간다
-        task.ord=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id).length;
+        task.min=null;task.dur=null;task.autoSlot=null;
+        // 손가락이 있던 자리에 끼워 넣는다 — 미배정끼리 순서 바꾸기도 이 길이다
+        const list=DB.tasks.filter(x=>x.date===ds&&x.min==null&&x.id!==task.id)
+          .sort((a,b)=>(a.ord||0)-(b.ord||0));
+        list.splice(Math.max(0,Math.min(list.length,unIndex==null?list.length:unIndex)),0,task);
+        list.forEach((x,i)=>{x.ord=i;});
       }else if(mode==='rt'&&prevT){
         clearAutoSlot(ds,leftBand);clearAutoSlot(ds,autoSlotBand(prevT));
         resizeLinked(task,mode,baseS,baseD,curS,curD,prevT,prevBase);
@@ -2156,6 +2170,7 @@ function taskSheet(){
     h+=detailHTML();
     if(!e.id)h+='<div class="fl"><span></span><button onclick="toggleAdv()">'+esc(L.less)+'</button></div>';
   }
+  if(e.id)h+='<div class="row2"><button class="btn s" onclick="moveNextDay()">'+esc(L.nextDay)+'</button></div>';
   h+='<div class="row2">'+(e.id?'<button class="btn s" onclick="copyTask()">'+esc(L.copyToUn)+'</button>':'')+
     '<button class="btn p" onclick="saveTask()">'+esc(e.id?L.save:L.add)+'</button></div>';
   if(e.id)h+='<div class="row2"><button class="btn d" onclick="delTask(false)">'+esc(e.repId?L.delOnlyThis:L.del)+'</button>'+
@@ -2212,6 +2227,19 @@ function saveTask(){
       tourMade('task',nid);}}
   materializeWindow();save();finishTaskSheet();
   toast(e.id?L.edited:L.added);tourSignal(e.id?'task-edited':'task-saved');
+}
+/* 같은 내용 그대로 하루 뒤로 보낸다. 시각과 길이는 그대로 두고 원래 칸만 정리한다.
+   반복 일정이면 그 날짜를 예외로 남기고 규칙에서 떼어낸다. */
+function moveNextDay(){
+  readTitle();const t=DB.tasks.find(x=>x.id===_ed.id);if(!t)return;
+  const oldDs=t.date,oldBand=t.min!=null?(autoSlotBand(t)||bandAt(oldDs,t.min)):null;
+  addRepException(t);t.repId=null;
+  const title=String(_ed.title||'').trim();if(title)t.title=title;
+  t.subj=_ed.subj;t.date=addDays(oldDs,1);t.autoSlot=null;
+  t.ord=DB.tasks.filter(x=>x.date===t.date&&x.id!==t.id&&(x.min==null)===(t.min==null)).length;
+  if(oldBand){if(oldBand.auto)splitAutoSlot(oldDs,oldBand,true);else splitBand(oldDs,oldBand,true);}
+  if(t.min!=null)resolveOverlaps(t.date,t.id);
+  save();finishTaskSheet();toast(L.movedNextDay);
 }
 function delTask(all){
   const t=DB.tasks.find(x=>x.id===_ed.id);if(!t)return;
@@ -2441,9 +2469,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=73';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=73';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=73';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=74';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=74';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=74';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3158,7 +3186,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=73').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=74').catch(()=>{});
 </script>
 </body>
 </html>
