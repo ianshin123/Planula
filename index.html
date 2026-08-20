@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=75">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=75">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=75">
-<link rel="apple-touch-icon" href="icon-192.png?v=75">
+<link rel="manifest" href="manifest.webmanifest?v=76">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=76">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=76">
+<link rel="apple-touch-icon" href="icon-192.png?v=76">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -101,7 +101,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 
 #app{height:100%;display:flex;flex-direction:column}
-#top{padding:calc(var(--st) + 14px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
+#top{padding:calc(var(--st) + 30px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
 #topin{max-width:var(--wrap);margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 /* 마스코트가 탭을 옮겨도 같은 자리에 있도록 제목이 남는 폭을 먹고 버튼 영역 폭을 고정한다.
@@ -565,7 +565,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tourfly.landing{transition-duration:.78s}.tourfly.landing img{animation:none}
 .tourfly.leaving{opacity:0;transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .3s ease}
 @keyframes mascotHover{0%{transform:translateY(-3px) rotate(-1.2deg)}100%{transform:translateY(4px) rotate(1.2deg)}}
-.mascot-home{display:block;width:25px;height:32px;flex:none;padding:0;opacity:1;transition:opacity .34s ease,transform .45s cubic-bezier(.22,1.6,.36,1);touch-action:manipulation}.mascot-home.tour-away{opacity:0;pointer-events:none}.mascot-home.arrived{animation:mascotArrive .5s cubic-bezier(.22,1.6,.36,1)}
+.mascot-home{display:block;width:34px;height:44px;margin-bottom:-13px;flex:none;padding:0;opacity:1;transition:opacity .34s ease,transform .45s cubic-bezier(.22,1.6,.36,1);touch-action:manipulation}.mascot-home.tour-away{opacity:0;pointer-events:none}.mascot-home.arrived{animation:mascotArrive .5s cubic-bezier(.22,1.6,.36,1)}
 .mascot-home img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 5px 7px rgba(65,34,18,.18))}.mascot-home:active{transform:scale(.92)}.mascot-home.playing img{filter:drop-shadow(0 6px 10px rgba(224,122,79,.34))}
 @keyframes mascotArrive{0%{transform:scale(.72);opacity:.2}100%{transform:scale(1);opacity:1}}
 @media(max-height:620px){.tourguide{width:min(calc(100vw - 24px),330px)}.tourbody h2{font-size:20px}.tourbody p{font-size:12.5px;line-height:1.5}.tourfly{width:72px;height:97px}}
@@ -2523,9 +2523,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=75';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=75';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=75';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=76';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=76';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=76';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3275,7 +3275,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=75').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=76').catch(()=>{});
 </script>
 </body>
 </html>
