@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=74">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=74">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=74">
-<link rel="apple-touch-icon" href="icon-192.png?v=74">
+<link rel="manifest" href="manifest.webmanifest?v=75">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=75">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=75">
+<link rel="apple-touch-icon" href="icon-192.png?v=75">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -137,6 +137,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   display:flex;flex-direction:column;transition:box-shadow .16s}
 .unbar.tgt{box-shadow:0 0 0 2.5px var(--ac) inset}
 .unbar .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin-bottom:7px}
+/* 미리보기가 서 있는 동안에는 가운데 정렬을 걷는다. 그러지 않으면 미리보기가
+   내용 폭으로 좁아져 이름이 가운데부터 시작한 것처럼 보인다. */
+.unrow.hasghost{align-items:stretch;justify-content:flex-start;border-width:0}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
 .uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
@@ -304,6 +307,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .dd{display:flex;align-items:center;gap:11px;padding:12px 17px;border-top:1px solid var(--line2)}
 .ddn{flex:1;min-width:0;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ddd{font-size:11.5px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ddord{display:flex;flex-direction:column;gap:2px;margin-left:6px}
+.ddord button{font-size:10px;line-height:1;color:var(--ink3);padding:2px 4px;border-radius:5px;background:var(--muted)}
 .ddc{font-size:14.5px;font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:-.03em;flex:none;
   padding:5px 11px;border-radius:11px;background:var(--gd-s);color:var(--gd)}
 .ddc.far{background:var(--ac-s);color:var(--ac)}
@@ -437,6 +442,8 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .schedrow.off .schedsum{opacity:.5}
 .schedempty{padding:20px 15px;border:1.5px dashed var(--line);border-radius:var(--r3);text-align:center;color:var(--ink3);font-size:13px;font-weight:650;line-height:1.6}
 .blockrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1.15fr) 38px;gap:7px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:8px}
+.gaptog{font-size:10px;font-weight:850;color:var(--ink3);padding:1px 6px;border-radius:7px;background:var(--muted)}
+.gaptog.on{color:var(--ac);background:var(--ac-s)}
 .blockrow label{display:block;font-size:10.5px;font-weight:800;color:var(--ink3);margin-bottom:4px}
 .blockrow .fi{padding:11px 10px;font-size:13px;background:var(--solid)}
 .blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
@@ -558,7 +565,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .tourfly.landing{transition-duration:.78s}.tourfly.landing img{animation:none}
 .tourfly.leaving{opacity:0;transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .3s ease}
 @keyframes mascotHover{0%{transform:translateY(-3px) rotate(-1.2deg)}100%{transform:translateY(4px) rotate(1.2deg)}}
-.mascot-home{display:block;width:54px;height:70px;flex:none;padding:0;opacity:1;transition:opacity .34s ease,transform .45s cubic-bezier(.22,1.6,.36,1);touch-action:manipulation}.mascot-home.tour-away{opacity:0;pointer-events:none}.mascot-home.arrived{animation:mascotArrive .5s cubic-bezier(.22,1.6,.36,1)}
+.mascot-home{display:block;width:25px;height:32px;flex:none;padding:0;opacity:1;transition:opacity .34s ease,transform .45s cubic-bezier(.22,1.6,.36,1);touch-action:manipulation}.mascot-home.tour-away{opacity:0;pointer-events:none}.mascot-home.arrived{animation:mascotArrive .5s cubic-bezier(.22,1.6,.36,1)}
 .mascot-home img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 5px 7px rgba(65,34,18,.18))}.mascot-home:active{transform:scale(.92)}.mascot-home.playing img{filter:drop-shadow(0 6px 10px rgba(224,122,79,.34))}
 @keyframes mascotArrive{0%{transform:scale(.72);opacity:.2}100%{transform:scale(1);opacity:1}}
 @media(max-height:620px){.tourguide{width:min(calc(100vw - 24px),330px)}.tourbody h2{font-size:20px}.tourbody p{font-size:12.5px;line-height:1.5}.tourfly{width:72px;height:97px}}
@@ -642,7 +649,7 @@ const L=KO?{
   blockFallback:'칸',firstBlock:'첫 칸',newBlock:'새 칸',
   hour:'시간',minute:'분',
   tabToday:'오늘',tabCal:'달력',tabCat:'목표',
-  cat:'목표',catAdd:'목표 추가',
+  cat:'목표',mile:'마일스톤',search:'찾기',searchPh:'할 일 · 목표 · 디데이 · 날짜',searchNone:'찾은 게 없다',catAdd:'목표 추가',
   headToday:'오늘',headCal:'달력',headCalSub:'날짜를 눌러 그날 열기',headCat:'목표',headCatSub:'디데이와 하위 목표',
   aTask:'할일 추가',aSched:'시간표 설정',aTheme:'테마 변경',aData:'데이터 관리',a24:'24시간 보기 전환',
   aDone:'완료 표시',aMascot:'캐릭터 움직이기',altMascot:'주황 해파리 캐릭터',
@@ -678,7 +685,7 @@ const L=KO?{
   schedLead:'시간대는 하나다. 그 안에 요일 묶음을 원하는 만큼 둘 수 있다. 평일·주말은 처음부터 들어 있고, 다르게 돌아가는 날이 있으면 묶음을 더 넣으면 된다.',
   schedFree:'24시간 보기: ',schedFreeNote:'시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.',
   schedDays:'적용 요일 · 비우면 그 요일은 24시간',clearDays:'모두 해제',
-  blocks:'칸',name:'이름',blockNamePh:'예: 1교시',end:'끝',
+  blocks:'칸',name:'이름',blockNamePh:'예: 1교시',end:'끝',gapKind:'쉬는 시간',blockKind:'칸',
   aBlockDel:'칸 삭제',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
   needBlock:'칸을 하나 이상 만들어줘',needBlockNames:'칸 이름을 모두 적어줘',
   checkTimes:'시작·끝 시간을 확인해줘',overlapping:'겹치는 칸이 있어',
@@ -741,7 +748,7 @@ const L=KO?{
   blockFallback:'Block',firstBlock:'First block',newBlock:'New block',
   hour:'h',minute:'m',
   tabToday:'Today',tabCal:'Calendar',tabCat:'Goals',
-  cat:'Goal',catAdd:'Add goal',
+  cat:'Goal',mile:'Milestone',search:'Search',searchPh:'Tasks · goals · d-days · dates',searchNone:'Nothing found',catAdd:'Add goal',
   headToday:'Today',headCal:'Calendar',headCalSub:'Tap a date to open that day',headCat:'Goals',headCatSub:'D-days and sub-goals',
   aTask:'Add task',aSched:'Schedule settings',aTheme:'Change theme',aData:'Manage data',a24:'Toggle 24-hour view',
   aDone:'Mark done',aMascot:'Play character',altMascot:'Orange jellyfish character',
@@ -778,7 +785,7 @@ const L=KO?{
   schedLead:'There is one schedule. It holds as many day sets as you need. Weekday and weekend come with it — add another set for days that run differently.',
   schedFree:'24-hour view: ',schedFreeNote:'Days without a schedule let you place tasks anywhere in the day.',
   schedDays:'Days it applies to · empty means 24-hour',clearDays:'Clear all',
-  blocks:'Blocks',name:'Name',blockNamePh:'e.g. Period 1',end:'End',
+  blocks:'Blocks',name:'Name',blockNamePh:'e.g. Period 1',end:'End',gapKind:'Break',blockKind:'Block',
   aBlockDel:'Delete block',addBlock:'+ Add block',reallyDel:'Really delete',
   needBlock:'Add at least one block',needBlockNames:'Name every block',
   checkTimes:'Check the start and end times',overlapping:'Some blocks overlap',
@@ -895,7 +902,7 @@ function setName(x){
   if(x.name)return x.name;
   return x.kind==='weekday'?L.defaultWeekday:x.kind==='weekend'?L.defaultWeekend:L.schedSetFallback;}
 function setBlocks(x){
-  if(Array.isArray(x.blocks)&&x.blocks.length)return x.blocks.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e}));
+  if(Array.isArray(x.blocks)&&x.blocks.length)return x.blocks.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e,gap:b.gap===true}));
   const src=x.kind==='weekday'?DEFAULT_WEEKDAY:x.kind==='weekend'?DEFAULT_WEEKEND:null;
   if(!src)return [];
   const names=x.kind==='weekend'?L.defaultWeekendBlocks:L.defaultWeekdayBlocks;
@@ -922,7 +929,7 @@ function buildScheduleBlocks(profile){
   const blocks=(profile&&profile.blocks||[]).slice().sort((a,b)=>a.s-b.s);
   blocks.forEach(b=>{
     if(b.s>cur)out.push({id:'g'+cur,s:cur,e:b.s,name:gapName(cur,b.s),cls:false});
-    out.push({id:b.id,s:b.s,e:b.e,name:b.name,cls:true});cur=b.e;});
+    out.push({id:b.id,s:b.s,e:b.e,name:b.name,cls:b.gap!==true});cur=b.e;});
   if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:gapName(cur,1440),cls:false});
   return out;
 }
@@ -967,10 +974,12 @@ const placeSnap=m=>snapTo(m,PLACE_SNAP);
 const KEY='planner_v3';
 function freshSettings(){return {force24:{},theme:'sys',sched:freshSched(),tutorialSeen:false,introDone:false};}
 function normalizeProfile(p){
+  // gap:true 는 쉬는 시간·취침 전처럼 회색으로 그리는 칸이다. 옛 저장값에는 없으니
+  // 없으면 일반 칸으로 본다 — 덮어써도 깨지지 않는다.
   const blocks=(Array.isArray(p&&p.blocks)?p.blocks:[]).map((b,i)=>({
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||L.blockFallback),
     s:Math.max(0,Math.min(1435,Math.round(Number(b.s)||0))),
-    e:Math.max(5,Math.min(1440,Math.round(Number(b.e)||0)))
+    e:Math.max(5,Math.min(1440,Math.round(Number(b.e)||0))),gap:b.gap===true
   })).filter(b=>b.e>b.s).sort((a,b)=>a.s-b.s);
   return {id:String(p&&p.id||('sch-'+Date.now().toString(36))),name:String(p&&p.name||L.schedSetFallback),blocks,off:(p&&p.off)===true};
 }
@@ -1420,7 +1429,8 @@ function themeIcon(){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor" stroke="none"/></svg>';
 }
 function topHTML(){
-  const th='<button class="ib" aria-label="'+esc(L.aSched)+'" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/></svg></button>'+
+  const th='<button class="ib" aria-label="'+esc(L.search)+'" onclick="openSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>'+
+    '<button class="ib" aria-label="'+esc(L.aSched)+'" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/></svg></button>'+
     '<button class="ib" aria-label="'+esc(L.aTheme)+'" onclick="cycleTheme()">'+themeIcon()+'</button>'+
     '<button class="ib" aria-label="'+esc(L.aData)+'" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
@@ -1501,24 +1511,28 @@ function setDateViewMode(ds){
 function popToggle24(){const ds=popDate;if(setDateViewMode(ds))openDay(ds);}
 
 /* ═════ 8. 과목 ═════ */
-function ddHTML(s,d,editable){
+function ddHTML(s,d,editable,idx,total){
   const n=dcount(d.date),cl=n<0?'past':(n<=7?'':'far');
   const lab=n===0?'D-DAY':(n>0?'D-'+n:'D+'+(-n)),dt=parseD(d.date);
   return '<div class="dd"'+(editable?' onclick="editDday(\''+s.id+'\',\''+d.id+'\')"':'')+'>'+
     '<div class="sjc" style="background:'+s.color+'"></div>'+
     '<div style="flex:1;min-width:0"><div class="ddn">'+esc(d.title)+'</div>'+
     '<div class="ddd">'+esc(fmtDot(dt))+(editable?'':' · '+esc(s.name))+'</div></div>'+
-    '<div class="ddc '+cl+'">'+lab+'</div></div>';
+    '<div class="ddc '+cl+'">'+lab+'</div>'+
+    (editable&&total>1?'<div class="ddord">'+
+      (idx>0?'<button onclick="event.stopPropagation();moveDday(\''+s.id+'\','+idx+',-1)">▲</button>':'')+
+      (idx<total-1?'<button onclick="event.stopPropagation();moveDday(\''+s.id+'\','+idx+',1)">▼</button>':'')+
+      '</div>':'')+'</div>';
 }
 function subjHTML(){
   if(!DB.subjects.length)return '<div class="card glass"><div class="empty">'+L.catEmpty+'</div></div>';
   let h='';
   DB.subjects.forEach(s=>{
-    const dds=(s.ddays||[]).slice().sort((a,b)=>a.date<b.date?-1:1),gls=s.goals||[];
+    const dds=(s.ddays||[]).slice(),gls=s.goals||[];   // 손으로 정한 순서를 그대로 쓴다
     h+='<div class="sj glass"><div class="sjh" onclick="editSubject(\''+s.id+'\')">'+
       '<div class="sjc" style="background:'+s.color+'"></div><b>'+esc(s.name)+'</b>'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="width:17px;height:17px;color:var(--ink3)"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></div>';
-    dds.forEach(d=>{h+=ddHTML(s,d,true);});
+    dds.forEach((d,i)=>{h+=ddHTML(s,d,true,i,dds.length);});
     if(gls.length){h+='<div style="border-top:1px solid var(--line2);padding:4px 0 7px" class="goals" data-sid="'+s.id+'">';
       gls.forEach(g=>{h+='<div class="gl" data-gid="'+g.id+'" onclick="editGoal(\''+s.id+'\',\''+g.id+'\')">'+
         '<div class="gld"></div><div class="glt">'+esc(g.text)+'</div><div class="gr2"><i></i><i></i><i></i></div></div>';});
@@ -1693,7 +1707,7 @@ function bindGrid(root){
   let mode=null,el=null,tid=null,sy=0,sx=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
   let baseS=0,baseD=0,nextT=null,nextBase=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
   // 꾹 누르기 대기 상태와 직전 탭. 둘 다 이 그리드 안에서만 산다.
-  let armed=false,prevT=null,prevBase=0,lifted=null,unIndex=null;
+  let armed=false,prevT=null,prevBase=0,lifted=null,unIndex=null,unGhost=null,hardS=0,hardE=1440;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -1732,6 +1746,26 @@ function bindGrid(root){
     ghost.innerHTML='<div class="evb"><div class="evtitle"><div class="evt">'+esc(task?task.title:'')+'</div>'+
       (sj?'<span class="evcat"><i style="background:'+sj.color+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div><div class="evm"></div></div>';
     grid().appendChild(ghost);return ghost;};
+  /* 미배정으로 갈 때는 진짜 칩과 똑같은 미리보기(uchipHTML)를 실제로 끼어들 자리에
+     세운다. 마크업이 같아야 이름 줄이 배치 결과와 어긋나지 않는다. */
+  const clearUnGhost=()=>{
+    if(!unGhost)return;
+    const r=unGhost.parentElement;unGhost.remove();unGhost=null;unIndex=null;
+    if(r)r.classList.remove('hasghost');};
+  const paintUnGhost=cy=>{
+    const row=root.querySelector('.unrow');if(!row)return;
+    if(!unGhost){
+      const task=DB.tasks.find(x=>x.id===tid);if(!task)return;
+      const box=document.createElement('div');box.innerHTML=uchipHTML(task,' dropghost');
+      unGhost=box.firstElementChild;unGhost.removeAttribute('data-id');
+      row.classList.add('hasghost');row.appendChild(unGhost);}
+    const rows=[].slice.call(row.querySelectorAll('.uchip')).filter(c=>c!==unGhost&&c!==el);
+    let idx=rows.length;
+    for(let i=0;i<rows.length;i++){const rr=rows[i].getBoundingClientRect();
+      if(cy<rr.top+rr.height/2){idx=i;break;}}
+    unIndex=idx;
+    const before=rows[idx]||null;
+    if(unGhost.nextElementSibling!==before||unGhost.parentElement!==row)row.insertBefore(unGhost,before);};
   const paintGhost=(sMin,dMin)=>{
     const g=ensureGhost(),top=map.y(sMin),h=Math.max(MIN_EVENT_PX,map.y(Math.min(1440,sMin+dMin))-top);
     g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
@@ -1759,6 +1793,7 @@ function bindGrid(root){
     if(el)el.classList.remove('act','dragging','lift');
     dropIn();
     if(ghost){ghost.remove();ghost=null;}
+    clearUnGhost();
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
     mode=null;el=null;tid=null;armed=false;unIndex=null;prevT=null;nextT=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
@@ -1810,19 +1845,20 @@ function bindGrid(root){
       el=ev;tid=task.id;mode=handle.classList.contains('t')?'rt':'rb';
       baseS=rel(task.min);baseD=Math.max(SNAP,taskDur(task,ds));curS=baseS;curD=baseD;
       prevBand=autoSlotBand(task);
-      /* 경계를 함께 미는 건 같은 칸에 있는 이웃끼리만이다. 칸이 다르면 붙어 있어도
-         남남이라 제 끝만 움직인다. */
-      const myBand=autoSlotBand(task)||bandAt(ds,task.min);
-      const sameCell=o=>{const b=autoSlotBand(o)||bandAt(ds,o.min);
-        return (!myBand&&!b)||sameBand(myBand,b);};
+      /* 맞닿아 있으면 칸이 달라도 경계를 함께 민다. 맞닿은 이웃이 없을 때는
+         옆 일정을 침범하지 못하게 한계를 미리 잡아 둔다 — 그래야 놓은 뒤에
+         엉뚱한 일정이 밀려나는 일이 없다. */
+      const others=DB.tasks.filter(x=>x.date===ds&&x.id!==task.id&&x.min!=null);
+      const endsBefore=others.map(x=>rel(x.min)+taskDur(x,ds)).filter(v=>v<=baseS+.5);
+      const startsAfter=others.map(x=>rel(x.min)).filter(v=>v>=baseS+baseD-.5);
+      hardS=endsBefore.length?Math.max.apply(null,endsBefore):0;
+      hardE=startsAfter.length?Math.min.apply(null,startsAfter):1440;
       if(mode==='rt'){
-        prevT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&
-          Math.abs(rel(x.min)+taskDur(x,ds)-baseS)<.5&&sameCell(x))||null;
+        prevT=others.find(x=>Math.abs(rel(x.min)+taskDur(x,ds)-baseS)<.5)||null;
         if(prevT)prevBase=Math.max(SNAP,taskDur(prevT,ds));
       }else{
         const endR=baseS+baseD;
-        nextT=DB.tasks.find(x=>x.date===ds&&x.id!==task.id&&x.min!=null&&
-          Math.abs(rel(x.min)-endR)<.5&&sameCell(x))||null;
+        nextT=others.find(x=>Math.abs(rel(x.min)-endR)<.5)||null;
         if(nextT)nextBase=Math.max(SNAP,taskDur(nextT,ds));}
       GD.on=true;el.classList.add('act');
       if(e.cancelable)e.preventDefault();
@@ -1859,15 +1895,9 @@ function bindGrid(root){
       // 대신 손가락 높이로 목록에서 끼어들 자리를 정해 둔다 — 미배정끼리 순서를 바꾼다.
       if(overUn){
         if(ghost){ghost.remove();ghost=null;}
-        const row=root.querySelector('.unrow');
-        if(row){
-          const rows=[].slice.call(row.querySelectorAll('.uchip')).filter(c=>c!==el);
-          let idx=rows.length;
-          for(let i=0;i<rows.length;i++){const rr=rows[i].getBoundingClientRect();
-            if(t.clientY<rr.top+rr.height/2){idx=i;break;}}
-          unIndex=idx;}
+        paintUnGhost(t.clientY);
         showTag(L.dropToUn,t.clientY);return;}
-      unIndex=null;
+      clearUnGhost();
       const task=DB.tasks.find(x=>x.id===tid),point=placeSnap(r);
       let d=(task&&task.autoSlot!=null)?60:baseD,sM=placeSnap(r-d/2);
       dropBand=null;
@@ -1903,12 +1933,12 @@ function bindGrid(root){
       // 길이 조절 — 같은 칸에서 맞닿은 이웃이 있으면 경계를 함께 밀어 총 길이를 지킨다
       autoScroll(t.clientY);
       if(mode==='rt'){
-        const minS=prevT?baseS-prevBase+SNAP:0;
+        const minS=prevT?baseS-prevBase+SNAP:hardS;
         let sM=snap(r);sM=Math.max(minS,Math.min(baseS+baseD-SNAP,sM));
         curS=sM;curD=baseS+baseD-sM;paintEl(curS,curD);
         showTag((prevT?L.edgeTag:'')+hhmm(abs(curS))+L.startsAt+' \u00b7 '+durTxt(curD),t.clientY);
       }else{
-        const maxE=nextT?baseS+baseD+nextBase-SNAP:1440;
+        const maxE=nextT?baseS+baseD+nextBase-SNAP:hardE;
         let en=snap(r);en=Math.max(baseS+SNAP,Math.min(maxE,en));
         curS=baseS;curD=en-baseS;paintEl(curS,curD);
         showTag((nextT?L.edgeTag:'')+hhmm(abs(en))+' \u00b7 '+durTxt(curD),t.clientY);}
@@ -2120,13 +2150,13 @@ function finishTaskSheet(){
 }
 let _ed={},_adv=false;
 function newTask(ds,min){
-  _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,rep:null,repId:null};
+  _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,mile:null,rep:null,repId:null};
   _adv=false;taskSheet();
 }
 function openTask(id){
   const t=DB.tasks.find(x=>x.id===id);if(!t)return;
   const rule=t.repId?DB.repeats.find(r=>r.id===t.repId):null;
-  _ed={id:t.id,title:t.title,date:t.date,min:t.min,dur:t.dur,subj:t.subj||null,repId:t.repId||null,
+  _ed={id:t.id,title:t.title,date:t.date,min:t.min,dur:t.dur,subj:t.subj||null,mile:t.mile||null,repId:t.repId||null,
     rep:rule?{freq:rule.freq,weekdays:(rule.weekdays||[]).slice(),interval:rule.interval||2,start:rule.start,end:rule.end||''}:null};
   _adv=true;taskSheet();
 }
@@ -2138,7 +2168,7 @@ function detailHTML(){
     'font-size:14px;font-weight:800;color:var(--ink2)">'+when+
     '</div>';
   if(DB.subjects.length)h+='<div class="fl">'+esc(L.cat)+'</div><div class="seg"><button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">'+esc(L.none)+'</button>'+
-    DB.subjects.map(s=>'<button class="sg'+(e.subj===s.id?' on':'')+'" onclick="setSubj(\''+s.id+'\')">'+esc(s.name)+'</button>').join('')+'</div>';
+    DB.subjects.map(s=>'<button class="sg'+(e.subj===s.id?' on':'')+'" onclick="setSubj(\''+s.id+'\')">'+esc(s.name)+'</button>').join('')+'</div>'+mileSeg(e);
   h+='<div class="fl">'+esc(L.repeat)+'</div><div class="seg">'+
     '<button class="sg'+(!rep?' on':'')+'" onclick="setRep(null)">'+esc(L.none)+'</button>'+
     '<button class="sg'+(rep&&rep.freq==='daily'?' on':'')+'" onclick="setRep(\'daily\')">'+esc(L.repDaily)+'</button>'+
@@ -2164,7 +2194,7 @@ function taskSheet(){
     const where=e.min==null?esc(L.unassigned):(hhmm(e.min)+(bandAt(e.date,e.min)?' · '+esc(bandAt(e.date,e.min).name):''));
     if(DB.subjects.length)h+='<div class="fl">'+esc(L.cat)+'</div><div class="seg">'+
       '<button class="sg'+(!e.subj?' on':'')+'" onclick="setSubj(null)">'+esc(L.none)+'</button>'+
-      DB.subjects.map(x=>'<button class="sg'+(e.subj===x.id?' on':'')+'" onclick="setSubj(\''+x.id+'\')">'+esc(x.name)+'</button>').join('')+'</div>';
+      DB.subjects.map(x=>'<button class="sg'+(e.subj===x.id?' on':'')+'" onclick="setSubj(\''+x.id+'\')">'+esc(x.name)+'</button>').join('')+'</div>'+mileSeg(e);
     h+='<div class="fl">'+L.goesTo(where)+'<button onclick="toggleAdv()">'+esc(L.more)+'</button></div>';
   }else{
     h+=detailHTML();
@@ -2180,7 +2210,16 @@ function taskSheet(){
 function readTitle(){const i=$('#f_title');if(i)_ed.title=i.value;
   const rs=$('#r_s'),re=$('#r_e');if(_ed.rep){if(rs)_ed.rep.start=rs.value;if(re)_ed.rep.end=re.value;}}
 function toggleAdv(){readTitle();_adv=!_adv;taskSheet();}
-function setSubj(s){readTitle();_ed.subj=s;taskSheet();}
+function setSubj(s){readTitle();if(_ed.subj!==s)_ed.mile=null;_ed.subj=s;taskSheet();}
+function setMile(m){readTitle();_ed.mile=m;taskSheet();}
+/* 목표 안에 시험·마일스톤이 있으면 그 안에서 한 번 더 고르게 한다 */
+function mileSeg(e){
+  const s=e.subj?subjOf(e.subj):null,ds=s&&s.ddays?s.ddays:[];
+  if(!ds.length)return '';
+  return '<div class="fl">'+esc(L.mile)+'</div><div class="seg">'+
+    '<button class="sg'+(!e.mile?' on':'')+'" onclick="setMile(null)">'+esc(L.none)+'</button>'+
+    ds.map(d=>'<button class="sg'+(e.mile===d.id?' on':'')+'" onclick="setMile(\''+d.id+'\')">'+esc(d.title)+'</button>').join('')+'</div>';
+}
 function setRep(f){readTitle();
   if(!f)_ed.rep=null;
   else _ed.rep={freq:f,weekdays:[parseD(_ed.date).getDay()],interval:2,start:_ed.date,end:''};
@@ -2207,7 +2246,7 @@ function saveTask(){
   if(e.id){
     const t=DB.tasks.find(x=>x.id===e.id);if(!t)return;
     Object.assign(t,{title:e.title.trim(),min:e.min,
-      dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),subj:e.subj});
+      dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),subj:e.subj,mile:e.mile||null});
     if(e.rep){
       const old=e.repId?DB.repeats.find(r=>r.id===e.repId):null;
       if(old){const ex=old.ex||[];Object.assign(old,mkRule(),{ex});
@@ -2223,7 +2262,7 @@ function saveTask(){
       const nid=uid();
       DB.tasks.push({id:nid,title:e.title.trim(),date:e.date,min:e.min,
         dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),
-        ord:sibs.length,done:false,subj:e.subj,repId:null});
+        ord:sibs.length,done:false,subj:e.subj,mile:e.mile||null,repId:null});
       tourMade('task',nid);}}
   materializeWindow();save();finishTaskSheet();
   toast(e.id?L.edited:L.added);tourSignal(e.id?'task-edited':'task-saved');
@@ -2235,10 +2274,11 @@ function moveNextDay(){
   const oldDs=t.date,oldBand=t.min!=null?(autoSlotBand(t)||bandAt(oldDs,t.min)):null;
   addRepException(t);t.repId=null;
   const title=String(_ed.title||'').trim();if(title)t.title=title;
-  t.subj=_ed.subj;t.date=addDays(oldDs,1);t.autoSlot=null;
-  t.ord=DB.tasks.filter(x=>x.date===t.date&&x.id!==t.id&&(x.min==null)===(t.min==null)).length;
+  t.subj=_ed.subj;t.mile=_ed.mile||null;t.date=addDays(oldDs,1);
+  // 다음날의 같은 시각이 아니라 미배정으로 보낸다. 그날 계획은 그날 다시 짠다.
+  t.min=null;t.dur=null;t.autoSlot=null;
+  t.ord=DB.tasks.filter(x=>x.date===t.date&&x.id!==t.id&&x.min==null).length;
   if(oldBand){if(oldBand.auto)splitAutoSlot(oldDs,oldBand,true);else splitBand(oldDs,oldBand,true);}
-  if(t.min!=null)resolveOverlaps(t.date,t.id);
   save();finishTaskSheet();toast(L.movedNextDay);
 }
 function delTask(all){
@@ -2334,6 +2374,11 @@ function saveDday(){
   if(_dd.id){const d=s.ddays.find(x=>x.id===_dd.id);d.title=t;d.date=dt;}
   else{const d={id:uid(),title:t,date:dt};s.ddays.push(d);tourMade('dday',d.id);}
   save();closeSheet();paint();tourSignal('dday-saved');}
+function moveDday(sid,i,dir){
+  const s=subjOf(sid);if(!s||!s.ddays)return;const j=i+dir;
+  if(j<0||j>=s.ddays.length)return;
+  const a=s.ddays;const t=a[i];a[i]=a[j];a[j]=t;save();paint();
+}
 function delDday(){const s=subjOf(_dd.sid);s.ddays=(s.ddays||[]).filter(x=>x.id!==_dd.id);
   save();closeSheet();paint();}
 let _gl={};
@@ -2394,9 +2439,16 @@ function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.spl
    id 가 없으면 이 시간대에 묶음을 하나 더 넣는다. */
 function editSchedSet(id){
   const x=id?findSet(id):null;
+  const rows=[];
+  if(x){
+    let cur=0;
+    setBlocks(x).slice().sort((a,b)=>a.s-b.s).forEach(b=>{
+      // 칸 사이의 빈 시간도 행으로 꺼내 준다. 이름과 길이를 그대로 고칠 수 있다.
+      if(b.s>cur)rows.push({id:uid(),name:gapName(cur,b.s),s:cur,e:b.s,gap:true});
+      rows.push({id:uid(),name:b.name,s:b.s,e:b.e,gap:b.gap===true});cur=b.e;});
+    if(cur<1440)rows.push({id:uid(),name:gapName(cur,1440),s:cur,e:1440,gap:true});}
   _sched=x
-    ?{id:x.id,kind:x.kind||null,name:setName(x),days:setDays(x),
-      blocks:setBlocks(x).map(b=>({id:uid(),name:b.name,s:b.s,e:b.e})),delArmed:false}
+    ?{id:x.id,kind:x.kind||null,name:setName(x),days:setDays(x),blocks:rows,delArmed:false}
     :{id:null,kind:null,name:'',days:[],
       blocks:[{id:uid(),name:L.firstBlock,s:M(9,0),e:M(10,0)}],delArmed:false};
   scheduleEditor();
@@ -2413,7 +2465,8 @@ function scheduleEditor(){
     '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
     '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
     '<div class="fl">'+esc(L.blocks)+'</div>'+
-    _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>'+esc(L.name)+'</label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
+    _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>'+esc(L.name)+
+      ' <button class="gaptog'+(b.gap?' on':'')+'" onclick="toggleBlockGap('+i+')">'+esc(b.gap?L.gapKind:L.blockKind)+'</button></label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
       '<div class="blocktimes"><div><label>'+esc(L.start)+'</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
       '<div><label>'+esc(L.end)+'</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
       '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
@@ -2431,6 +2484,7 @@ function addScheduleBlock(){
   _sched.blocks.push({id:uid(),name:L.newBlock,s:st,e:Math.min(1440,st+60)});scheduleEditor();
 }
 function removeScheduleBlock(i){syncScheduleForm();_sched.blocks.splice(i,1);scheduleEditor();}
+function toggleBlockGap(i){syncScheduleForm();const b=_sched.blocks[i];if(b)b.gap=!b.gap;scheduleEditor();}
 /* 한 요일은 한 묶음에만 속한다. 새로 가져간 요일은 다른 묶음에서 뺀다. */
 function claimDays(days,exceptId){
   schedSets().forEach(x=>{if(x.id!==exceptId)x.days=setDays(x).filter(d=>days.indexOf(d)<0);});
@@ -2439,7 +2493,7 @@ function saveSchedule(){
   syncScheduleForm();
   const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
   const name=String(_sched.name||'').trim();
-  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)})).sort((a,b)=>a.s-b.s);
+  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e),gap:b.gap===true})).sort((a,b)=>a.s-b.s);
   if(!name){toast(L.needSetName);return;}
   if(!blocks.length){toast(L.needBlock);return;}
   for(let i=0;i<blocks.length;i++){
@@ -2469,9 +2523,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=74';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=74';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=74';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=75';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=75';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=75';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3105,6 +3159,41 @@ document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive
 
 /* ═════ 16. 데이터 ═════ */
 let _bakArm=false;                       // 되돌리기는 두 번 눌러야 실행된다
+/* 찾기 — 할 일·목표·마일스톤·하위 목표·날짜를 한 번에 훑는다 */
+function openSearch(){
+  openSheet('<div class="sh2">'+esc(L.search)+'</div>'+
+    '<input class="fi" id="f_q" placeholder="'+esc(L.searchPh)+'" oninput="runSearch()">'+
+    '<div id="searchres" style="margin-top:6px"></div>');
+}
+function searchGo(kind,val){
+  closeSheet();
+  if(kind==='day'){setTimeout(()=>openDay(val),120);return;}
+  if(kind==='task'){setTimeout(()=>openTask(val),120);return;}
+  go('subj');
+}
+function runSearch(){
+  const box=$('#searchres'),inp=$('#f_q');if(!box||!inp)return;
+  const q=inp.value.trim().toLowerCase();
+  if(!q){box.innerHTML='';return;}
+  const hit=v=>String(v||'').toLowerCase().indexOf(q)>=0;
+  const rows=[];
+  DB.subjects.forEach(s=>{
+    if(hit(s.name))rows.push([L.cat,s.name,'','subj','']);
+    (s.ddays||[]).forEach(d=>{if(hit(d.title)||hit(d.date))
+      rows.push([L.mile,d.title,s.name+' \u00b7 '+d.date,'day',d.date]);});
+    (s.goals||[]).forEach(g=>{if(hit(g.text))rows.push([L.goal,g.text,s.name,'subj','']);});
+  });
+  DB.tasks.forEach(t=>{
+    if(!hit(t.title)&&!hit(t.date))return;
+    const sj=t.subj?subjOf(t.subj):null;
+    rows.push([t.date,t.title,(t.min!=null?hhmm(t.min):L.unassigned)+(sj?' \u00b7 '+sj.name:''),'task',t.id]);
+  });
+  box.innerHTML=rows.length
+    ?rows.slice(0,40).map(r=>'<div class="dd" onclick="searchGo(\''+r[3]+'\',\''+esc(r[4])+'\')">'+
+      '<div style="flex:1;min-width:0"><div class="ddn">'+esc(r[1])+'</div>'+
+      '<div class="ddd">'+esc(r[2]||'')+'</div></div><div class="ddc">'+esc(r[0])+'</div></div>').join('')
+    :'<div class="empty">'+esc(L.searchNone)+'</div>';
+}
 function openData(){_bakArm=false;dataSheet();}
 function armRestore(){_bakArm=true;dataSheet();}
 function bakHTML(){
@@ -3186,7 +3275,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=74').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=75').catch(()=>{});
 </script>
 </body>
 </html>
