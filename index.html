@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=76">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=76">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=76">
-<link rel="apple-touch-icon" href="icon-192.png?v=76">
+<link rel="manifest" href="manifest.webmanifest?v=77">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=77">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=77">
+<link rel="apple-touch-icon" href="icon-192.png?v=77">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -101,7 +101,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 
 #app{height:100%;display:flex;flex-direction:column}
-#top{padding:calc(var(--st) + 30px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
+#top{padding:calc(var(--st) + 42px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
 #topin{max-width:var(--wrap);margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 /* 마스코트가 탭을 옮겨도 같은 자리에 있도록 제목이 남는 폭을 먹고 버튼 영역 폭을 고정한다.
@@ -924,13 +924,29 @@ function gapName(s,e){
   if(s===M(7,15))return L.gapMorning;
   return (e-s)>=25?L.gapFree:L.gapBreak;
 }
+/* 칸의 시각은 시계 시각으로 저장하지만, 다루는 좌표는 하루선(02:00 시작)이다.
+   그래야 '취침 전 23:00~00:30'처럼 자정을 넘는 칸도 그대로 표현된다.
+   돌려주는 s·e 는 모두 하루선 분(0~1440)이고 늘 s<e 다. */
+function blockSpan(b){const a=rel(b.s);let len=b.e-b.s;if(len<=0)len+=1440;return {a,len};}
+/* 하루선의 끝(02:00)을 넘는 칸은 두 조각으로 나뉜다. 같은 칸이 화면 맨 위와
+   맨 아래에 나뉘어 보이는 것이고, 저장값은 하나 그대로다. */
+function blockSegs(list){
+  const segs=[];
+  (list||[]).forEach(b=>{
+    const sp=blockSpan(b);if(sp.len<=0)return;
+    const end=sp.a+sp.len;
+    if(end<=1440)segs.push({b,s:sp.a,e:end});
+    else{segs.push({b,s:sp.a,e:1440});segs.push({b,s:0,e:end-1440,tail:true});}});
+  return segs.sort((x,y)=>x.s-y.s);
+}
 function buildScheduleBlocks(profile){
   const out=[];let cur=0;
-  const blocks=(profile&&profile.blocks||[]).slice().sort((a,b)=>a.s-b.s);
-  blocks.forEach(b=>{
-    if(b.s>cur)out.push({id:'g'+cur,s:cur,e:b.s,name:gapName(cur,b.s),cls:false});
-    out.push({id:b.id,s:b.s,e:b.e,name:b.name,cls:b.gap!==true});cur=b.e;});
-  if(cur<1440)out.push({id:'g'+cur,s:cur,e:1440,name:gapName(cur,1440),cls:false});
+  const gap=(s,e)=>({id:'g'+s,s,e,name:gapName(abs(s),abs(e)),cls:false});
+  blockSegs(profile&&profile.blocks).forEach(x=>{
+    if(x.s<cur)return;                       // 앞 칸과 겹치면 건너뛴다
+    if(x.s>cur)out.push(gap(cur,x.s));
+    out.push({id:x.b.id+(x.tail?'-t':''),s:x.s,e:x.e,name:x.b.name,cls:x.b.gap!==true});cur=x.e;});
+  if(cur<1440)out.push(gap(cur,1440));
   return out;
 }
 function scheduleProfile(ds){
@@ -948,10 +964,11 @@ function is24(ds){
 }
 function bandAt(ds,min){
   if(is24(ds))return null;
-  const b=scheduleBlocks(ds).find(x=>min>=x.s&&min<x.e)||null;
+  const r=rel(min);
+  const b=scheduleBlocks(ds).find(x=>r>=x.s&&r<x.e)||null;
   if(!b||b.cls||b.e-b.s<=120)return b;
   // 자정~등교 전처럼 긴 빈 구간은 통째로 채우지 않고 손가락이 놓인 1시간만 사용한다.
-  const s=Math.max(b.s,Math.floor(min/60)*60);
+  const s=Math.max(b.s,Math.floor(r/60)*60);
   return {id:b.id+'h'+s,s,e:Math.min(b.e,s+60),name:b.name,cls:false};
 }
 function relParts(s,e){
@@ -980,12 +997,12 @@ function normalizeProfile(p){
     id:String(b.id||('b'+i+'-'+Date.now().toString(36))),name:String(b.name||L.blockFallback),
     s:Math.max(0,Math.min(1435,Math.round(Number(b.s)||0))),
     e:Math.max(5,Math.min(1440,Math.round(Number(b.e)||0))),gap:b.gap===true
-  })).filter(b=>b.e>b.s).sort((a,b)=>a.s-b.s);
+  })).filter(b=>b.e!==b.s).sort((a,b)=>rel(a.s)-rel(b.s));
   return {id:String(p&&p.id||('sch-'+Date.now().toString(36))),name:String(p&&p.name||L.schedSetFallback),blocks,off:(p&&p.off)===true};
 }
 function legacyDuration(min){
-  const b=buildScheduleBlocks(legacyProfile()).find(x=>min>=x.s&&min<x.e)||null;
-  if(!b)return 60;if(!b.cls&&b.e-b.s>120)return Math.min(60,b.e-Math.floor(min/60)*60);
+  const r=rel(min),b=buildScheduleBlocks(legacyProfile()).find(x=>r>=x.s&&r<x.e)||null;
+  if(!b)return 60;if(!b.cls&&b.e-b.s>120)return Math.min(60,b.e-Math.floor(r/60)*60);
   return b.e-b.s;
 }
 /* 옛 저장값(여러 개의 시간표 + 요일 연결)을 하나뿐인 시간대로 옮긴다.
@@ -1220,8 +1237,8 @@ function resolveOverlaps(ds, movedId){
 }
 /** 한 칸의 일정을 원하는 순서로 놓고 칸 시간을 똑같이 나눈다 */
 function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
-  let inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&t.min>=band.s&&t.min<band.e)
-    .sort((a,b)=>a.min-b.min||(a.ord||0)-(b.ord||0));
+  let inB=DB.tasks.filter(t=>t.date===ds&&t.min!=null&&rel(t.min)>=band.s&&rel(t.min)<band.e)
+    .sort((a,b)=>rel(a.min)-rel(b.min)||(a.ord||0)-(b.ord||0));
   if(movingId&&insertAt!=null){
     const mv=inB.find(t=>t.id===movingId);
     if(mv){inB=inB.filter(t=>t.id!==movingId);
@@ -1230,8 +1247,9 @@ function splitBand(ds, band, fillEvenIfOne, movingId, insertAt){
   if(inB.length<2&&!fillEvenIfOne) return;
   const each=Math.max(SNAP, snap((band.e-band.s)/inB.length));
   inB.forEach((t,i)=>{
-    t.min=band.s+each*i;
-    t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-t.min):each;
+    const st=band.s+each*i;
+    t.min=abs(st);
+    t.dur=(i===inB.length-1)?Math.max(SNAP,band.e-st):each;
     t.ord=i;});
 }
 /** 주말 24시간 보기에서 기본 1시간 일정들이 공유하는 상대 시간 슬롯 */
@@ -1313,8 +1331,7 @@ function visualCellEnd(ds,it){
   let end=Math.min(1440,Math.floor(it.s/60)*60+60);
   if(!is24(ds)){
     const b=bandAt(ds,abs(Math.min(1439,it.s)));
-    if(b){const rs=rel(b.s),re=Math.min(1440,rs+(b.e-b.s));
-      if(it.s>=rs&&it.s<re)end=re;}
+    if(b&&it.s>=b.s&&it.s<b.e)end=b.e;
   }
   return Math.max(it.e,end);
 }
@@ -1365,7 +1382,7 @@ function renderDay(ds){
   const un=tasksOf(ds).filter(t=>t.min==null).sort((a,b)=>a.ord-b.ord);
   let h='<div class="daylayout"><div id="gridwrap"><div class="grid" data-date="'+ds+'" style="height:'+H+'px">';
   // 이 요일에 지정된 시간표 밴드
-  if(!is24(ds))scheduleBlocks(ds).forEach(b=>relParts(b.s,b.e).forEach(([s,e])=>{
+  if(!is24(ds))scheduleBlocks(ds).forEach(b=>[[b.s,b.e]].forEach(([s,e])=>{
     const top=map.y(s),hh=map.y(e)-top;
     h+='<div class="band'+(b.cls?'':' gap')+'" style="top:'+top+'px;height:'+hh+'px">'+
        (hh>=17?'<b>'+esc(b.name)+'</b>':'')+'</div>';}));
@@ -1903,13 +1920,13 @@ function bindGrid(root){
       dropBand=null;
       const b=bandAt(ds,abs(point));           // 학교 시간표면 쉬는시간까지 모든 칸에 맞춘다
       if(b){
-        const others=DB.tasks.filter(x=>x.date===ds&&x.id!==tid&&x.min!=null&&x.min>=b.s&&x.min<b.e)
-          .sort((a,c)=>a.min-c.min||(a.ord||0)-(c.ord||0));
-        const raw=abs(point),n=others.length+1;
-        dropIndex=Math.max(0,Math.min(others.length,Math.floor(((raw-b.s)/(b.e-b.s))*n)));
+        const others=DB.tasks.filter(x=>x.date===ds&&x.id!==tid&&x.min!=null&&rel(x.min)>=b.s&&rel(x.min)<b.e)
+          .sort((a,c)=>rel(a.min)-rel(c.min)||(a.ord||0)-(c.ord||0));
+        const n=others.length+1;
+        dropIndex=Math.max(0,Math.min(others.length,Math.floor(((point-b.s)/(b.e-b.s))*n)));
         const each=Math.max(SNAP,snap((b.e-b.s)/n));
-        const sAbs=Math.min(b.e-SNAP,b.s+each*dropIndex);
-        sM=rel(sAbs);d=dropIndex===n-1?Math.max(SNAP,b.e-sAbs):each;
+        sM=Math.min(b.e-SNAP,b.s+each*dropIndex);
+        d=dropIndex===n-1?Math.max(SNAP,b.e-sM):each;
       }else if(is24(ds)&&(baseD===60||(task&&task.autoSlot!=null))){
         let slot=weekendSlotAt(ds,point,tid);
         if(!slot){const ss=Math.max(0,Math.min(1380,placeSnap(r-30)));
@@ -2151,7 +2168,7 @@ function finishTaskSheet(){
 let _ed={},_adv=false;
 function newTask(ds,min){
   _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,mile:null,rep:null,repId:null};
-  _adv=false;taskSheet();
+  _adv=true;taskSheet();
 }
 function openTask(id){
   const t=DB.tasks.find(x=>x.id===id);if(!t)return;
@@ -2439,14 +2456,10 @@ function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.spl
    id 가 없으면 이 시간대에 묶음을 하나 더 넣는다. */
 function editSchedSet(id){
   const x=id?findSet(id):null;
-  const rows=[];
-  if(x){
-    let cur=0;
-    setBlocks(x).slice().sort((a,b)=>a.s-b.s).forEach(b=>{
-      // 칸 사이의 빈 시간도 행으로 꺼내 준다. 이름과 길이를 그대로 고칠 수 있다.
-      if(b.s>cur)rows.push({id:uid(),name:gapName(cur,b.s),s:cur,e:b.s,gap:true});
-      rows.push({id:uid(),name:b.name,s:b.s,e:b.e,gap:b.gap===true});cur=b.e;});
-    if(cur<1440)rows.push({id:uid(),name:gapName(cur,1440),s:cur,e:1440,gap:true});}
+  // 칸 사이의 빈 시간도 행으로 꺼내 준다. 이름과 길이를 그대로 고칠 수 있다.
+  // 순서는 하루선(02:00 시작)이라 자정을 넘는 칸도 제자리에 온다.
+  const rows=x?buildScheduleBlocks({blocks:setBlocks(x)}).map(b=>({
+    id:uid(),name:b.name,s:abs(b.s),e:abs(b.e),gap:!b.cls})):[];
   _sched=x
     ?{id:x.id,kind:x.kind||null,name:setName(x),days:setDays(x),blocks:rows,delArmed:false}
     :{id:null,kind:null,name:'',days:[],
@@ -2493,14 +2506,19 @@ function saveSchedule(){
   syncScheduleForm();
   const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
   const name=String(_sched.name||'').trim();
-  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e),gap:b.gap===true})).sort((a,b)=>a.s-b.s);
+  // 하루선(02:00 시작)으로 재서 검사한다. 23:00~00:30 처럼 자정을 넘겨도 된다.
+  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e),gap:b.gap===true}))
+    .sort((a,b)=>rel(a.s)-rel(b.s));
   if(!name){toast(L.needSetName);return;}
   if(!blocks.length){toast(L.needBlock);return;}
   for(let i=0;i<blocks.length;i++){
     const b=blocks[i];if(!b.name){toast(L.needBlockNames);return;}
-    if(!Number.isFinite(b.s)||!Number.isFinite(b.e)||b.s<0||b.e>1440||b.e<=b.s){toast(L.checkTimes);return;}
-    if(i&&b.s<blocks[i-1].e){toast(L.overlapping);return;}
+    if(!Number.isFinite(b.s)||!Number.isFinite(b.e)||b.s<0||b.s>=1440||b.e<0||b.e>1440||blockSpan(b).len<=0){
+      toast(L.checkTimes);return;}
   }
+  // 하루선 조각으로 펼쳐 겹치는지만 본다. 02:00 을 넘는 칸은 두 조각이 된다.
+  const segs=blockSegs(blocks);
+  for(let i=1;i<segs.length;i++)if(segs[i].s<segs[i-1].e){toast(L.overlapping);return;}
   let x=_sched.id?findSet(_sched.id):null;
   if(!x){x={id:uid(),kind:null,name,days:[],blocks:null};schedSets().push(x);}
   claimDays(days,x.id);
@@ -2523,9 +2541,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=76';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=76';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=76';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=77';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=77';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=77';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -2821,7 +2839,7 @@ function tourTargetRect(s,t,allowScroll){
       const cm=map.min(Math.max(0,cy-raw.top));
       if(!is24(ds)){
         const bd=bandAt(ds,abs(Math.min(1439,cm)));
-        if(bd){const rs=rel(bd.s);return span(rs,Math.min(1440,rs+(bd.e-bd.s)));}}
+        if(bd)return span(bd.s,bd.e);}
       const h0=Math.max(0,Math.min(1380,Math.floor(cm/60)*60));
       return span(h0,h0+60);
     };
@@ -2832,7 +2850,7 @@ function tourTargetRect(s,t,allowScroll){
       const t0=tasksOf(ds).filter(x=>x.min!=null).sort((a,b)=>a.min-b.min)[0];
       if(t0){
         const bd=autoSlotBand(t0)||(is24(ds)?null:bandAt(ds,t0.min));
-        if(bd){const rs=rel(bd.s);c=span(rs,Math.min(1440,rs+(bd.e-bd.s)));}
+        if(bd)c=span(bd.s,bd.e);
         else{const h0=Math.max(0,Math.min(1380,Math.floor(rel(t0.min)/60)*60));c=span(h0,h0+60);}}
       if(c&&(c.t<visibleTop-2||c.b>visibleBottom+2)&&allowScroll!==false&&scroll){
         // 그 칸이 화면 밖이면 다른 칸을 고르지 말고 그 칸으로 데려간다
@@ -3275,7 +3293,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=76').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=77').catch(()=>{});
 </script>
 </body>
 </html>
