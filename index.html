@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=78">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=78">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=78">
-<link rel="apple-touch-icon" href="icon-192.png?v=78">
+<link rel="manifest" href="manifest.webmanifest?v=79">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=79">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=79">
+<link rel="apple-touch-icon" href="icon-192.png?v=79">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1458,8 +1458,8 @@ function topHTML(){
     return '<div class="hrow"><div class="h1"><small>'+esc(fmtMDW(d))+'</small><span class="hname">'+esc(L.headToday)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+
       '<button class="ib'+(is24(TODAY())?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+soonHTML();
   }
-  if(tab==='cal')return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
-  return '<div class="hrow"><div class="h1"><span class="hname">'+esc(L.headCat)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headCat)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
 }
 function cycleTheme(){
   const o=['sys','light','dark'],i=o.indexOf(DB.s.theme||'sys');
@@ -2544,9 +2544,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=78';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=78';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=78';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=79';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=79';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=79';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3296,7 +3296,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=78').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=79').catch(()=>{});
 </script>
 </body>
 </html>
