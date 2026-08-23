@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=81">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=81">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=81">
-<link rel="apple-touch-icon" href="icon-192.png?v=81">
+<link rel="manifest" href="manifest.webmanifest?v=82">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=82">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=82">
+<link rel="apple-touch-icon" href="icon-192.png?v=82">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -449,7 +449,19 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .gaptog.on{color:var(--ac);background:var(--ac-s)}
 .blockrow label{display:block;font-size:10.5px;font-weight:800;color:var(--ink3);margin-bottom:4px}
 .blockrow .fi{padding:11px 10px;font-size:13px;background:var(--solid)}
-.blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
+/* 시각 두 개는 라벨을 붙인 상자 둘이 아니라 한 줄짜리 범위로 읽는다.
+   진짜 <input type=time> 은 투명하게 덮어 두고(네이티브 시각 고르개는 그대로 살린다)
+   눈에 보이는 글자는 우리가 그린다 — 기기 지역설정이 12시간제여도 앱은 언제나 24시간이다. */
+.blocktimes{display:flex;align-items:center;gap:7px;min-width:0}
+.tfield{position:relative;flex:none;width:84px}
+.tfield input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;background:none;
+  font:inherit;color:transparent;-webkit-appearance:none;appearance:none}
+.tval{display:block;padding:10px 4px;border:1px solid var(--line);border-radius:10px;background:var(--solid);
+  font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em;text-align:center;color:var(--ink)}
+.tfield:focus-within .tval{border-color:var(--ac-b);box-shadow:0 0 0 3px var(--ac-s)}
+.tarrow{flex:none;width:11px;height:9px;color:var(--ink3)}
+.tlen{flex:1;min-width:0;text-align:right;font-size:11.5px;font-weight:750;color:var(--ink3);
+  font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .blockdel{width:38px;height:42px;border-radius:10px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:20px;font-weight:500}
 /* 칸 순서는 손잡이를 잡아 끌어 바꾼다. 손잡이만 세로 제스처를 가져가고 나머지는 시트 스크롤 그대로다. */
 .blockside{display:flex;flex-direction:column;gap:6px;align-items:center}
@@ -582,7 +594,8 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 @media(max-height:620px){.tourguide{width:min(calc(100vw - 24px),330px)}.tourbody h2{font-size:20px}.tourbody p{font-size:12.5px;line-height:1.5}.tourfly{width:72px;height:97px}}
 @media(max-width:620px){
   .blockrow{grid-template-columns:minmax(0,1fr) 38px}
-  .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1/3;grid-row:2}
+  /* 시각 줄은 이름 칸과 오른쪽 끝을 맞춘다 — 손잡이 칸까지 넘어가면 길이 표시가 버튼 밑으로 들어간다 */
+  .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1;grid-row:2}
   .blockrow .blockside{grid-column:2;grid-row:1;align-self:end}
 }
 .popnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -2489,6 +2502,27 @@ function openScheduleSettings(){
 let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.split(':').map(Number),m=a[0]*60+a[1];return end&&m===0?1440:m;}
+/* 진짜 입력은 <input type=time> 그대로다 — 시각 고르개는 기기가 주는 것을 쓴다.
+   다만 보이는 글자는 우리가 그린다. 기기 지역설정이 12시간제면 네이티브 표시가
+   '01:00 PM'이 되는데, 앱은 어디서나 24시간이라 그것만 어긋나 보인다.
+   input.value 는 지역설정과 무관하게 늘 'HH:MM' 24시간이라 그대로 쓸 수 있다. */
+function timeFieldHTML(cls,m,label){
+  return '<div class="tfield"><span class="tval" aria-hidden="true">'+esc(timeVal(m))+'</span>'+
+    '<input class="'+cls+'" type="time" step="300" value="'+timeVal(m)+'" aria-label="'+esc(label)+'" oninput="blockTimeInput(this)"></div>';
+}
+function blockLenTxt(s,e){
+  if(!Number.isFinite(s)||!Number.isFinite(e))return '';
+  let d=e-s;if(d<=0)d+=1440;
+  return d>0&&d<1440?durTxt(d):'';
+}
+function blockTimeInput(el){
+  const row=el.closest('.blockrow');if(!row)return;
+  const f=el.closest('.tfield'),v=f&&f.querySelector('.tval');
+  if(v)v.textContent=el.value||'--:--';
+  const len=row.querySelector('.tlen');
+  if(len)len.textContent=blockLenTxt(parseTime(row.querySelector('.bstart').value,false),
+                                     parseTime(row.querySelector('.bend').value,true));
+}
 /* 묶음 하나를 고친다. 저장하면 그 묶음의 내용이 바뀔 뿐, 시간표가 하나 더 생기지 않는다.
    id 가 없으면 이 시간대에 묶음을 하나 더 넣는다. */
 function editSchedSet(id){
@@ -2517,8 +2551,11 @@ function scheduleEditor(){
     '<div class="fl">'+esc(L.blocks)+'</div>'+
     _sched.blocks.map((b,i)=>'<div class="blockrow" data-bi="'+i+'"><div class="bnamewrap"><label>'+esc(L.name)+
       ' <button class="gaptog'+(b.gap?' on':'')+'" onclick="toggleBlockGap('+i+')">'+esc(b.gap?L.gapKind:L.blockKind)+'</button></label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
-      '<div class="blocktimes"><div><label>'+esc(L.start)+'</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
-      '<div><label>'+esc(L.end)+'</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
+      '<div class="blocktimes">'+
+        timeFieldHTML('bstart',b.s,L.start)+
+        '<svg class="tarrow" viewBox="0 0 11 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M.9 4.5h8.4M6.6 1.4l3 3.1-3 3.1"/></svg>'+
+        timeFieldHTML('bend',b.e,L.end)+
+        '<div class="tlen">'+esc(blockLenTxt(b.s,b.e))+'</div></div>'+
       '<div class="blockside">'+
         '<button class="blockgrip" aria-label="'+esc(L.aBlockMove)+'"><i></i><i></i><i></i></button>'+
         '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button>'+
@@ -2651,9 +2688,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=81';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=81';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=81';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=82';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=82';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=82';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3404,7 +3441,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=81').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=82').catch(()=>{});
 </script>
 </body>
 </html>
