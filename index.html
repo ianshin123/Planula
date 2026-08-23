@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=80">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=80">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=80">
-<link rel="apple-touch-icon" href="icon-192.png?v=80">
+<link rel="manifest" href="manifest.webmanifest?v=81">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=81">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=81">
+<link rel="apple-touch-icon" href="icon-192.png?v=81">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -317,6 +317,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .gld{width:6px;height:6px;border-radius:50%;background:var(--ink3);flex:none;margin-left:3px}
 .glt{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gl.dragging{opacity:.3}
+/* 날짜를 가진 하위 목표는 한 줄 안에 날짜와 디데이를 같이 단다 — 줄 높이가 달라지면 끌어 옮기기가 어긋난다. */
+.gldd{flex:none;font-size:11px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ddc.sm{font-size:11.5px;font-weight:850;line-height:14px;padding:3px 8px;border-radius:9px}
 .gr2{width:22px;flex:none;display:flex;flex-direction:column;gap:3px;align-items:center;opacity:.3}
 .gr2 i{display:block;width:15px;height:1.8px;border-radius:1px;background:var(--ink2)}
 .sjf{display:flex;gap:8px;padding:11px 14px 15px}
@@ -448,6 +451,14 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .blockrow .fi{padding:11px 10px;font-size:13px;background:var(--solid)}
 .blocktimes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;min-width:0}
 .blockdel{width:38px;height:42px;border-radius:10px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:20px;font-weight:500}
+/* 칸 순서는 손잡이를 잡아 끌어 바꾼다. 손잡이만 세로 제스처를 가져가고 나머지는 시트 스크롤 그대로다. */
+.blockside{display:flex;flex-direction:column;gap:6px;align-items:center}
+.blockgrip{width:38px;height:34px;border-radius:10px;background:var(--solid);border:1px solid var(--line);
+  color:var(--ink3);display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;touch-action:none}
+.blockgrip i{display:block;width:15px;height:1.8px;border-radius:1px;background:currentColor}
+.blockgrip:active{background:var(--ac-s);color:var(--ac);border-color:var(--ac-s)}
+.blockrow.dragging{opacity:.32}
+.blockrow.liftrow{position:relative;z-index:3;box-shadow:var(--shadow-lg);border-color:var(--ac)}
 .fullnote{padding:12px 14px;border-radius:var(--r3);background:var(--ac-s);color:var(--ink2);font-size:12.5px;font-weight:700;line-height:1.55}
 #tour{position:fixed;inset:0;z-index:300;opacity:0;pointer-events:none;transition:opacity .28s ease}
 #tour.on{opacity:1}#tour:not(.on),#tour:not(.on) *{pointer-events:none!important}
@@ -572,7 +583,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 @media(max-width:620px){
   .blockrow{grid-template-columns:minmax(0,1fr) 38px}
   .blockrow .bnamewrap{grid-column:1}.blockrow .blocktimes{grid-column:1/3;grid-row:2}
-  .blockrow .blockdel{grid-column:2;grid-row:1;align-self:end}
+  .blockrow .blockside{grid-column:2;grid-row:1;align-self:end}
 }
 .popnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .popt{text-align:center}
@@ -678,6 +689,7 @@ const L=KO?{
   ddayEdit:'디데이 수정',ddayAdd:'디데이 추가',ddayPh:'예: 2회고사, 보고서 제출',date:'날짜',
   needName:'이름을 적어줘',needDate:'날짜를 골라줘',
   goalEdit:'하위 목표 수정',goalAdd:'하위 목표 추가',goalPh:'예: 3단원 문제집 1회독',needText:'내용을 적어줘',
+  goalDday:'디데이',clearDate:'날짜 비우기',
   everyDay:'매일',weekdays:'평일',weekends:'주말',noDays:'적용 요일 없음',
   edit:'수정',blockCount:n=>n+'칸',
   schedNone:'아직 만든 시간표가 없다.<br>모든 요일을 24시간으로 보여준다.',
@@ -686,7 +698,7 @@ const L=KO?{
   schedFree:'24시간 보기: ',schedFreeNote:'시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.',
   schedDays:'적용 요일 · 비우면 그 요일은 24시간',clearDays:'모두 해제',
   blocks:'칸',name:'이름',blockNamePh:'예: 1교시',end:'끝',gapKind:'쉬는 시간',blockKind:'칸',
-  aBlockDel:'칸 삭제',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
+  aBlockDel:'칸 삭제',aBlockMove:'칸 순서 바꾸기',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
   needBlock:'칸을 하나 이상 만들어줘',needBlockNames:'칸 이름을 모두 적어줘',
   checkTimes:'시작·끝 시간을 확인해줘',overlapping:'겹치는 칸이 있어',
   sampleGoal:'수학',sampleDday:'중간고사',sampleTasks:['영어 단어 외우기','수학 문제집 풀기'],
@@ -778,6 +790,7 @@ const L=KO?{
   ddayEdit:'Edit D-day',ddayAdd:'Add D-day',ddayPh:'e.g. Midterm, report due',date:'Date',
   needName:'Write a name',needDate:'Pick a date',
   goalEdit:'Edit sub-goal',goalAdd:'Add sub-goal',goalPh:'e.g. Finish unit 3 workbook',needText:'Write something',
+  goalDday:'D-day',clearDate:'Clear date',
   everyDay:'Every day',weekdays:'Weekdays',weekends:'Weekends',noDays:'Not applied to any day',
   edit:'Edit',blockCount:n=>n===1?'1 block':n+' blocks',
   schedNone:'No schedules yet.<br>Every day shows the full 24 hours.',
@@ -786,7 +799,7 @@ const L=KO?{
   schedFree:'24-hour view: ',schedFreeNote:'Days without a schedule let you place tasks anywhere in the day.',
   schedDays:'Days it applies to · empty means 24-hour',clearDays:'Clear all',
   blocks:'Blocks',name:'Name',blockNamePh:'e.g. Period 1',end:'End',gapKind:'Break',blockKind:'Block',
-  aBlockDel:'Delete block',addBlock:'+ Add block',reallyDel:'Really delete',
+  aBlockDel:'Delete block',aBlockMove:'Reorder block',addBlock:'+ Add block',reallyDel:'Really delete',
   needBlock:'Add at least one block',needBlockNames:'Name every block',
   checkTimes:'Check the start and end times',overlapping:'Some blocks overlap',
   sampleGoal:'Maths',sampleDday:'Midterm',sampleTasks:['Learn 30 words','Workbook unit 3'],
@@ -898,9 +911,10 @@ function schedRoot(){
 function schedSets(){return schedRoot().sets;}
 /* 이름은 어느 묶음이든 고칠 수 있다. 평일·주말 씨앗은 고치기 전까지만
    정해진 이름을 쓰고, 고치면 그 이름이 그대로 남는다. */
+function seedName(kind){return kind==='weekday'?L.defaultWeekday:kind==='weekend'?L.defaultWeekend:'';}
 function setName(x){
   if(x.name)return x.name;
-  return x.kind==='weekday'?L.defaultWeekday:x.kind==='weekend'?L.defaultWeekend:L.schedSetFallback;}
+  return seedName(x.kind)||L.schedSetFallback;}
 function setBlocks(x){
   if(Array.isArray(x.blocks)&&x.blocks.length)return x.blocks.map(b=>({id:b.id,name:b.name,s:b.s,e:b.e,gap:b.gap===true}));
   const src=x.kind==='weekday'?DEFAULT_WEEKDAY:x.kind==='weekend'?DEFAULT_WEEKEND:null;
@@ -1019,7 +1033,8 @@ function migrateSched(raw,legacy,hasPlannerData){
   if(rs&&typeof rs==='object'&&Array.isArray(rs.sets)){          // 지금 형식
     const sets=rs.sets.map(x=>{
       const b=norm(x.blocks),kind=x.kind==='weekday'||x.kind==='weekend'?x.kind:null;
-      return {id:String(x.id||uid()),kind,name:kind?undefined:String(x.name||'').trim(),
+      // 씨앗이라고 이름을 버리면 안 된다. 버리면 고쳐 둔 이름이 새로고침마다 평일·주말로 되돌아간다.
+      return {id:String(x.id||uid()),kind,name:String(x.name||'').trim(),
         days:dayList(x.days)||[],blocks:b.length?b:null};
     }).filter(x=>x.kind||x.blocks);
     ['weekday','weekend'].forEach(k=>{if(!sets.some(x=>x.kind===k))
@@ -1070,6 +1085,9 @@ function normalizeDB(d,legacy){
   s.introDone=raw.introDone===true;
   s.sched=migrateSched(raw,legacy,hasPlannerData);
   const out={v:7,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:Array.isArray(d.subjects)?d.subjects:[],repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  // 하위 목표의 디데이는 나중에 생겼다. 없거나 모양이 아니면 날짜 없는 하위 목표로 둔다.
+  out.subjects.forEach(sj=>{if(Array.isArray(sj.goals))sj.goals.forEach(g=>{
+    g.date=/^\d{4}-\d{2}-\d{2}$/.test(String(g.date||''))?g.date:null;});});
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
     if(t.min!=null)t.min=((Math.round(Number(t.min)||0)%1440)+1440)%1440;
@@ -1414,9 +1432,14 @@ function uchipHTML(t,extra){
 }
 /* 2주 이내 마감 — 작은 빨간 글씨 */
 function dcount(date){return Math.round((parseD(date)-parseD(TODAY()))/86400000);}
+/* 하위 목표도 날짜를 가지면 그대로 디데이다. 마감 줄·달력·검색이 한 벌로 다루도록
+   {id,title,date} 꼴로 맞춰 준다. goal:true 면 수정은 하위 목표 시트로 간다.
+   목표 카드의 디데이 목록과 task.mile 은 그대로 s.ddays 만 쓴다 — 순서와 연결이 거기 매여 있다. */
+function goalDdays(s){return (s.goals||[]).filter(g=>g.date).map(g=>({id:g.id,title:g.text,date:g.date,goal:true}));}
+function ddayList(s){return (s.ddays||[]).concat(goalDdays(s));}
 function soonHTML(){
   const a=[];
-  DB.subjects.forEach(s=>(s.ddays||[]).forEach(d=>{const n=dcount(d.date);if(n>=0&&n<=14)a.push({s,d,n});}));
+  DB.subjects.forEach(s=>ddayList(s).forEach(d=>{const n=dcount(d.date);if(n>=0&&n<=14)a.push({s,d,n});}));
   if(!a.length)return '';
   a.sort((x,y)=>x.n-y.n);
   return '<div class="soon">'+a.map(x=>'<span><b>'+(x.n===0?'D-DAY':'D-'+x.n)+'</b> '+esc(x.s.name)+' '+esc(x.d.title)+'</span>').join('')+'</div>';
@@ -1471,7 +1494,7 @@ function cycleTheme(){
 function calHTML(){
   const y=calM.getFullYear(),m=calM.getMonth();
   const first=new Date(y,m,1),start=new Date(first);start.setDate(1-first.getDay());
-  const dd={};DB.subjects.forEach(s=>(s.ddays||[]).forEach(d=>{(dd[d.date]=dd[d.date]||[]).push({s,d});}));
+  const dd={};DB.subjects.forEach(s=>ddayList(s).forEach(d=>{(dd[d.date]=dd[d.date]||[]).push({s,d});}));
   let h='<div class="card glass" style="padding:16px 15px 17px"><div class="calh">'+
     '<button class="ib" onclick="moveMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>'+
     '<b>'+esc(fmtYM(y,m))+'</b>'+
@@ -1485,7 +1508,7 @@ function calHTML(){
       (n?'<div class="dots">'+Array.from({length:Math.min(n,4)},()=>'<span class="dot"></span>').join('')+'</div>':'')+
       (dds.length?'<div class="cdd">'+esc(dds[0].d.title.slice(0,3))+'</div>':'')+'</div>';}
   h+='</div></div>';
-  const up=[];DB.subjects.forEach(s=>(s.ddays||[]).forEach(d=>{if(dcount(d.date)>=0)up.push({s,d});}));
+  const up=[];DB.subjects.forEach(s=>ddayList(s).forEach(d=>{if(dcount(d.date)>=0)up.push({s,d});}));
   up.sort((a,b)=>a.d.date<b.d.date?-1:1);
   if(up.length){h+='<div class="card glass"><div class="ctitle"><b>'+esc(L.upcoming)+'</b></div>';
     up.slice(0,8).forEach(({s,d})=>{h+=ddHTML(s,d,false);});h+='</div>';}
@@ -1531,10 +1554,13 @@ function setDateViewMode(ds){
 function popToggle24(){const ds=popDate;if(setDateViewMode(ds))openDay(ds);}
 
 /* ═════ 8. 과목 ═════ */
+function dlabel(n){return n===0?'D-DAY':(n>0?'D-'+n:'D+'+(-n));}
+function dclass(n){return n<0?'past':(n<=7?'':'far');}
 function ddHTML(s,d,editable,idx,total){
-  const n=dcount(d.date),cl=n<0?'past':(n<=7?'':'far');
-  const lab=n===0?'D-DAY':(n>0?'D-'+n:'D+'+(-n)),dt=parseD(d.date);
-  return '<div class="dd"'+(editable?' onclick="editDday(\''+s.id+'\',\''+d.id+'\')"':'')+'>'+
+  const n=dcount(d.date),cl=dclass(n);
+  const lab=dlabel(n),dt=parseD(d.date);
+  const open=d.goal?'editGoal':'editDday';              // 하위 목표에서 온 디데이는 하위 목표 시트로 연다
+  return '<div class="dd"'+(editable?' onclick="'+open+'(\''+s.id+'\',\''+d.id+'\')"':'')+'>'+
     '<div class="sjc" style="background:'+s.color+'"></div>'+
     '<div style="flex:1;min-width:0"><div class="ddn">'+esc(d.title)+'</div>'+
     '<div class="ddd">'+esc(fmtDot(dt))+(editable?'':' · '+esc(s.name))+'</div></div>'+
@@ -1554,8 +1580,12 @@ function subjHTML(){
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="width:17px;height:17px;color:var(--ink3)"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></div>';
     dds.forEach((d,i)=>{h+=ddHTML(s,d,true,i,dds.length);});
     if(gls.length){h+='<div style="border-top:1px solid var(--line2);padding:4px 0 7px" class="goals" data-sid="'+s.id+'">';
-      gls.forEach(g=>{h+='<div class="gl" data-gid="'+g.id+'" onclick="editGoal(\''+s.id+'\',\''+g.id+'\')">'+
-        '<div class="gld"></div><div class="glt">'+esc(g.text)+'</div><div class="gr2"><i></i><i></i><i></i></div></div>';});
+      gls.forEach(g=>{const n=g.date?dcount(g.date):null;
+        h+='<div class="gl" data-gid="'+g.id+'" onclick="editGoal(\''+s.id+'\',\''+g.id+'\')">'+
+        '<div class="gld"></div><div class="glt">'+esc(g.text)+'</div>'+
+        (g.date?'<div class="gldd">'+esc(fmtDot(parseD(g.date)))+'</div>'+
+          '<div class="ddc sm '+dclass(n)+'">'+dlabel(n)+'</div>':'')+
+        '<div class="gr2"><i></i><i></i><i></i></div></div>';});
       h+='</div>';}
     h+='<div class="sjf">'+
       '<button class="mini" onclick="editDday(\''+s.id+'\',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>'+esc(L.dday)+'</button>'+
@@ -2404,17 +2434,22 @@ let _gl={};
 function editGoal(sid,gid){
   const s=subjOf(sid);if(!s)return;
   const g=gid?(s.goals||[]).find(x=>x.id===gid):null;
-  _gl={sid,id:g?g.id:null,text:g?g.text:''};
+  // 하위 목표도 날짜를 달면 디데이가 된다. 비워 두면 날짜 없는 하위 목표 그대로다.
+  _gl={sid,id:g?g.id:null,text:g?g.text:'',date:(g&&g.date)||''};
   let h='<div class="sh2">'+esc(g?L.goalEdit:L.goalAdd)+'</div>'+
     '<input class="fi" id="f_gl" placeholder="'+esc(L.goalPh)+'" value="'+esc(_gl.text)+'">'+
+    '<div class="fl"><span>'+esc(L.goalDday)+'</span><span><button onclick="clearGoalDate()">'+esc(L.clearDate)+'</button></span></div>'+
+    '<input class="fi" type="date" id="f_gld" value="'+esc(_gl.date)+'">'+
     '<div class="row2"><button class="btn p" onclick="saveGoal()">'+esc(L.save)+'</button></div>';
   if(g)h+='<div class="row2"><button class="btn d" onclick="delGoal()">'+esc(L.del)+'</button></div>';
   openSheet(h);}
+function clearGoalDate(){const d=$('#f_gld');if(d)d.value='';_gl.date='';}
 function saveGoal(){
   const v=$('#f_gl').value.trim();if(!v){toast(L.needText);return;}
+  const dtEl=$('#f_gld'),dt=dtEl?dtEl.value:'';
   const s=subjOf(_gl.sid);s.goals=s.goals||[];
-  if(_gl.id)s.goals.find(x=>x.id===_gl.id).text=v;
-  else s.goals.push({id:uid(),text:v});
+  if(_gl.id){const g=s.goals.find(x=>x.id===_gl.id);g.text=v;g.date=dt||null;}
+  else s.goals.push({id:uid(),text:v,date:dt||null});
   save();closeSheet();paint();}
 function delGoal(){const s=subjOf(_gl.sid);s.goals=(s.goals||[]).filter(x=>x.id!==_gl.id);
   save();closeSheet();paint();}
@@ -2484,13 +2519,85 @@ function scheduleEditor(){
       ' <button class="gaptog'+(b.gap?' on':'')+'" onclick="toggleBlockGap('+i+')">'+esc(b.gap?L.gapKind:L.blockKind)+'</button></label><input class="fi bname" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'"></div>'+
       '<div class="blocktimes"><div><label>'+esc(L.start)+'</label><input class="fi bstart" type="time" step="300" value="'+timeVal(b.s)+'"></div>'+
       '<div><label>'+esc(L.end)+'</label><input class="fi bend" type="time" step="300" value="'+timeVal(b.e)+'"></div></div>'+
-      '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button></div>').join('')+
+      '<div class="blockside">'+
+        '<button class="blockgrip" aria-label="'+esc(L.aBlockMove)+'"><i></i><i></i><i></i></button>'+
+        '<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="removeScheduleBlock('+i+')">−</button>'+
+      '</div></div>').join('')+
     '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button>'+
     '<div class="row2"><button class="btn p" onclick="saveSchedule()">'+esc(L.save)+'</button></div>'+
     (_sched.kind
       ?(setEdited(findSet(_sched.id)||{})?'<div class="row2"><button class="btn d" onclick="resetSchedSet()">'+esc(L.defaultReset)+'</button></div>':'')
       :(_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedSet()">'+esc(_sched.delArmed?L.reallyDel:L.setDel)+'</button></div>':''));
   openSheet(h);
+  bindBlockDrag();
+}
+/* 순서를 바꾸면 시각도 그 순서대로 다시 깐다. 칸의 길이와 칸 사이의 빈 시간은
+   자리마다 그대로 두고, 맨 처음 칸이 시작하던 시각에서 다시 이어 붙인다.
+   그래서 전체가 차지하는 범위는 그대로고, 옮긴 칸만 제 길이째로 자리를 바꾼다. */
+function reorderScheduleBlocks(from,to){
+  const cur=_sched.blocks;
+  if(from===to||from<0||to<0||from>=cur.length||to>=cur.length)return false;
+  const span=cur.map(b=>{
+    const s=Number(b.s),e=Number(b.e);
+    if(!Number.isFinite(s)||!Number.isFinite(e))return null;
+    let len=e-s;if(len<=0)len+=1440;
+    return {a:rel(s),len};});
+  if(span.some(x=>!x||x.len<=0)){                       // 시각이 덜 채워졌으면 순서만 바꾼다
+    const mv=cur.splice(from,1)[0];cur.splice(to,0,mv);return true;}
+  // 자리마다의 빈 시간은 그 자리에 남긴다 — 옮긴 칸이 빈 시간까지 끌고 다니지 않는다
+  const gapAt=[];
+  for(let i=0;i<span.length-1;i++)gapAt.push(Math.max(0,span[i+1].a-(span[i].a+span[i].len)));
+  const total=span.reduce((a,x)=>a+x.len,0)+gapAt.reduce((a,x)=>a+x,0);
+  if(span[0].a+total>1440){                             // 이미 겹쳐 있으면 시각은 건드리지 않는다
+    const mv=cur.splice(from,1)[0];cur.splice(to,0,mv);return true;}
+  const order=cur.map((b,i)=>i);
+  order.splice(to,0,order.splice(from,1)[0]);
+  let cursor=span[0].a;
+  const next=order.map((oi,k)=>{
+    const b=cur[oi],len=span[oi].len,a=cursor;
+    cursor=a+len+(k<gapAt.length?gapAt[k]:0);
+    return Object.assign({},b,{s:abs(a),e:abs(a+len)});});
+  _sched.blocks=next;
+  return true;
+}
+/* 손잡이를 잡으면 그 줄만 따라 움직이고 나머지는 자리를 비켜 준다.
+   포인터 이벤트라 손가락과 마우스가 같은 길을 쓴다. */
+function bindBlockDrag(){
+  const sheet=$('#sheet');if(!sheet)return;
+  sheet.querySelectorAll('.blockgrip').forEach(grip=>{
+    if(grip._b)return;grip._b=true;
+    grip.addEventListener('pointerdown',e=>{
+      const el=grip.closest('.blockrow[data-bi]');if(!el)return;
+      e.preventDefault();
+      syncScheduleForm();                               // 끌기 전에 입력창 값을 먼저 거둔다
+      const items=[...sheet.querySelectorAll('.blockrow[data-bi]')];
+      const from=items.indexOf(el);if(from<0)return;
+      const step=items.length>1
+        ?Math.abs(items[1].getBoundingClientRect().top-items[0].getBoundingClientRect().top)
+        :el.offsetHeight;
+      const y0=e.clientY;let to=from,moved=false;
+      try{grip.setPointerCapture(e.pointerId);}catch(err){}
+      items.forEach(x=>{if(x!==el)x.style.transition='transform .18s cubic-bezier(.3,1.2,.5,1)';});
+      el.classList.add('liftrow');buzz(10);
+      const move=ev=>{
+        const dy=ev.clientY-y0;
+        if(!moved&&Math.abs(dy)>4){moved=true;el.classList.add('dragging');}
+        el.style.transform='translateY('+dy+'px)';
+        const t=Math.max(0,Math.min(items.length-1,from+Math.round(dy/(step||1))));
+        if(t!==to){to=t;buzz(6);}
+        items.forEach((it,i)=>{if(it===el)return;let sft=0;
+          if(from<to&&i>from&&i<=to)sft=-step;else if(from>to&&i>=to&&i<from)sft=step;
+          it.style.transform=sft?'translateY('+sft+'px)':'';});};
+      const end=()=>{
+        grip.removeEventListener('pointermove',move);
+        grip.removeEventListener('pointerup',end);grip.removeEventListener('pointercancel',end);
+        el.classList.remove('liftrow','dragging');
+        items.forEach(x=>{x.style.transition='';x.style.transform='';});
+        if(to!==from&&reorderScheduleBlocks(from,to))scheduleEditor();};
+      grip.addEventListener('pointermove',move);
+      grip.addEventListener('pointerup',end);grip.addEventListener('pointercancel',end);
+    });
+  });
 }
 function toggleScheduleDay(i){syncScheduleForm();const p=_sched.days.indexOf(i);if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);scheduleEditor();}
 function setScheduleDays(){syncScheduleForm();_sched.days=[];scheduleEditor();}
@@ -2524,7 +2631,8 @@ function saveSchedule(){
   let x=_sched.id?findSet(_sched.id):null;
   if(!x){x={id:uid(),kind:null,name,days:[],blocks:null};schedSets().push(x);}
   claimDays(days,x.id);
-  x.days=days;x.blocks=blocks;x.name=name;
+  // 씨앗의 이름을 그대로 두고 저장했으면 빈 이름으로 남긴다 — 정해진 이름을 계속 따라간다.
+  x.days=days;x.blocks=blocks;x.name=(x.kind&&name===seedName(x.kind))?'':name;
   save();paint();openScheduleSettings();toast(L.defaultSaved);
   tourSignal('schedule-saved');
 }
@@ -2543,9 +2651,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=80';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=80';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=80';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=81';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=81';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=81';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3201,7 +3309,8 @@ function runSearch(){
     if(hit(s.name))rows.push([L.cat,s.name,'','subj','']);
     (s.ddays||[]).forEach(d=>{if(hit(d.title)||hit(d.date))
       rows.push([L.mile,d.title,s.name+' \u00b7 '+d.date,'day',d.date]);});
-    (s.goals||[]).forEach(g=>{if(hit(g.text))rows.push([L.goal,g.text,s.name,'subj','']);});
+    (s.goals||[]).forEach(g=>{if(hit(g.text)||(g.date&&hit(g.date)))
+      rows.push(g.date?[L.goal,g.text,s.name+' · '+g.date,'day',g.date]:[L.goal,g.text,s.name,'subj','']);});
   });
   DB.tasks.forEach(t=>{
     if(!hit(t.title)&&!hit(t.date))return;
@@ -3295,7 +3404,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=80').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=81').catch(()=>{});
 </script>
 </body>
 </html>
