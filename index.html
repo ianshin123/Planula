@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=82">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=82">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=82">
-<link rel="apple-touch-icon" href="icon-192.png?v=82">
+<link rel="manifest" href="manifest.webmanifest?v=83">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=83">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=83">
+<link rel="apple-touch-icon" href="icon-192.png?v=83">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -307,8 +307,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .dd{display:flex;align-items:center;gap:11px;padding:12px 17px;border-top:1px solid var(--line2)}
 .ddn{flex:1;min-width:0;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ddd{font-size:11.5px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums}
-.ddord{display:flex;flex-direction:column;gap:2px;margin-left:6px}
-.ddord button{font-size:10px;line-height:1;color:var(--ink3);padding:2px 4px;border-radius:5px;background:var(--muted)}
 .ddc{font-size:14.5px;font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:-.03em;flex:none;
   padding:5px 11px;border-radius:11px;background:var(--gd-s);color:var(--gd)}
 .ddc.far{background:var(--ac-s);color:var(--ac)}
@@ -316,12 +314,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .gl{display:flex;align-items:center;gap:11px;padding:10px 17px 10px 19px}
 .gld{width:6px;height:6px;border-radius:50%;background:var(--ink3);flex:none;margin-left:3px}
 .glt{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gl.dragging{opacity:.3}
 /* 날짜를 가진 하위 목표는 한 줄 안에 날짜와 디데이를 같이 단다 — 줄 높이가 달라지면 끌어 옮기기가 어긋난다. */
 .gldd{flex:none;font-size:11px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums}
 .ddc.sm{font-size:11.5px;font-weight:850;line-height:14px;padding:3px 8px;border-radius:9px}
-.gr2{width:22px;flex:none;display:flex;flex-direction:column;gap:3px;align-items:center;opacity:.3}
+/* 줄 세 개는 순서를 바꾸는 손잡이다. 잡히는 범위만 ::before 로 넓히고,
+   손잡이만 세로 제스처를 가져간다(touch-action:none) — 나머지 줄은 화면 스크롤 그대로다. */
+.gr2{position:relative;width:22px;height:26px;flex:none;display:flex;flex-direction:column;gap:3px;
+  align-items:center;justify-content:center;border-radius:8px;opacity:.34;touch-action:none}
+.gr2::before{content:'';position:absolute;top:-8px;bottom:-8px;left:-9px;right:-6px}
 .gr2 i{display:block;width:15px;height:1.8px;border-radius:1px;background:var(--ink2)}
+.gr2:active{opacity:1;background:var(--ac-s)}
+.gr2:active i{background:var(--ac)}
+/* 끌리는 줄은 손가락을 따라오는 물건이라 떠오른다. 흐려지는 건 남겨 둔 자리가 아니라
+   그 줄 자신이라 거꾸로다 — 다른 줄이 비켜서는 것으로 빈자리는 이미 보인다. */
+.dd.dragging,.gl.dragging{position:relative;z-index:3;background:var(--solid);
+  border-radius:var(--r3);border-top-color:transparent;box-shadow:var(--shadow-lg)}
 .sjf{display:flex;gap:8px;padding:11px 14px 15px}
 .mini{flex:1;padding:12px;border-radius:var(--r3);background:var(--muted);color:var(--ink2);
   font-size:13.5px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:5px}
@@ -711,7 +718,7 @@ const L=KO?{
   schedFree:'24시간 보기: ',schedFreeNote:'시간표가 없는 요일은 하루 전체에 자유롭게 배치된다.',
   schedDays:'적용 요일 · 비우면 그 요일은 24시간',clearDays:'모두 해제',
   blocks:'칸',name:'이름',blockNamePh:'예: 1교시',end:'끝',gapKind:'쉬는 시간',blockKind:'칸',
-  aBlockDel:'칸 삭제',aBlockMove:'칸 순서 바꾸기',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
+  aBlockDel:'칸 삭제',aBlockMove:'칸 순서 바꾸기',aReorder:'끌어서 순서 바꾸기',addBlock:'+ 칸 추가',reallyDel:'정말 삭제하기',
   needBlock:'칸을 하나 이상 만들어줘',needBlockNames:'칸 이름을 모두 적어줘',
   checkTimes:'시작·끝 시간을 확인해줘',overlapping:'겹치는 칸이 있어',
   sampleGoal:'수학',sampleDday:'중간고사',sampleTasks:['영어 단어 외우기','수학 문제집 풀기'],
@@ -812,7 +819,7 @@ const L=KO?{
   schedFree:'24-hour view: ',schedFreeNote:'Days without a schedule let you place tasks anywhere in the day.',
   schedDays:'Days it applies to · empty means 24-hour',clearDays:'Clear all',
   blocks:'Blocks',name:'Name',blockNamePh:'e.g. Period 1',end:'End',gapKind:'Break',blockKind:'Block',
-  aBlockDel:'Delete block',aBlockMove:'Reorder block',addBlock:'+ Add block',reallyDel:'Really delete',
+  aBlockDel:'Delete block',aBlockMove:'Reorder block',aReorder:'Drag to reorder',addBlock:'+ Add block',reallyDel:'Really delete',
   needBlock:'Add at least one block',needBlockNames:'Name every block',
   checkTimes:'Check the start and end times',overlapping:'Some blocks overlap',
   sampleGoal:'Maths',sampleDday:'Midterm',sampleTasks:['Learn 30 words','Workbook unit 3'],
@@ -1573,15 +1580,18 @@ function ddHTML(s,d,editable,idx,total){
   const n=dcount(d.date),cl=dclass(n);
   const lab=dlabel(n),dt=parseD(d.date);
   const open=d.goal?'editGoal':'editDday';              // 하위 목표에서 온 디데이는 하위 목표 시트로 연다
-  return '<div class="dd"'+(editable?' onclick="'+open+'(\''+s.id+'\',\''+d.id+'\')"':'')+'>'+
+  return '<div class="dd"'+(editable?' data-did="'+d.id+'" onclick="'+open+'(\''+s.id+'\',\''+d.id+'\')"':'')+'>'+
     '<div class="sjc" style="background:'+s.color+'"></div>'+
     '<div style="flex:1;min-width:0"><div class="ddn">'+esc(d.title)+'</div>'+
     '<div class="ddd">'+esc(fmtDot(dt))+(editable?'':' · '+esc(s.name))+'</div></div>'+
     '<div class="ddc '+cl+'">'+lab+'</div>'+
-    (editable&&total>1?'<div class="ddord">'+
-      (idx>0?'<button onclick="event.stopPropagation();moveDday(\''+s.id+'\','+idx+',-1)">▲</button>':'')+
-      (idx<total-1?'<button onclick="event.stopPropagation();moveDday(\''+s.id+'\','+idx+',1)">▼</button>':'')+
-      '</div>':'')+'</div>';
+    (editable&&total>1?gripHTML():'')+'</div>';
+}
+/* 순서를 바꾸는 손잡이. 잡는 곳이 분명해야 해서 줄 세 개를 진짜 버튼으로 둔다.
+   탭은 아무 일도 하지 않는다 — 줄을 눌렀는데 수정 시트가 열리면 당황한다. */
+function gripHTML(){
+  return '<button class="gr2" type="button" aria-label="'+esc(L.aReorder)+'" onclick="event.stopPropagation()">'+
+    '<i></i><i></i><i></i></button>';
 }
 function subjHTML(){
   if(!DB.subjects.length)return '<div class="card glass"><div class="empty">'+L.catEmpty+'</div></div>';
@@ -1591,14 +1601,16 @@ function subjHTML(){
     h+='<div class="sj glass"><div class="sjh" onclick="editSubject(\''+s.id+'\')">'+
       '<div class="sjc" style="background:'+s.color+'"></div><b>'+esc(s.name)+'</b>'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="width:17px;height:17px;color:var(--ink3)"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></div>';
-    dds.forEach((d,i)=>{h+=ddHTML(s,d,true,i,dds.length);});
+    if(dds.length){h+='<div class="ddays" data-sid="'+s.id+'">';
+      dds.forEach((d,i)=>{h+=ddHTML(s,d,true,i,dds.length);});
+      h+='</div>';}
     if(gls.length){h+='<div style="border-top:1px solid var(--line2);padding:4px 0 7px" class="goals" data-sid="'+s.id+'">';
       gls.forEach(g=>{const n=g.date?dcount(g.date):null;
         h+='<div class="gl" data-gid="'+g.id+'" onclick="editGoal(\''+s.id+'\',\''+g.id+'\')">'+
         '<div class="gld"></div><div class="glt">'+esc(g.text)+'</div>'+
         (g.date?'<div class="gldd">'+esc(fmtDot(parseD(g.date)))+'</div>'+
           '<div class="ddc sm '+dclass(n)+'">'+dlabel(n)+'</div>':'')+
-        '<div class="gr2"><i></i><i></i><i></i></div></div>';});
+        (gls.length>1?gripHTML():'')+'</div>';});
       h+='</div>';}
     h+='<div class="sjf">'+
       '<button class="mini" onclick="editDday(\''+s.id+'\',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>'+esc(L.dday)+'</button>'+
@@ -1615,7 +1627,7 @@ function paint(){
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   placeThumb();attachDockDrag();
   if(tab==='today'){bindGrid($('#view'));requestAnimationFrame(fitRail);}
-  if(tab==='subj')bindGoalDrag();
+  if(tab==='subj')bindOrderDrag();
   if(tab==='cal')requestAnimationFrame(fitCalendar);
 }
 function firstPaint(){
@@ -2092,35 +2104,52 @@ function bindGrid(root){
     if(SEL){SEL=null;refresh();}          // 일정이 없는 곳을 누르면 선택 해제
   });
 }
-function bindGoalDrag(){
-  document.querySelectorAll('.goals').forEach(list=>{
+/* 목표 탭의 순서 바꾸기. 디데이도 하위 목표도 줄 세 개(.gr2)를 잡아 끈다.
+   시간대 편집기의 칸 손잡이와 같은 방식이다 — 잡는 곳이 눈에 보여야 한다.
+   아무 데나 꾹 누르는 길은 두지 않는다. 줄을 읽으려고 손을 얹었을 뿐인데
+   줄이 딸려 오면 놀라고, 수정하려고 탭한 것과도 헷갈린다. */
+const ORDER_LISTS=[
+  {list:'.ddays',row:'.dd',key:'did',apply:(s,ids)=>{s.ddays=ids.map(id=>(s.ddays||[]).find(x=>x.id===id)).filter(Boolean);}},
+  {list:'.goals',row:'.gl', key:'gid',apply:(s,ids)=>{s.goals=ids.map(id=>(s.goals||[]).find(x=>x.id===id)).filter(Boolean);}}
+];
+function bindOrderDrag(){
+  ORDER_LISTS.forEach(cfg=>document.querySelectorAll(cfg.list).forEach(list=>{
     if(list._b)return;list._b=true;
-    let items=[],el=null,y0=0,h=44,from=-1,to=-1,timer=null,active=false;
-    const clr=()=>{clearTimeout(timer);timer=null;};
-    list.addEventListener('touchstart',e=>{const it=e.target.closest('.gl');if(!it)return;
-      y0=e.touches[0].clientY;clr();
-      timer=setTimeout(()=>{active=true;el=it;items=[...list.querySelectorAll('.gl')];
-        from=items.indexOf(it);to=from;
-        h=items.length>1?(items[1].getBoundingClientRect().top-items[0].getBoundingClientRect().top):it.offsetHeight;
-        items.forEach(x=>{if(x!==it)x.style.transition='transform .18s cubic-bezier(.3,1.2,.5,1)';});
-        it.classList.add('dragging');buzz(12);},240);},{passive:true});
-    list.addEventListener('touchmove',e=>{
-      if(!active){if(Math.abs(e.touches[0].clientY-y0)>8)clr();return;}
-      if(e.cancelable)e.preventDefault();
-      const dy=e.touches[0].clientY-y0;
-      el.style.transform='translateY('+dy+'px) scale(1.02)';
-      to=Math.max(0,Math.min(items.length-1,from+Math.round(dy/h)));
-      items.forEach((it,i)=>{if(it===el)return;let s=0;
-        if(from<to&&i>from&&i<=to)s=-h;else if(from>to&&i>=to&&i<from)s=h;
-        it.style.transform=s?'translateY('+s+'px)':'';});},{passive:false});
-    const end=()=>{clr();if(!active)return;active=false;
-      const s=subjOf(list.dataset.sid),ids=items.map(x=>x.dataset.gid);
-      el.classList.remove('dragging');items.forEach(x=>{x.style.transition='';x.style.transform='';});
-      if(to!==from&&s){const mv=ids.splice(from,1)[0];ids.splice(to,0,mv);
-        s.goals=ids.map(id=>s.goals.find(g=>g.id===id)).filter(Boolean);save();paint();}
-      el=null;};
-    list.addEventListener('touchend',end);list.addEventListener('touchcancel',end);});
+    list.querySelectorAll('.gr2').forEach(grip=>{
+      grip.addEventListener('pointerdown',e=>{
+        const el=grip.closest(cfg.row);if(!el)return;
+        e.preventDefault();
+        const items=[...list.querySelectorAll(cfg.row)];
+        const from=items.indexOf(el);if(from<0||items.length<2)return;
+        const step=Math.abs(items[1].getBoundingClientRect().top-items[0].getBoundingClientRect().top)||el.offsetHeight;
+        const y0=e.clientY;let to=from;
+        try{grip.setPointerCapture(e.pointerId);}catch(err){}
+        items.forEach(x=>{if(x!==el)x.style.transition='transform .18s cubic-bezier(.3,1.2,.5,1)';});
+        el.classList.add('dragging');buzz(10);
+        const move=ev=>{
+          const dy=ev.clientY-y0;
+          el.style.transform='translateY('+dy+'px) scale(1.02)';
+          const t=Math.max(0,Math.min(items.length-1,from+Math.round(dy/step)));
+          if(t!==to){to=t;buzz(6);}
+          items.forEach((it,i)=>{if(it===el)return;let sft=0;
+            if(from<to&&i>from&&i<=to)sft=-step;else if(from>to&&i>=to&&i<from)sft=step;
+            it.style.transform=sft?'translateY('+sft+'px)':'';});};
+        const end=()=>{
+          grip.removeEventListener('pointermove',move);
+          grip.removeEventListener('pointerup',end);grip.removeEventListener('pointercancel',end);
+          el.classList.remove('dragging');
+          items.forEach(x=>{x.style.transition='';x.style.transform='';});
+          const s=subjOf(list.dataset.sid);
+          if(to!==from&&s){const ids=items.map(x=>x.dataset[cfg.key]);
+            ids.splice(to,0,ids.splice(from,1)[0]);
+            cfg.apply(s,ids);save();paint();}};
+        grip.addEventListener('pointermove',move);
+        grip.addEventListener('pointerup',end);grip.addEventListener('pointercancel',end);
+      });
+    });
+  }));
 }
+
 
 /* ═════ 12. 시트 ═════ */
 /* 시트는 바깥 빈 곳을 눌러 닫을 수도 있고, 맨 위 손잡이를 잡아 아래로 끌어내려도 닫힌다.
@@ -2436,11 +2465,6 @@ function saveDday(){
   if(_dd.id){const d=s.ddays.find(x=>x.id===_dd.id);d.title=t;d.date=dt;}
   else{const d={id:uid(),title:t,date:dt};s.ddays.push(d);tourMade('dday',d.id);}
   save();closeSheet();paint();tourSignal('dday-saved');}
-function moveDday(sid,i,dir){
-  const s=subjOf(sid);if(!s||!s.ddays)return;const j=i+dir;
-  if(j<0||j>=s.ddays.length)return;
-  const a=s.ddays;const t=a[i];a[i]=a[j];a[j]=t;save();paint();
-}
 function delDday(){const s=subjOf(_dd.sid);s.ddays=(s.ddays||[]).filter(x=>x.id!==_dd.id);
   save();closeSheet();paint();}
 let _gl={};
@@ -2688,9 +2712,9 @@ function deleteSchedSet(){
 
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=82';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=82';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=82';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=83';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=83';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=83';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3441,7 +3465,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=82').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=83').catch(()=>{});
 </script>
 </body>
 </html>
