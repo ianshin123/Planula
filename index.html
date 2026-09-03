@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=92">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=92">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=92">
-<link rel="apple-touch-icon" href="icon-192.png?v=92">
+<link rel="manifest" href="manifest.webmanifest?v=93">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=93">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=93">
+<link rel="apple-touch-icon" href="icon-192.png?v=93">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1749,6 +1749,24 @@ function examItems(ds){
     (exHeld(a.id)?0:a.done?1:0)-(exHeld(b.id)?0:b.done?1:0)||(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0)).map(t=>({exam:false,t}));
   return ex.concat(ts);
 }
+/* 과목 순서는 `ord` 하나가 정한다. 같은 날 시험이 여럿이면 그 순서가 곧
+   **그 날 먼저 보는 시험**이고, 헤더 디데이 줄도 같은 값을 따라간다.
+   옮긴 뒤에는 (시험일 → 그 날 안의 자리) 순으로 전체를 다시 번호 매겨,
+   날짜를 건너 옮겨도 번호가 엉키지 않게 한다. */
+function renumberSubjects(){
+  const key=x=>x.exam||'9999-99-99';
+  DB.subjects.sort((a,b)=>(key(a)<key(b)?-1:key(a)>key(b)?1:0)||(a.ord||0)-(b.ord||0));
+  DB.subjects.forEach((x,i)=>{x.ord=i;});
+}
+/* 과목 x 를 ds 날의 at 번째 시험으로 놓는다. 이웃 사이의 중간값을 잠깐 준 뒤
+   전체를 다시 번호 매기면 앞뒤 어느 쪽으로 옮겨도 한 번에 맞는다. */
+function placeExamSubject(x,ds,at){
+  x.exam=ds;
+  const day=DB.subjects.filter(v=>v.exam===ds&&v.id!==x.id).sort((a,b)=>(a.ord||0)-(b.ord||0));
+  const i=Math.max(0,Math.min(day.length,at)),before=day[i-1],after=day[i];
+  x.ord=before?(after?(before.ord+after.ord)/2:before.ord+1):(after?after.ord-1:0);
+  renumberSubjects();
+}
 function examChipHTML(it,extra){
   if(it.exam){
     const x=it.s;
@@ -1902,6 +1920,19 @@ function exLift(){
 function exMoveGhost(){
   if(EXD.ghost)EXD.ghost.style.transform='translate3d('+(EXD.x-EXD.dx)+'px,'+(EXD.y-EXD.dy)+'px,0)';
 }
+/* 몇 번째 자리인지 잴 때는 도착 자리 빈 줄(`.exslot`)을 잠깐 숨긴다. 빈 줄이 낀 채로
+   재면 그 높이만큼 아래 칩들이 밀려나 손가락이 경계를 넘어도 넘은 게 되지 않는다 —
+   빈 줄이 스스로를 밀어내며 제자리를 지키는 꼴이라 순서가 아예 안 바뀐다. */
+function exIndexAt(list,y){
+  const s=EXD.slot,vis=s?s.style.display:null;
+  if(s)s.style.display='none';
+  let idx=list.length;
+  for(let i=0;i<list.length;i++){
+    const r=list[i].getBoundingClientRect();
+    if(y<r.top+r.height/2){idx=i;break;}}
+  if(s)s.style.display=vis||'';
+  return idx;
+}
 function exClearTarget(){
   document.querySelectorAll('.excell.tgt,.exstage.tgt').forEach(n=>n.classList.remove('tgt'));
   if(EXD.slot&&EXD.slot.parentNode)EXD.slot.parentNode.removeChild(EXD.slot);
@@ -1922,9 +1953,7 @@ function exHover(){
     // 안 한 일들 사이에만 선다. 완료 더미 사이나 그 아래로는 끼어들 수 없다(달력 칸과 같다).
     const chips=[...box.querySelectorAll('.stagechip')].filter(n=>
       n!==EXD.el&&n!==EXD.slot&&!n.classList.contains('done'));
-    let idx=chips.length;
-    for(let i=0;i<chips.length;i++){const r=chips[i].getBoundingClientRect();
-      if(EXD.y<r.top+r.height/2){idx=i;break;}}
+    const idx=exIndexAt(chips,EXD.y);
     if(EXD.tgt&&EXD.tgt.stage&&EXD.idx===idx&&EXD.slot&&EXD.slot.parentNode===box)return;
     exClearTarget();stage.classList.add('tgt');
     const slot=document.createElement('div');slot.className='exslot';
@@ -1934,13 +1963,21 @@ function exHover(){
   }
   const ds=cell.dataset.d;
   const box=cell.querySelector('.exitems');
+  /* 시험 칩은 **시험 칩들 사이**에만 선다. 같은 날 시험끼리의 순서가 곧 그 날 보는
+     순서라서, 할 일 사이로 끼워 봐야 뜻이 없다. */
+  if(EXD.kind==='exam'){
+    const ex=[...box.querySelectorAll('.exchip.exam')].filter(n=>n!==EXD.el&&n!==EXD.slot);
+    const i2=exIndexAt(ex,EXD.y);
+    if(EXD.tgt&&EXD.tgt.ds===ds&&EXD.idx===i2&&EXD.slot&&EXD.slot.parentNode===box)return;
+    exClearTarget();cell.classList.add('tgt');
+    const slot=document.createElement('div');slot.className='exslot';
+    box.insertBefore(slot,ex[i2]||box.querySelector('.exchip:not(.exam)')||null);
+    EXD.slot=slot;EXD.tgt={ds};EXD.idx=i2;
+    return;
+  }
   const und=[...box.querySelectorAll('.exchip')].filter(n=>
     n!==EXD.el&&n!==EXD.slot&&!n.classList.contains('exam')&&!n.classList.contains('done'));
-  let idx=und.length;
-  for(let i=0;i<und.length;i++){
-    const r=und[i].getBoundingClientRect();
-    if(EXD.y<r.top+r.height/2){idx=i;break;}
-  }
+  const idx=exIndexAt(und,EXD.y);
   const anchor=und[idx]||box.querySelector('.exchip.done')||null;   // 완료 더미 위에서 멈춘다
   if(EXD.tgt&&EXD.tgt.ds===ds&&EXD.idx===idx&&EXD.slot&&EXD.slot.parentNode===box)return;
   exClearTarget();
@@ -1991,9 +2028,11 @@ function examApplyDrop(){
   if(EXD.kind==='exam'){
     // 시험일을 지우는 건 과목 시트의 '날짜 지우기'다 — 달력 안에서는 날짜만 옮긴다.
     const x=subjOf(EXD.id);if(!x||tgt.stage||!tgt.ds)return;
-    x.exam=tgt.ds;
+    const moved=x.exam!==tgt.ds;
+    placeExamSubject(x,tgt.ds,EXD.idx);
     save();paint();buzz(12);
-    toast(L.examSet(x.name,fmtDot(parseD(tgt.ds))));
+    // 같은 날 안에서 순서만 바꾼 것이면 알림을 띄우지 않는다 — 날짜는 그대로다.
+    if(moved)toast(L.examSet(x.name,fmtDot(parseD(tgt.ds))));
     return;
   }
   if(EXD.kind==='stage'){
@@ -3120,9 +3159,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=92';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=92';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=92';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=93';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=93';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=93';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3868,7 +3907,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=92').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=93').catch(()=>{});
 </script>
 </body>
 </html>
