@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=86">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=86">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=86">
-<link rel="apple-touch-icon" href="icon-192.png?v=86">
+<link rel="manifest" href="manifest.webmanifest?v=87">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=87">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=87">
+<link rel="apple-touch-icon" href="icon-192.png?v=87">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -332,7 +332,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .ebi b{font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 
-.extray{border-radius:var(--r);padding:14px 15px 15px;margin-bottom:14px}
+.extray{position:sticky;top:4px;z-index:30;border-radius:var(--r);padding:12px 15px 13px;margin-bottom:12px;
+  box-shadow:var(--shadow-md)}
 .exth{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
 .exth b{font-size:16px;font-weight:800;letter-spacing:-.025em}
 .exth .mini{flex:0 0 auto;padding:9px 13px;font-size:12.5px;gap:5px;display:flex;align-items:center;justify-content:center}
@@ -1892,8 +1893,9 @@ function examStageHTML(){
 }
 function examHTML(){
   if(!EX.start)examReset();
-  return examTrayHTML()+
-    '<div class="exlayout"><div class="exwrap">'+
+  // 과목 판은 달력 열 안에서 위에 붙는다(미배정 레일과 같은 방식).
+  // 레일과 다른 열이라 서로 덮지 않고, 달력이 그 밑으로 흘러 지나간다.
+  return '<div class="exlayout"><div class="exwrap">'+examTrayHTML()+
     '<div class="exstream" id="exstream">'+
       '<button class="exmore" onclick="examMore()">'+esc(L.examMore)+'</button>'+
       examWeeksHTML(0,EX.weeks)+'</div></div>'+
@@ -3289,9 +3291,9 @@ function saveBlockSheet(){
 function removeBlockSheet(){closeSheet();removeScheduleBlock(_blk);}
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=86';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=86';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=86';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=87';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=87';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=87';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -4040,7 +4042,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=86').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=87').catch(()=>{});
 </script>
 </body>
 </html>
