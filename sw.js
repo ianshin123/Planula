@@ -1,10 +1,10 @@
 /* 플래너 서비스워커.
    HTML은 network-first → 배포 즉시 최신본이 보인다(캐시 갇힘 없음).
    정적 자산은 cache-first. */
-const CACHE = 'planula-v85';
+const CACHE = 'planula-v86';
 const ASSETS = [
-  './', './index.html', './manifest.webmanifest?v=85', './icon-192.png?v=85', './icon-512.png?v=85',
-  './assets/planner-mascot-idle.png?v=85', './assets/planner-mascot-loop.gif?v=85', './assets/planner-mascot-once.gif?v=85'
+  './', './index.html', './manifest.webmanifest?v=86', './icon-192.png?v=86', './icon-512.png?v=86',
+  './assets/planner-mascot-idle.png?v=86', './assets/planner-mascot-loop.gif?v=86', './assets/planner-mascot-once.gif?v=86'
 ];
 
 self.addEventListener('install', (e) => {
