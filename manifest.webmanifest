@@ -1,19 +1,19 @@
 {
   "name": "Planula",
   "short_name": "Planula",
-  "description": "Planula — a day planner with per-weekday schedules and a free 24-hour view. Korean and English.",
+  "description": "Planula — a day planner with per-weekday schedules, a free 24-hour view and an exam-period calendar. Korean and English.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#F7F5F1",
-  "theme_color": "#F7F5F1",
+  "background_color": "#F1F0EC",
+  "theme_color": "#F1F0EC",
   "lang": "en",
   "dir": "ltr",
   "icons": [
-    { "src": "icon-192.png?v=83", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png?v=83", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png?v=83", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icon-192.png?v=84", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png?v=84", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png?v=84", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
