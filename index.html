@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=88">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=88">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=88">
-<link rel="apple-touch-icon" href="icon-192.png?v=88">
+<link rel="manifest" href="manifest.webmanifest?v=89">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=89">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=89">
+<link rel="apple-touch-icon" href="icon-192.png?v=89">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1925,6 +1925,16 @@ function delStage(){
 const EXD={on:false,armed:false,el:null,ghost:null,kind:null,id:null,
            x:0,y:0,dx:0,dy:0,timer:null,tgt:null,idx:0,slot:null,scrollTimer:null};
 const EX_HOLD=280, EX_SLOP=10;
+/* 두 번째 탭을 기다리는 시간. 완료를 이만큼 미뤄 두고, 그 안에 두 번째 탭이 오면 수정이다.
+   기다리는 시간과 두 번으로 세는 창은 **같은 값**이어야 한다 — 창이 더 좁으면 그 틈에
+   떨어진 두 번째 탭이 두 번으로도, 새 한 번으로도 못 세어져 아무 일도 안 일어난다. */
+const EX_DBL=340;
+/* 터치가 끝나면 브라우저가 mousedown/mouseup/click 을 한 벌 더 만들어 보낸다.
+   그걸 새 누름으로 받으면 꾹 누르기 타이머가 한 번 더 돌아 손도 안 댄 칩이 떠오른다. */
+let _exTouchAt=0;
+/* 손가락이 칩 위에서 시작해 흘러갔으면(= 스크롤·탭 넘기기) 그건 탭이 아니다.
+   브라우저가 그런 경우 click 을 안 보내 주기를 기대하지 않고 우리가 직접 센다. */
+let _exMoved=false;
 function exClearTimer(){clearTimeout(EXD.timer);EXD.timer=null;}
 function exPoint(e){const t=e.touches&&e.touches[0]||e.changedTouches&&e.changedTouches[0]||e;
   return {x:t.clientX,y:t.clientY};}
@@ -2100,7 +2110,7 @@ function bindExamDrag(){
     if(!chip)return;
     if(chip.classList.contains('done'))return;           // 완료된 칩은 끌지 않는다
     const p=exPoint(e);EXD.x=p.x;EXD.y=p.y;
-    EXD.el=chip;
+    _exMoved=false;EXD.el=chip;
     EXD.kind=chip.dataset.sid?'exam':(chip.dataset.gid?'stage':'task');
     EXD.id=chip.dataset.sid||chip.dataset.gid||chip.dataset.tid;EXD.armed=true;
     exClearTimer();
@@ -2111,29 +2121,33 @@ function bindExamDrag(){
     if(!EXD.armed&&!EXD.on)return;
     const p=exPoint(e);
     if(EXD.armed){
-      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){EXD.armed=false;exClearTimer();
+      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){
+        _exMoved=true;EXD.armed=false;exClearTimer();
         clearInterval(EXD.scrollTimer);EXD.scrollTimer=null;}
       return;
     }
     if(e.cancelable)e.preventDefault();
-    EXD.x=p.x;EXD.y=p.y;exMoveGhost();exHover();
+    _exMoved=true;EXD.x=p.x;EXD.y=p.y;exMoveGhost();exHover();
   };
-  v.addEventListener('touchstart',down,{passive:true});
+  v.addEventListener('touchstart',e=>{_exTouchAt=Date.now();down(e);},{passive:true});
   v.addEventListener('touchmove',move,{passive:false});
-  v.addEventListener('touchend',()=>exEnd(true));
-  v.addEventListener('touchcancel',()=>exEnd(false));
-  v.addEventListener('mousedown',e=>{if(e.button===0)down(e);});
+  v.addEventListener('touchend',()=>{_exTouchAt=Date.now();exEnd(true);});
+  v.addEventListener('touchcancel',()=>{_exTouchAt=Date.now();exEnd(false);});
+  v.addEventListener('mousedown',e=>{
+    if(Date.now()-_exTouchAt<700)return;      // 터치가 만든 합성 mousedown 은 받지 않는다
+    if(e.button===0)down(e);});
   window.addEventListener('mousemove',e=>{if(EXD.armed||EXD.on)move(e);});
   window.addEventListener('mouseup',()=>{if(EXD.armed||EXD.on)exEnd(true);});
   /* 탭 규칙 — 할 일 칩: 한 번은 완료 토글, 두 번은 수정. 시험 칩: 두 번에 과목 수정.
      레일 칩: 한 번에 수정. 빈 칸 탭은 아무 일도 하지 않는다(오늘 탭과 같다). */
   v.addEventListener('click',e=>{
-    if(Date.now()-GD.endedAt<320)return;
+    // 끌기가 방금 끝났거나(합성 click), 손가락이 흘러가 스크롤이 된 손짓은 탭이 아니다.
+    if(Date.now()-GD.endedAt<320||_exMoved)return;
     const chip=e.target.closest('.exchip');
     if(!chip)return;
     const id=chip.dataset.tid||chip.dataset.sid||chip.dataset.gid;
     if(chip.dataset.gid){editStage(id);return;}
-    const dbl=_exClick.id===id&&Date.now()-_exClick.at<340;
+    const dbl=_exClick.id===id&&Date.now()-_exClick.at<EX_DBL;
     clearTimeout(_exClick.timer);_exClick.timer=null;
     if(dbl){
       _exClick.id=null;
@@ -2142,7 +2156,7 @@ function bindExamDrag(){
     }
     _exClick.id=id;_exClick.at=Date.now();
     if(chip.dataset.tid)
-      _exClick.timer=setTimeout(()=>{if(_exClick.id===id)exToggleDone(id);_exClick.id=null;},350);
+      _exClick.timer=setTimeout(()=>{if(_exClick.id===id)exToggleDone(id);_exClick.id=null;},EX_DBL);
   });
 }
 /* ═════ 9. paint ═════ */
@@ -2298,6 +2312,12 @@ function bindGrid(root){
   // 한 노드에 딱 한 번만 붙인다. _b 를 되돌려 다시 부르면 같은 노드에 리스너가 겹쳐
   // 완료 토글이 짝수 번 실행되고(= 아무 일도 안 일어난다) 리스너가 배로 불어난다.
   if(!root||root._b)return;root._b=true;
+  /* `#view` 는 탭이 바뀌어도 같은 노드다. 리스너는 한 번만 붙으므로 오늘 탭이 아닐 때는
+     여기 붙은 손들이 스스로 물러나야 한다. 물러나지 않으면 시험 탭에서 칩을 한 번 톡
+     누른 것만으로도 `commit()`→`clearAll()` 이 `GD.endedAt` 을 새로 찍어, 바로 뒤따라오는
+     click 이 시험 탭의 `<320ms` 걸름망에 걸려 완료·수정이 통째로 삼켜진다.
+     날짜 팝업(`#popbody`)은 언제나 그리드이므로 그대로 살아 있다. */
+  const live=()=>root.id!=='view'||tab==='today';
   const grid=()=>root.querySelector('.grid');
   const unbar=()=>root.querySelector('.unbar');
   const dateOf=()=>{const g=grid();return g?g.dataset.date:TODAY();};
@@ -2413,6 +2433,7 @@ function bindGrid(root){
     if(v)S.scrollTop+=v;};
 
   root.addEventListener('touchstart',e=>{
+    if(!live())return;
     map=timeMap(dateOf());
     const t=e.touches[0];sx=t.clientX;sy=t.clientY;moved=0;virtualDoneId=null;
     if(e.target.closest('.evck,.uck')){
@@ -2477,6 +2498,7 @@ function bindGrid(root){
   },{passive:false});
 
   root.addEventListener('touchmove',e=>{
+    if(!live())return;
     const t=e.touches[0];
     moved=Math.max(moved,Math.abs(t.clientX-sx)+Math.abs(t.clientY-sy));
     if(!GD.on){
@@ -2549,6 +2571,7 @@ function bindGrid(root){
   },{passive:false});
 
   const commit=()=>{
+    if(!live())return;
     if(blocked){
       const doneId=virtualDoneId,shouldToggle=doneId&&moved<=TAP_SLOP;
       blocked=false;virtualDoneId=null;
@@ -2610,9 +2633,10 @@ function bindGrid(root){
       if(mode==='rt'||mode==='rb')tourSignal('task-resized');}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
-  root.addEventListener('touchcancel',()=>{clearAll();refresh();});
+  root.addEventListener('touchcancel',()=>{if(!live())return;clearAll();refresh();});
 
   root.addEventListener('click',e=>{
+    if(!live())return;
     if(e.target.closest('.evck')){
       const ev=e.target.closest('.ev');if(ev){e.stopPropagation();toggleDone(ev.dataset.id);}return;}
     if(e.target.closest('.uck')){
@@ -2621,7 +2645,7 @@ function bindGrid(root){
   /* 터치가 만든 합성 click 은 GD.endedAt 로 걸러 두 번 세지 않게 한다.
      여기는 마우스로 볼 때의 선택·수정 경로다. */
   root.addEventListener('click',e=>{
-    if(GD.on||Date.now()-GD.endedAt<300)return;
+    if(!live()||GD.on||Date.now()-GD.endedAt<300)return;
     const ev=e.target.closest('.ev'),uc=e.target.closest('.uchip');
     if(ev&&!ev.classList.contains('dropghost')){
       const id=ev.dataset.id;
@@ -3133,9 +3157,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=88';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=88';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=88';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=89';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=89';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=89';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3884,7 +3908,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=88').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=89').catch(()=>{});
 </script>
 </body>
 </html>
