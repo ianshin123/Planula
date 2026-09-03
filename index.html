@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=89">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=89">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=89">
-<link rel="apple-touch-icon" href="icon-192.png?v=89">
+<link rel="manifest" href="manifest.webmanifest?v=90">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=90">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=90">
+<link rel="apple-touch-icon" href="icon-192.png?v=90">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -313,7 +313,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   display:flex;flex-direction:column;align-items:center;padding-top:7px;gap:3px;position:relative;
   transition:transform .12s;min-height:42px;overflow:hidden}
 .cell:active{transform:scale(.94)}
-.cell.out{opacity:.3}
+/* 다른 달의 날짜도 이 달과 똑같이 선명하게 둔다. 흐리게 하면 달 경계 주의 날짜를
+   읽으려고 눈을 찡그리게 되는데, 시험 기간은 달을 걸쳐 있기 일쑤다. */
+.cell.out{opacity:1}
 .cell.today{background:var(--ac-s);border-color:var(--ac-b)}
 .dn{font-size:15px;font-weight:750;color:var(--ink2);font-variant-numeric:tabular-nums}
 .cell.sun .dn{color:var(--gd)}
@@ -390,7 +392,7 @@ body[data-tab="exam"] #view,body[data-tab="exam"] #topin{max-width:none}
 .excell{min-height:72px;border-radius:10px;background:var(--muted);border:1px solid transparent;
   padding:5px 3px 6px;display:flex;flex-direction:column;gap:3px;min-width:0;
   transition:background .16s,border-color .16s}
-.excell.out{opacity:.42}
+.excell.out{opacity:1}
 .excell.today{background:var(--ac-s);border-color:var(--ac-b)}
 .excell.tgt{background:var(--ac-s);border-color:var(--ac);box-shadow:inset 0 0 0 1px var(--ac)}
 .exdn{font-size:11px;font-weight:850;color:var(--ink3);text-align:center;line-height:1.1;
@@ -806,7 +808,7 @@ const L=KO?{
   taskEdit:'할일 수정',taskNew:'새 할일',taskPh:'무엇을 할까',
   goesTo:w=>w+'에 들어간다',more:'자세히 ▾',less:'간단히 ▴',
   copyToUn:'미배정으로 복사',nextDay:'다음날로 옮기기',movedNextDay:'다음날로 옮겼다',save:'저장',add:'추가',delOnlyThis:'이것만 삭제',del:'삭제',delAllRep:'반복 전체 삭제',
-  needTaskName:'할일 이름을 적어줘',copiedToUn:'미배정에 복사했다',edited:'수정했다',added:'추가했다',
+  needTaskName:'할일 이름을 적어줘',needDow:'반복할 요일을 하나는 골라줘',copiedToUn:'미배정에 복사했다',edited:'수정했다',added:'추가했다',
   delAllRepDone:'반복 전체를 지웠다',deleted:'지웠다',
   catEdit:'목표 수정',catNew:'새 목표',catPh:'예: 수학, 동아리, 운동',color:'색상',catDel:'목표 삭제',
   needCatName:'과목 이름을 적어줘',catDeleted:'과목을 지웠다',
@@ -918,7 +920,7 @@ const L=KO?{
   taskEdit:'Edit task',taskNew:'New task',taskPh:'What needs doing?',
   goesTo:w=>'Goes into '+w,more:'Details ▾',less:'Simple ▴',
   copyToUn:'Copy to unassigned',nextDay:'Move to tomorrow',movedNextDay:'Moved to the next day',save:'Save',add:'Add',delOnlyThis:'Delete just this one',del:'Delete',delAllRep:'Delete every repeat',
-  needTaskName:'Give the task a name',copiedToUn:'Copied to unassigned',edited:'Saved',added:'Added',
+  needTaskName:'Give the task a name',needDow:'Pick at least one weekday',copiedToUn:'Copied to unassigned',edited:'Saved',added:'Added',
   delAllRepDone:'Deleted the whole repeat',deleted:'Deleted',
   catEdit:'Edit goal',catNew:'New goal',catPh:'e.g. Maths, club, training',color:'Color',catDel:'Delete goal',
   needCatName:'Give the subject a name',catDeleted:'Subject deleted',
@@ -1389,8 +1391,12 @@ function materialize(ds){
     if(DB.tasks.some(t=>t.repId===rep.id&&t.date===ds))return;
     const sibs=DB.tasks.filter(t=>t.date===ds&&(t.min==null)===(rep.min==null));
     DB.tasks.push({id:uid(),title:rep.title,date:ds,min:rep.min,
-      dur:rep.dur!=null?rep.dur:bandLen(ds,rep.min),
-      ord:sibs.length,done:false,subj:rep.subj,repId:rep.id});
+      // 미배정으로 만든 반복은 길이도 비워 둔다 — 시각이 없는데 길이만 60분으로
+      // 굳으면 나중에 시간에 놓을 때 그 칸 길이 대신 60분이 따라붙는다.
+      dur:rep.min==null?null:(rep.dur!=null?rep.dur:bandLen(ds,rep.min)),
+      // 시험 탭에서 만든 반복은 인스턴스도 시험 일이다. 이걸 안 넘기면 반복으로
+      // 생긴 일들이 시험 달력에 서지 않아 반복을 걸어 둔 뜻이 없어진다.
+      ord:sibs.length,done:false,subj:rep.subj,exam:!!rep.exam,repId:rep.id});
     _dirty=true;
   });
 }
@@ -1788,7 +1794,7 @@ function examChipHTML(it,extra){
   const t=it.t,sj=taskSubj(t);
   const col=sj?('--c:'+scVar(sj.color)+';--cs:'+scSoft(sj.color)):'--c:var(--ink2);--cs:var(--muted)';
   return '<div class="exchip'+(t.done?' done':'')+(extra||'')+'" data-tid="'+t.id+'" style="'+col+'">'+
-    (t.min!=null?'<i>'+hhmm(t.min)+'</i> ':'')+esc(t.title)+'</div>';
+    (t.min!=null?'<i>'+hhmm(t.min)+'</i> ':'')+(t.repId?'<i>\u21bb</i> ':'')+esc(t.title)+'</div>';
 }
 function stageChipHTML(g,extra){
   const sj=subjOfTitle(g.title);
@@ -2746,14 +2752,16 @@ function finishTaskSheet(){
   }else{closeSheet();paint();}
 }
 let _ed={},_adv=false;
-function newTask(ds,min){
-  _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,mile:null,rep:null,repId:null};
+function newTask(ds,min,exam){
+  _ed={id:null,title:tourSample('task'),date:ds||TODAY(),min:(min==null?null:min),dur:null,subj:null,mile:null,
+    exam:!!exam,rep:null,repId:null};
   _adv=true;taskSheet();
 }
 function openTask(id){
   const t=DB.tasks.find(x=>x.id===id);if(!t)return;
   const rule=t.repId?DB.repeats.find(r=>r.id===t.repId):null;
-  _ed={id:t.id,title:t.title,date:t.date,min:t.min,dur:t.dur,subj:t.subj||null,mile:t.mile||null,repId:t.repId||null,
+  _ed={id:t.id,title:t.title,date:t.date,min:t.min,dur:t.dur,subj:t.subj||null,mile:t.mile||null,
+    exam:!!t.exam,repId:t.repId||null,
     rep:rule?{freq:rule.freq,weekdays:(rule.weekdays||[]).slice(),interval:rule.interval||2,start:rule.start,end:rule.end||''}:null};
   _adv=true;taskSheet();
 }
@@ -2781,6 +2789,40 @@ function detailHTML(){
   }
   return h;
 }
+/* 반복 고르개의 손들. 시트를 다시 그리므로 입력창에 적어 둔 것을 먼저 거둬들이고,
+   다시 그린 뒤 시트 스크롤을 제자리에 돌려놓는다 — 안 그러면 반복을 고를 때마다
+   시트가 맨 위로 튀어 아래쪽의 요일·간격 줄이 화면 밖으로 사라진다. */
+function repaintTaskSheet(){
+  const el=subSheetOn()?$('#subsheet'):$('#sheet');
+  const y=el?el.scrollTop:0;
+  taskSheet();
+  const el2=subSheetOn()?$('#subsheet'):$('#sheet');
+  if(el2)requestAnimationFrame(()=>{el2.scrollTop=y;});
+}
+function setRep(freq){
+  readTitle();const e=_ed;
+  if(!freq){e.rep=null;repaintTaskSheet();return;}
+  const cur=e.rep||{};
+  e.rep={freq,
+    // 요일 지정은 비어 있으면 아무 날도 안 걸린다. 이 할 일이 놓인 요일로 시작한다.
+    weekdays:(cur.weekdays&&cur.weekdays.length)?cur.weekdays.slice():[parseD(e.date).getDay()],
+    interval:cur.interval||2,
+    start:cur.start||e.date,
+    end:cur.end||''};
+  repaintTaskSheet();
+}
+function togDow(i){
+  readTitle();const r=_ed.rep;if(!r)return;
+  const w=(r.weekdays||[]).slice(),at=w.indexOf(i);
+  if(at>=0)w.splice(at,1);else w.push(i);
+  r.weekdays=w.sort((a,b)=>a-b);
+  repaintTaskSheet();
+}
+function bumpN(d){
+  readTitle();const r=_ed.rep;if(!r)return;
+  r.interval=Math.max(1,Math.min(60,(r.interval||2)+d));
+  repaintTaskSheet();
+}
 function taskSheet(){
   const e=_ed;
   let h='<div class="sh2">'+esc(e.id?L.taskEdit:L.taskNew)+'</div>'+
@@ -2806,10 +2848,12 @@ function toggleAdv(){readTitle();_adv=!_adv;taskSheet();}
 function saveTask(){
   readTitle();const e=_ed;
   if(!e.title.trim()){toast(L.needTaskName);return;}
+  // 요일을 하나도 안 고른 '요일 지정'은 어느 날에도 안 걸린다. 조용히 사라지느니 여기서 막는다.
+  if(e.rep&&e.rep.freq==='weekly'&&!(e.rep.weekdays||[]).length){toast(L.needDow);return;}
   const mkRule=()=>({id:e.repId||uid(),title:e.title.trim(),freq:e.rep.freq,
     weekdays:e.rep.weekdays.slice(),interval:e.rep.interval,
     start:e.rep.start||e.date,end:e.rep.end||'',min:e.min,dur:e.dur,subj:e.subj,
-    mode24:is24(e.date),ex:[]});
+    exam:!!e.exam,mode24:is24(e.date),ex:[]});
   if(e.id){
     const t=DB.tasks.find(x=>x.id===e.id);if(!t)return;
     Object.assign(t,{title:e.title.trim(),min:e.min,
@@ -2829,7 +2873,7 @@ function saveTask(){
       const nid=uid();
       DB.tasks.push({id:nid,title:e.title.trim(),date:e.date,min:e.min,
         dur:e.min==null?null:(e.dur!=null?e.dur:bandLen(e.date,e.min)),
-        ord:sibs.length,done:false,subj:e.subj,mile:e.mile||null,repId:null});
+        ord:sibs.length,done:false,subj:e.subj,mile:e.mile||null,exam:!!e.exam,repId:null});
       tourMade('task',nid);}}
   materializeWindow();save();finishTaskSheet();
   toast(e.id?L.edited:L.added);tourSignal(e.id?'task-edited':'task-saved');
@@ -3157,9 +3201,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=89';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=89';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=89';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=90';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=90';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=90';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3908,7 +3952,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=89').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=90').catch(()=>{});
 </script>
 </body>
 </html>
