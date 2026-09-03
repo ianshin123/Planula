@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=85">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=85">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=85">
-<link rel="apple-touch-icon" href="icon-192.png?v=85">
+<link rel="manifest" href="manifest.webmanifest?v=86">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=86">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=86">
+<link rel="apple-touch-icon" href="icon-192.png?v=86">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -23,14 +23,14 @@
   --bg:#F1F0EC; --bg2:#FBFAF8; --solid:#FFFFFF; --muted:#E8E7E1;
   --ink:#1A1917; --ink2:#5C5A53; --ink3:#98958D;
   --line:rgba(36,34,29,.14); --line2:rgba(36,34,29,.07);
-  --ac:#0D8B84; --ac2:#17A79E; --ac-s:rgba(13,139,132,.12); --ac-b:rgba(13,139,132,.34);
-  --ac-glow:rgba(13,139,132,.38); --spot-glow:rgba(13,139,132,.6);
+  --ac:#0B87DA; --ac2:#39A4EA; --ac-s:rgba(11,135,218,.12); --ac-b:rgba(11,135,218,.34);
+  --ac-glow:rgba(11,135,218,.38); --spot-glow:rgba(11,135,218,.6);
   --tour-paper:rgba(253,253,251,.7); --tour-sheen:rgba(255,255,255,.55);
-  --tour-halo:rgba(226,246,244,.55); --tour-lift:rgba(252,254,253,.9);
-  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0D8B84;
+  --tour-halo:rgba(223,240,253,.55); --tour-lift:rgba(252,254,253,.9);
+  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0B87DA;
   --gd:#CE4238; --gd-s:rgba(206,66,56,.12);
   --ok:#2E9C60; --ok-s:rgba(46,156,96,.13);
-  --band:rgba(13,139,132,.06);
+  --band:rgba(11,135,218,.06);
   --surface:var(--bg2); --surface-brd:var(--line);
   --blur-surface:rgba(255,255,255,.94); --blur-strong:rgba(249,249,246,.82); --done-bg:rgba(232,231,225,.66);
   --shadow-sm:0 1px 2px rgba(28,26,22,.05),0 4px 12px rgba(28,26,22,.045);
@@ -38,9 +38,9 @@
   /* 과목 일곱 색 — 빨 주 노 초 파 보 검. 저장값은 hex 가 아니라 키라서
      라이트·다크에서 각각 알맞은 값이 나온다. */
   --sc-red:#DC3B3B; --sc-orange:#E8720F; --sc-yellow:#C08D00; --sc-green:#1E9C57;
-  --sc-blue:#2A6FDD; --sc-purple:#8145D4; --sc-ink:#454952;
+  --sc-blue:#4355E0; --sc-purple:#8145D4; --sc-ink:#454952;
   --scs-red:rgba(220,59,59,.13); --scs-orange:rgba(232,114,15,.14); --scs-yellow:rgba(192,141,0,.15);
-  --scs-green:rgba(30,156,87,.13); --scs-blue:rgba(42,111,221,.13); --scs-purple:rgba(129,69,212,.13);
+  --scs-green:rgba(30,156,87,.13); --scs-blue:rgba(67,85,224,.13); --scs-purple:rgba(129,69,212,.13);
   --scs-ink:rgba(69,73,82,.12);
   /* 강조색 위에 얹는 글자. 다크의 밝은 아쿠아 위에 흰 글자를 쓰면 읽히지 않는다. */
   --on-ac:#FFFFFF; --exam-fg:#FFFFFF;
@@ -53,47 +53,47 @@
   --bg:#121315; --bg2:#1B1D20; --solid:#1B1D20; --muted:#23262A;
   --ink:#ECEDEA; --ink2:#A4A8A4; --ink3:#6F736F;
   --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.06);
-  --ac:#3ACFC0; --ac2:#69E2D5; --ac-s:rgba(58,207,192,.15); --ac-b:rgba(58,207,192,.4);
-  --ac-glow:rgba(58,207,192,.24); --spot-glow:rgba(58,207,192,.5);
+  --ac:#54BFFF; --ac2:#8AD5FF; --ac-s:rgba(84,191,255,.16); --ac-b:rgba(84,191,255,.42);
+  --ac-glow:rgba(84,191,255,.24); --spot-glow:rgba(84,191,255,.5);
   --tour-paper:rgba(247,252,251,.72); --tour-sheen:rgba(255,255,255,.18);
-  --tour-halo:rgba(168,238,230,.5); --tour-lift:rgba(246,254,252,.78);
-  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0D8B84;
+  --tour-halo:rgba(160,213,255,.5); --tour-lift:rgba(246,254,252,.78);
+  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0B87DA;
   --gd:#FF6F63; --gd-s:rgba(255,111,99,.16);
   --ok:#48C983; --ok-s:rgba(72,201,131,.15);
-  --band:rgba(58,207,192,.07);
+  --band:rgba(84,191,255,.08);
   --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
   --blur-surface:rgba(27,29,32,.95); --blur-strong:rgba(20,22,24,.8); --done-bg:rgba(35,38,42,.66);
   --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 5px 14px rgba(0,0,0,.2);
   --shadow-md:0 10px 26px rgba(0,0,0,.4); --shadow-lg:0 18px 50px rgba(0,0,0,.55);
   --sc-red:#FF6B63; --sc-orange:#FF9440; --sc-yellow:#E8BC42; --sc-green:#45C77E;
-  --sc-blue:#5D9CFF; --sc-purple:#B183F5; --sc-ink:#AEB3BC;
+  --sc-blue:#8B96FF; --sc-purple:#B183F5; --sc-ink:#AEB3BC;
   --scs-red:rgba(255,107,99,.17); --scs-orange:rgba(255,148,64,.17); --scs-yellow:rgba(232,188,66,.17);
-  --scs-green:rgba(69,199,126,.17); --scs-blue:rgba(93,156,255,.17); --scs-purple:rgba(177,131,245,.17);
+  --scs-green:rgba(69,199,126,.17); --scs-blue:rgba(139,150,255,.17); --scs-purple:rgba(177,131,245,.17);
   --scs-ink:rgba(174,179,188,.16);
-  --on-ac:#0D1416; --exam-fg:#15171A;
+  --on-ac:#07131D; --exam-fg:#15171A;
 }}
 :root[data-theme="dark"]{
   --bg:#121315; --bg2:#1B1D20; --solid:#1B1D20; --muted:#23262A;
   --ink:#ECEDEA; --ink2:#A4A8A4; --ink3:#6F736F;
   --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.06);
-  --ac:#3ACFC0; --ac2:#69E2D5; --ac-s:rgba(58,207,192,.15); --ac-b:rgba(58,207,192,.4);
-  --ac-glow:rgba(58,207,192,.24); --spot-glow:rgba(58,207,192,.5);
+  --ac:#54BFFF; --ac2:#8AD5FF; --ac-s:rgba(84,191,255,.16); --ac-b:rgba(84,191,255,.42);
+  --ac-glow:rgba(84,191,255,.24); --spot-glow:rgba(84,191,255,.5);
   --tour-paper:rgba(247,252,251,.72); --tour-sheen:rgba(255,255,255,.18);
-  --tour-halo:rgba(168,238,230,.5); --tour-lift:rgba(246,254,252,.78);
-  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0D8B84;
+  --tour-halo:rgba(160,213,255,.5); --tour-lift:rgba(246,254,252,.78);
+  --tour-ink:#191D1C; --tour-ink2:#48524F; --tour-dim:#818A87; --tour-ac:#0B87DA;
   --gd:#FF6F63; --gd-s:rgba(255,111,99,.16);
   --ok:#48C983; --ok-s:rgba(72,201,131,.15);
-  --band:rgba(58,207,192,.07);
+  --band:rgba(84,191,255,.08);
   --surface:var(--bg2); --surface-brd:rgba(255,255,255,.1);
   --blur-surface:rgba(27,29,32,.95); --blur-strong:rgba(20,22,24,.8); --done-bg:rgba(35,38,42,.66);
   --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 5px 14px rgba(0,0,0,.2);
   --shadow-md:0 10px 26px rgba(0,0,0,.4); --shadow-lg:0 18px 50px rgba(0,0,0,.55);
   --sc-red:#FF6B63; --sc-orange:#FF9440; --sc-yellow:#E8BC42; --sc-green:#45C77E;
-  --sc-blue:#5D9CFF; --sc-purple:#B183F5; --sc-ink:#AEB3BC;
+  --sc-blue:#8B96FF; --sc-purple:#B183F5; --sc-ink:#AEB3BC;
   --scs-red:rgba(255,107,99,.17); --scs-orange:rgba(255,148,64,.17); --scs-yellow:rgba(232,188,66,.17);
-  --scs-green:rgba(69,199,126,.17); --scs-blue:rgba(93,156,255,.17); --scs-purple:rgba(177,131,245,.17);
+  --scs-green:rgba(69,199,126,.17); --scs-blue:rgba(139,150,255,.17); --scs-purple:rgba(177,131,245,.17);
   --scs-ink:rgba(174,179,188,.16);
-  --on-ac:#0D1416; --exam-fg:#15171A;
+  --on-ac:#07131D; --exam-fg:#15171A;
 }
 html,body{height:100%;overscroll-behavior:none;touch-action:pan-x pan-y}
 /* 이동이 '꾹 눌러서 끌기'라 누르고 있는 동안 글자가 선택되면 안 된다.
@@ -350,10 +350,34 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .exunrow em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--ink3)}
 .exunrow .exchip{font-size:11.5px;padding:5px 9px;border-radius:8px;-webkit-line-clamp:1}
 
-.exwrap{padding-bottom:8px}
+.exwrap{padding-bottom:8px;min-width:0}
+/* 시험 탭은 달력과 미배정 레일이 나란하다. 레일은 화면에 붙어 따라온다. */
+.exlayout{display:grid;grid-template-columns:minmax(0,1fr) var(--unw);gap:12px;align-items:start}
+.exstage{position:sticky;top:4px;z-index:20;display:flex;flex-direction:column;gap:8px;
+  padding:9px 8px;border-radius:17px;max-height:calc(100vh - var(--dockh) - 120px)}
+.exstage .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin:0 2px}
+.exstage.tgt{box-shadow:inset 0 0 0 2.5px var(--ac)}
+.exstagerow{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:12px}
+.exchip.stagechip{font-size:12px;padding:8px 9px;border-radius:9px}
+.stageadd{display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:11px;
+  border:1.5px dashed var(--line);color:var(--ink3);font-size:12px;font-weight:800}
+.stageadd svg{width:12px;height:12px;flex:none}
+.stageadd:active{background:var(--ac-s);color:var(--ac);border-color:var(--ac-b)}
+/* 시험·시간표 탭은 좌우를 넓게 쓴다 — 패드에서 달력이 화면을 가득 채운다. */
+body[data-tab="exam"] #view,body[data-tab="exam"] #topin,
+body[data-tab="sched"] #view,body[data-tab="sched"] #topin{max-width:none}
+.ebi:active{transform:scale(.95)}
+@media(max-width:620px){
+  .exlayout{gap:8px}
+  .exdow{padding-right:calc(var(--unw) + 8px)}
+  .stageadd{font-size:11px;white-space:nowrap;gap:4px;padding:9px 4px}
+  .exchip.stagechip{font-size:11px;padding:7px 7px}
+}
 /* 요일 줄은 스크롤을 따라 붙어 있어야 몇 월 며칠인지 잃지 않는다. */
-.exdow{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
-  padding:5px 0 7px;background:var(--bg)}
+/* 요일 줄은 헤더의 일부다. 스크롤 위에 붙여 두면 뒤 날짜 숫자가 위로 삐져나온다.
+   오른쪽 여백은 미배정 레일 폭만큼 비워 달력 칸과 열이 맞는다. */
+.exdow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  padding:9px calc(var(--unw) + 12px) 0 0}
 .exdow i{font-style:normal;text-align:center;font-size:11px;font-weight:800;color:var(--ink3)}
 .exdow i.sun{color:var(--gd)}
 .exstream{display:flex;flex-direction:column;gap:4px}
@@ -522,54 +546,54 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
 .schedsum.static{background:var(--muted);opacity:1}
 .schedrow.off .schedsum{opacity:.5}
 .schedempty{padding:20px 15px;border:1.5px dashed var(--line);border-radius:var(--r3);text-align:center;color:var(--ink3);font-size:13px;font-weight:650;line-height:1.6}
-/* ── 시간표를 원으로 나눈다 ──────────────────────────────────────────
-   하루는 빈틈없이 칸으로 차 있고, 고칠 것은 칸 사이의 경계뿐이다.
-   12시가 맨 위, 시계 방향으로 24시간. 색은 홀짝으로 저절로 번갈아 든다. */
-.piewrap{position:relative;width:100%;max-width:288px;margin:2px auto 14px;aspect-ratio:1}
+/* ── 시간표 탭 ──────────────────────────────────────────────────────
+   목록 없이 다이얼 하나로 하루를 나눈다. 경계를 꾹 누르면 토글이 서고,
+   토글을 잡아 끄는 동안 5분 눈금이 촘촘히 깔린다. */
+.schwrap{max-width:640px;margin:0 auto}
+.schsets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.schchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 15px;border-radius:14px;
+  background:var(--muted);border:1.5px solid transparent;text-align:left}
+.schchip b{font-size:14px;font-weight:800;letter-spacing:-.02em}
+.schchip span{font-size:10.5px;font-weight:750;color:var(--ink3)}
+.schchip.on{background:var(--ac-s);border-color:var(--ac-b)}
+.schchip.on b{color:var(--ac)}
+.schchip.add{justify-content:center;border:1.5px dashed var(--line);background:none;color:var(--ink3);font-weight:800;font-size:13px}
+.schchip:active{transform:scale(.97)}
+.schmeta{border-radius:var(--r);padding:13px 14px;margin-bottom:12px;display:flex;flex-direction:column;gap:11px}
+.schmeta .dw{height:46px;display:grid;place-items:center}
+.schnamerow{display:flex;gap:8px;align-items:center}
+.schnamerow .fi{flex:1;min-width:0}
+.schddel{flex:0 0 auto;padding:11px 13px;font-size:12.5px}
+.schddel.danger{color:var(--gd);background:var(--gd-s)}
+.schdial{border-radius:var(--r);padding:22px 12px 12px;margin-bottom:12px}
+.piewrap{position:relative;width:100%;max-width:min(560px,94vw);margin:0 auto;aspect-ratio:1}
 #pie{display:block;width:100%;height:100%;touch-action:none;overflow:visible}
 .piebg{fill:var(--muted)}
 /* 색은 같고 농도만 번갈아 든다 — '색 있고 없고'가 저절로 반복되게. 종류를 고르는 자리는 없다. */
-.pieseg{fill:var(--ac);opacity:.88;stroke:var(--bg2);stroke-width:.7;transition:opacity .15s}
-.pieseg.alt{opacity:.34}
-.pieseg.sel{opacity:1;stroke:var(--ink);stroke-width:1.6}
-.pietick{stroke:var(--ink3);stroke-width:1.2;opacity:.55}
-.pienum{fill:var(--ink3);font-size:9.5px;font-weight:800;text-anchor:middle;font-variant-numeric:tabular-nums}
-.piecut{stroke:var(--bg2);stroke-width:1}
-.piecut.on{stroke:var(--ink);stroke-width:1.6}
-.piegrip{fill:var(--solid);stroke:var(--ink);stroke-width:2.2;cursor:grab;filter:drop-shadow(0 2px 4px rgba(0,0,0,.22))}
-.piegrip.on{fill:var(--ac);stroke:var(--solid)}
-.piemid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40%;text-align:center;pointer-events:none}
-.piemid b{display:block;font-size:14px;font-weight:850;letter-spacing:-.03em;line-height:1.2;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.piemid span{display:block;margin-top:2px;font-size:10.5px;font-weight:750;color:var(--ink3);font-variant-numeric:tabular-nums}
-.piemid i{display:block;font-style:normal;font-size:10.5px;font-weight:800;color:var(--ac)}
-
-.blockrow{display:flex;align-items:center;gap:8px;
-  padding:8px 9px;border:1px solid var(--line);border-radius:var(--r3);background:var(--muted);margin-bottom:6px}
-.blockrow.sel{border-color:var(--ac-b);background:var(--ac-s)}
-.bdot{width:10px;height:10px;border-radius:3px;background:var(--ac);opacity:.88;flex:none}
-.bdot.alt{opacity:.34}
-.blockrow .fi{padding:10px;font-size:13px;background:var(--solid)}
-.blockrow .bname{flex:1;min-width:0}
-.blocktimes{display:flex;align-items:center;gap:7px;flex:none}
+.pieseg{fill:var(--ac);opacity:.85;stroke:var(--bg2);stroke-width:.8}
+.pieseg.alt{opacity:.3}
+.pielab{font-size:7.5px;font-weight:800;text-anchor:middle;fill:var(--on-ac);pointer-events:none;letter-spacing:-.02em}
+.pielab.alt{fill:var(--ink2)}
+.pietick{stroke:var(--ink3);stroke-width:1;opacity:.4}
+.pietick.big{stroke-width:1.4;opacity:.7}
+.pienum{fill:var(--ink3);font-size:8.5px;font-weight:800;text-anchor:middle;font-variant-numeric:tabular-nums}
+/* 끄는 동안의 5분 눈금 — 지금 어느 5분 위에 있는지가 또렷해야 한다 */
+.piefine{stroke:var(--ink3);stroke-width:1;opacity:.55}
+.piefine.on{stroke:var(--ac);stroke-width:2.2;opacity:1}
+.piecuton{stroke:var(--solid);stroke-width:2.6;filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))}
+.piecuton.drag{stroke:var(--ac);stroke-width:3}
+.pieknob circle:first-child{fill:var(--solid);stroke:var(--ink);stroke-width:2.2;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}
+.pieknob .dotc{fill:var(--ac);stroke:none}
+.pieknob.drag circle:first-child{stroke:var(--ac)}
+.piemid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:36%;text-align:center;pointer-events:none;
+  display:flex;flex-direction:column;gap:2px;align-items:center}
+.piemid b{max-width:100%;font-size:17px;font-weight:850;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.piemid b.ptime{font-size:30px;font-variant-numeric:tabular-nums;color:var(--ac);letter-spacing:-.02em;font-weight:900}
+.piemid span{max-width:100%;font-size:11px;font-weight:750;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tval.fixed{padding:9px 4px;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;
-  color:var(--ink3);text-align:center;width:74px}
-.blockside{display:flex;gap:6px;align-items:center}
-/* 좁은 화면에서는 길이 표시를 뺀다 — 고른 칸의 길이는 원 가운데에 크게 나와 있다. */
-@media(max-width:620px){
-  .blockrow{gap:6px;padding:7px 8px}
-  .blockrow .tlen{display:none}
-  .tfield{width:74px}
-  .tval{padding:9px 2px;font-size:14px}
-}
-.blockgrip{width:32px;height:32px;border-radius:9px;background:var(--solid);border:1px solid var(--line);
-  color:var(--ink3);display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;touch-action:none}
-.blockgrip i{display:block;width:14px;height:1.8px;border-radius:1px;background:currentColor}
-.blockgrip:active{background:var(--ac-s);color:var(--ac);border-color:var(--ac-s)}
-.blockdel{width:32px;height:32px;border-radius:9px;background:var(--gd-s);color:var(--gd);display:grid;place-items:center;font-size:19px;font-weight:500}
-.blockrow.dragging{opacity:.32}
-.blockrow.liftrow{position:relative;z-index:3;box-shadow:var(--shadow-lg);border-color:var(--ac)}
-.tfield{position:relative;flex:none;width:78px}
+  color:var(--ink3);text-align:center;width:84px;background:var(--muted);border-radius:10px}
+.blocklen{color:var(--ac);font-weight:800;font-size:12px}
+.tfield{position:relative;flex:none;width:78px}.tfield{position:relative;flex:none;width:78px}
 .tfield input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;background:none;
   font:inherit;color:transparent;-webkit-appearance:none;appearance:none}
 .tval{display:block;padding:9px 4px;border:1px solid var(--line);border-radius:10px;background:var(--solid);
@@ -721,6 +745,7 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
     <button class="nb on" data-t="today" onclick="go('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg><span class="lb" data-i18n="tabToday">Today</span></button>
     <button class="nb" data-t="cal" onclick="go('cal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3.4"/><path d="M3 9.4h18M8 2.6v3.8M16 2.6v3.8"/></svg><span class="lb" data-i18n="tabCal">Calendar</span></button>
     <button class="nb" data-t="exam" onclick="go('exam')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.2h8.2L19 7.5v13.3H6.5z"/><path d="M14.2 3.4v4.3H18.6"/><path d="M9.4 13.4l1.9 1.9 3.9-4.2"/></svg><span class="lb" data-i18n="tabExam">Exams</span></button>
+    <button class="nb" data-t="sched" onclick="go('sched')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 12V3.2M12 12l6.3 6.1M12 12l-8.6 1.8"/></svg><span class="lb" data-i18n="tabSched">Schedule</span></button>
   </div>
   <button class="fab" id="mainFab" aria-label="Add task" data-i18n-aria="aTask" onclick="quickAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
 </div>
@@ -777,6 +802,8 @@ const L=KO?{
   hour:'시간',minute:'분',
   tabToday:'오늘',tabCal:'달력',tabCat:'목표',
   tabExam:'시험',headExam:'시험',subject:'과목',examWord:'시험',
+  tabSched:'시간표',headSched:'시간표',schedAdd2:'시간대 추가',blockEdit:'칸 수정',aDial:'하루 나누기',
+  stageLabel:'미배정',stageAdd:'할 일 추가',stageEdit:'할 일 수정',stagePh:'예: 수학 기출 3회 풀기',
   examSubjects:'과목',subjAdd:'과목 추가',subjEdit:'과목 수정',subjNew:'새 과목',subjDel:'과목 삭제',
   subjPh:'예: 국어, 수학, 영어',subjFallback:'과목',
   tags:'태그',tagsPh:'쉼표로 나눠서 · 예: 국어, 문학, 독서',
@@ -886,6 +913,8 @@ const L=KO?{
   hour:'h',minute:'m',
   tabToday:'Today',tabCal:'Calendar',tabCat:'Goals',
   tabExam:'Exams',headExam:'Exams',subject:'Subject',examWord:'exam',
+  tabSched:'Schedule',headSched:'Schedule',schedAdd2:'Add set',blockEdit:'Edit block',aDial:'Split the day',
+  stageLabel:'Unassigned',stageAdd:'Add task',stageEdit:'Edit task',stagePh:'e.g. 3 past papers',
   examSubjects:'Subjects',subjAdd:'Add subject',subjEdit:'Edit subject',subjNew:'New subject',subjDel:'Delete subject',
   subjPh:'e.g. Korean, Maths, English',subjFallback:'Subject',
   tags:'Tags',tagsPh:'Comma separated · e.g. maths, algebra, calc',
@@ -1259,7 +1288,17 @@ function normalizeDB(d,legacy){
   s.theme=['sys','light','dark'].includes(raw.theme)?raw.theme:'sys';s.tutorialSeen=raw.tutorialSeen===true;
   s.introDone=raw.introDone===true;
   s.sched=migrateSched(raw,legacy,hasPlannerData);
-  const out={v:8,tasks:Array.isArray(d.tasks)?d.tasks:[],subjects:migrateSubjects(d.subjects),repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  /* 시험 탭은 v9 에서 **새로 출발**한다. 옛 목표에서 옮겨 왔던 과목은 여기서 한 번에
+     비운다 — 예전 것의 영향 없이 시작하고 싶다는 뜻이었다. 원본은 백업 키에 그대로 있다.
+     v9 이후에 만든 과목(examReset 이 선 저장값)은 그대로 남는다. */
+  const wasReset=raw.examReset===true;
+  s.examReset=true;
+  const out={v:9,tasks:Array.isArray(d.tasks)?d.tasks:[],
+    subjects:wasReset?migrateSubjects(d.subjects):[],
+    repeats:Array.isArray(d.repeats)?d.repeats:[],s};
+  /* 시험 탭의 미배정 풀 — 날짜를 아직 정하지 않은 시험 할 일. */
+  out.stage=(Array.isArray(d.stage)?d.stage:[]).map((g,i)=>g&&g.title
+    ?({id:String(g.id||uid()),title:String(g.title),ord:Number.isFinite(Number(g.ord))?Number(g.ord):i}):null).filter(Boolean);
   out.tasks.forEach(t=>{
     if(t.min===undefined)t.min=null;if(t.dur===undefined)t.dur=null;
     if(t.min!=null)t.min=((Math.round(Number(t.min)||0)%1440)+1440)%1440;
@@ -1267,6 +1306,7 @@ function normalizeDB(d,legacy){
     if(t.dur==null&&t.min!=null)t.dur=legacy?legacyDuration(t.min):60;
     if(t.ord==null)t.ord=0;if(t.repId===undefined)t.repId=null;if(t.autoSlot===undefined)t.autoSlot=null;
     if(t.autoSlot!=null){t.autoSlot=Math.round(t.autoSlot);if(t.autoSlot<0||t.autoSlot>1380)t.autoSlot=null;}
+    t.exam=t.exam===true;                    // 시험 탭에서 만든 일만 시험 달력에 선다
   });
   return out;
 }
@@ -1302,7 +1342,7 @@ function restoreBackup(){
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast(L.saveFail);}}
 function plannerUntouched(){
   const s=DB.s||{};
-  return !DB.tasks.length&&!DB.subjects.length&&!DB.repeats.length&&
+  return !DB.tasks.length&&!DB.subjects.length&&!DB.repeats.length&&!DB.stage.length&&
     schedSets().length===2&&!schedSets().some(x=>setEdited(x)||setDays(x).join(',')!==(x.kind==='weekend'?'0,6':'1,2,3,4,5'))&&
     !Object.keys(s.force24||{}).length&&(s.theme||'sys')==='sys';
 }
@@ -1648,8 +1688,9 @@ function examBarHTML(){
   const a=DB.subjects.filter(x=>x.exam).map(x=>({s:x,n:dcount(x.exam)})).filter(x=>x.n>=0);
   if(!a.length)return '';
   a.sort((x,y)=>x.n-y.n||(x.s.ord||0)-(y.s.ord||0));
-  return '<div class="exambar">'+a.map(x=>'<span class="ebi" style="--c:'+scVar(x.s.color)+';--cs:'+scSoft(x.s.color)+'">'+
-    '<b>'+esc(dlabel(x.n))+'</b>'+esc(x.s.name)+'</span>').join('')+'</div>';
+  // 알약을 누르면 그 과목을 고친다 — 과목 수정 입구가 이 줄이다.
+  return '<div class="exambar">'+a.map(x=>'<button class="ebi" style="--c:'+scVar(x.s.color)+';--cs:'+scSoft(x.s.color)+'" onclick="editExamSubject(\''+x.s.id+'\')">'+
+    '<b>'+esc(dlabel(x.n))+'</b>'+esc(x.s.name)+'</button>').join('')+'</div>';
 }
 function carryHTML(){
   const a=carryTasks();if(!a.length)return '';
@@ -1680,7 +1721,6 @@ function themeIcon(){
 }
 function topHTML(){
   const th='<button class="ib" aria-label="'+esc(L.search)+'" onclick="openSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>'+
-    '<button class="ib" aria-label="'+esc(L.aSched)+'" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/></svg></button>'+
     '<button class="ib" aria-label="'+esc(L.aTheme)+'" onclick="cycleTheme()">'+themeIcon()+'</button>'+
     '<button class="ib" aria-label="'+esc(L.aData)+'" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
@@ -1689,8 +1729,11 @@ function topHTML(){
       '<button class="ib'+(is24(TODAY())?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+examBarHTML();
   }
   if(tab==='cal')return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
-  // 시험 탭에도 같은 디데이 줄을 둔다 — 날짜를 옮기는 화면에서 남은 날이 바로 보여야 한다
-  return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headExam)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>'+examBarHTML();
+  if(tab==='sched')return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headSched)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  // 시험 탭에도 같은 디데이 줄을 둔다 — 날짜를 옮기는 화면에서 남은 날이 바로 보여야 한다.
+  // 요일 줄도 헤더에 붙인다 — 스크롤 위에 떠 있으면 뒤 날짜가 삐져나와 보인다.
+  return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headExam)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>'+examBarHTML()+
+    '<div class="exdow">'+DOW.map((d,i)=>'<i class="'+(i===0?'sun':'')+'">'+d+'</i>').join('')+'</div>';
 }
 function cycleTheme(){
   const o=['sys','light','dark'],i=o.indexOf(DB.s.theme||'sys');
@@ -1755,17 +1798,17 @@ function openDay(ds){
 }
 function popMove(n){openDay(addDays(popDate,n));}
 function setDateViewMode(ds){
-  if(!scheduleProfile(ds)){closeSheet();openScheduleSettings();toast(L.schedAllOff);return false;}
+  if(!scheduleProfile(ds)){closeSheet();go('sched');toast(L.schedAllOff);return false;}
   const cur=is24(ds),def=default24(ds);if(cur===def)DB.s.force24[ds]=!def;else delete DB.s.force24[ds];save();return true;
 }
 function popToggle24(){const ds=popDate;if(setDateViewMode(ds))openDay(ds);}
 
 /* ═════ 8. 시험 ═════ */
 /* 시험기간에 쓰는 탭이다. 다른 달력 탭과 달리 **달로 끊지 않는다** — 주(週)를 계속 이어
-   붙이고, 달이 시작하는 주 앞에만 달 이름을 끼운다. 스크롤을 끝까지 내리면 다음 달이
-   저절로 이어지고, 위로 올리면 지난 주가 앞에 붙는다.
-   칸 안의 일은 눌러서 들어가 보는 게 아니라 그 자리에 그대로 보인다. 한 칸에 다 안
-   들어가면 그 주의 줄이 통째로 늘어난다 — 접거나 '+3' 으로 감추지 않는다. */
+   붙이고, 달이 시작하는 주 앞에만 달 이름을 끼운다.
+   이 탭은 **시험 계획 전용**이다. 여기서 만든 일(task.exam)만 달력에 서고,
+   오늘 탭에서 만든 일반 미배정은 여기 올라오지 않는다. 반대로 여기서 만든 일은
+   그 날의 미배정으로도 들어가서, 오늘 탭에서 시간을 잡아도 여기서는 사라지지 않는다. */
 const EX={start:null,weeks:0};
 const EX_BACK=4, EX_WEEKS=26, EX_STEP=8, EX_PREPEND=6;
 function weekStart(ds){const d=parseD(ds);d.setDate(d.getDate()-d.getDay());return d;}
@@ -1774,11 +1817,14 @@ function examReset(){
   EX.start=dstr(st);EX.weeks=EX_WEEKS;
 }
 function examWeekDate(i,j){const d=parseD(EX.start);d.setDate(d.getDate()+i*7+(j||0));return d;}
-/* 그 날에 놓인 것들. 시험은 언제나 맨 위, 할 일은 손으로 정한 순서(ord) 그대로다.
-   미배정 레일도 같은 ord 를 쓰므로 두 화면의 순서가 저절로 맞는다. */
+function stageList(){return DB.stage.slice().sort((a,b)=>(a.ord||0)-(b.ord||0));}
+function examTasksOf(ds){return tasksOf(ds).filter(t=>t.exam);}
+/* 그 날에 놓인 것들. 시험이 맨 위, 그 다음 **안 한 일**(손으로 정한 순서), 완료된 일은
+   전부 바닥으로 보낸다 — 남은 일이 항상 위에 모여 있어야 한눈에 읽힌다. */
 function examItems(ds){
   const ex=DB.subjects.filter(x=>x.exam===ds).sort((a,b)=>(a.ord||0)-(b.ord||0)).map(x=>({exam:true,s:x}));
-  const ts=tasksOf(ds).slice().sort((a,b)=>(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0)).map(t=>({exam:false,t}));
+  const ts=examTasksOf(ds).sort((a,b)=>
+    (a.done?1:0)-(b.done?1:0)||(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0)).map(t=>({exam:false,t}));
   return ex.concat(ts);
 }
 function examChipHTML(it,extra){
@@ -1790,6 +1836,11 @@ function examChipHTML(it,extra){
   const col=sj?('--c:'+scVar(sj.color)+';--cs:'+scSoft(sj.color)):'--c:var(--ink2);--cs:var(--muted)';
   return '<div class="exchip'+(t.done?' done':'')+(extra||'')+'" data-tid="'+t.id+'" style="'+col+'">'+
     (t.min!=null?'<i>'+hhmm(t.min)+'</i> ':'')+esc(t.title)+'</div>';
+}
+function stageChipHTML(g,extra){
+  const sj=subjOfTitle(g.title);
+  const col=sj?('--c:'+scVar(sj.color)+';--cs:'+scSoft(sj.color)):'--c:var(--ink2);--cs:var(--muted)';
+  return '<div class="exchip stagechip'+(extra||'')+'" data-gid="'+g.id+'" style="'+col+'">'+esc(g.title)+'</div>';
 }
 function examCellHTML(d,m){
   const ds=dstr(d),items=examItems(ds);
@@ -1822,20 +1873,31 @@ function examTrayHTML(){
       '<button class="mini exadd" onclick="editExamSubject(null)">'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>'+esc(L.subjAdd)+'</button></div>'+
     (subs.length
-      ?'<div class="expills">'+subs.map(x=>'<button class="expill" data-sid2="'+x.id+'" style="--c:'+scVar(x.color)+';--cs:'+scSoft(x.color)+'" onclick="editExamSubject(\''+x.id+'\')">'+
+      ?'<div class="expills">'+subs.map(x=>'<button class="expill" style="--c:'+scVar(x.color)+';--cs:'+scSoft(x.color)+'" onclick="editExamSubject(\''+x.id+'\')">'+
          '<i></i>'+esc(x.name)+(x.tags&&x.tags.length?'<span>'+esc(x.tags.join(' · '))+'</span>':'')+'</button>').join('')+'</div>'
       :'<div class="empty" style="padding:14px 8px">'+esc(L.examEmpty)+'</div>')+
-    (subs.length?'<div class="exdrop" data-tray="1"><span>'+esc(L.examUnset)+'</span>'+
-      '<div class="exunrow">'+(un.length?un.map(x=>examChipHTML({exam:true,s:x})).join(''):'<em>'+esc(L.examAllSet)+'</em>')+'</div>'+
+    (subs.length&&un.length?'<div class="exdrop" data-tray="1"><span>'+esc(L.examUnset)+'</span>'+
+      '<div class="exunrow">'+un.map(x=>examChipHTML({exam:true,s:x})).join('')+'</div>'+
     '</div>':'')+'</section>';
+}
+/* 시험 탭의 미배정 레일. 날짜를 아직 정하지 않은 시험 할 일이 서고,
+   여기서 달력의 날로 끌어다 배정한다. 추가는 전부 이 레일로 들어온다. */
+function examStageHTML(){
+  const list=stageList();
+  return '<aside class="exstage glass'+(list.length?'':' empty')+'" data-stage="1">'+
+    '<div class="uh">'+esc(L.stageLabel)+(list.length?' '+list.length:'')+'</div>'+
+    '<div class="exstagerow">'+list.map(g=>stageChipHTML(g)).join('')+'</div>'+
+    '<button class="stageadd" onclick="openStageAdd()">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>'+esc(L.stageAdd)+'</button></aside>';
 }
 function examHTML(){
   if(!EX.start)examReset();
   return examTrayHTML()+
-    '<div class="exwrap"><div class="exdow">'+DOW.map((d,i)=>'<i class="'+(i===0?'sun':'')+'">'+d+'</i>').join('')+'</div>'+
+    '<div class="exlayout"><div class="exwrap">'+
     '<div class="exstream" id="exstream">'+
       '<button class="exmore" onclick="examMore()">'+esc(L.examMore)+'</button>'+
-      examWeeksHTML(0,EX.weeks)+'</div></div>';
+      examWeeksHTML(0,EX.weeks)+'</div></div>'+
+    examStageHTML()+'</div>';
 }
 function examRowHTML(x){
   const n=dcount(x.exam);
@@ -1872,11 +1934,40 @@ function examMore(){
 }
 $('#scroll').addEventListener('scroll',examScroll,{passive:true});
 
+/* ═════ 미배정 레일 추가·수정 ═════ */
+function openStageAdd(){
+  openSheet('<div class="sh2">'+esc(L.stageAdd)+'</div>'+
+    '<input class="fi" id="f_sg" placeholder="'+esc(L.stagePh)+'">'+
+    '<div class="row2"><button class="btn p" onclick="saveStage()">'+esc(L.save)+'</button></div>');
+}
+function saveStage(){
+  const v=$('#f_sg').value.trim();if(!v){toast(L.needText);return;}
+  DB.stage.push({id:uid(),title:v,ord:DB.stage.length});
+  save();closeSheet();paint();
+}
+let _sg=null;
+function editStage(id){
+  const g=DB.stage.find(v=>v.id===id);if(!g)return;_sg=id;
+  openSheet('<div class="sh2">'+esc(L.stageEdit)+'</div>'+
+    '<input class="fi" id="f_sg" value="'+esc(g.title)+'">'+
+    '<div class="row2"><button class="btn p" onclick="updateStage()">'+esc(L.save)+'</button></div>'+
+    '<div class="row2"><button class="btn d" onclick="delStage()">'+esc(L.del)+'</button></div>');
+}
+function updateStage(){
+  const g=DB.stage.find(v=>v.id===_sg);if(!g)return;
+  const v=$('#f_sg').value.trim();if(!v){toast(L.needText);return;}
+  g.title=v;save();closeSheet();paint();
+}
+function delStage(){
+  DB.stage=DB.stage.filter(v=>v.id!==_sg);
+  save();closeSheet();paint();
+}
+
 /* ═════ 꾹 눌러 끌기 ═════
-   시험 탭의 이동은 탭이 아니라 **꾹 누르기**다. 칸 안의 글자를 읽으려고 손을 얹었을 뿐인데
-   딸려 오면 안 되고, 그렇다고 손잡이를 붙이기엔 칩이 너무 작다. 그래서 눌러서 기다리면
-   살짝 커지며 떠오르고(손에 잡혔다는 신호), 그때부터 손가락을 따라온다.
-   떠오른 뒤에는 화면 스크롤을 막는다 — 손가락이 아직 움직이기 전이라 막을 수 있다. */
+   시험 탭의 이동은 **꾹 누르기**다. 칸 안의 글자를 읽으려고 손을 얹었을 뿐인데 딸려 오면
+   안 되고, 그렇다고 손잡이를 붙이기엔 칩이 너무 작다. 눌러서 기다리면 살짝 커지며
+   떠오르고(손에 잡혔다는 신호), 그때부터 손가락을 따라온다.
+   완료된 칩은 끌지 않는다 — 완료는 바닥에 가라앉은 기록이지 다시 계획할 대상이 아니다. */
 const EXD={on:false,armed:false,el:null,ghost:null,kind:null,id:null,
            x:0,y:0,dx:0,dy:0,timer:null,tgt:null,idx:0,slot:null,scrollTimer:null};
 const EX_HOLD=280, EX_SLOP=10;
@@ -1892,7 +1983,7 @@ function exLift(){
   const r=el.getBoundingClientRect();
   const g=document.createElement('div');g.id='exghost';
   g.style.width=r.width+'px';
-  g.innerHTML=el.outerHTML.replace('class="exchip','class="exchip');
+  g.innerHTML=el.outerHTML;
   document.body.appendChild(g);
   EXD.ghost=g;EXD.dx=EXD.x-r.left;EXD.dy=EXD.y-r.top;
   exMoveGhost();
@@ -1902,36 +1993,54 @@ function exMoveGhost(){
   if(EXD.ghost)EXD.ghost.style.transform='translate3d('+(EXD.x-EXD.dx)+'px,'+(EXD.y-EXD.dy)+'px,0)';
 }
 function exClearTarget(){
-  document.querySelectorAll('.excell.tgt,.exdrop.tgt').forEach(n=>n.classList.remove('tgt'));
+  document.querySelectorAll('.excell.tgt,.exdrop.tgt,.exstage.tgt').forEach(n=>n.classList.remove('tgt'));
   if(EXD.slot&&EXD.slot.parentNode)EXD.slot.parentNode.removeChild(EXD.slot);
   EXD.slot=null;EXD.tgt=null;
 }
 /* 도착 자리를 보여 준다. 칸을 밝히는 것만으로는 '몇 번째로 들어가는지' 알 수 없어서
-   들어갈 자리에 빈 줄을 세운다. */
+   들어갈 자리에 빈 줄을 세운다. 자리는 **안 한 일들 사이**에만 선다 —
+   완료 더미 사이나 그 아래로는 끼어들 수 없다. */
 function exHover(){
   if(EXD.ghost)EXD.ghost.style.pointerEvents='none';
   const at=document.elementFromPoint(EXD.x,EXD.y);
   const cell=at&&at.closest?at.closest('.excell'):null;
   const tray=at&&at.closest?at.closest('.exdrop'):null;
-  if(!cell&&!tray){exClearTarget();return;}
+  const stage=at&&at.closest?at.closest('.exstage'):null;
+  if(!cell&&!tray&&!stage){exClearTarget();return;}
   if(tray){
-    if(EXD.kind!=='exam'){exClearTarget();return;}        // 할 일은 날짜를 벗어날 수 없다
+    if(EXD.kind!=='exam'){exClearTarget();return;}        // 시험 칩만 날짜를 벗어날 수 있다
     if(EXD.tgt&&EXD.tgt.tray)return;
     exClearTarget();tray.classList.add('tgt');EXD.tgt={tray:true};return;
   }
+  if(stage){
+    if(EXD.kind==='exam'){exClearTarget();return;}        // 시험 칩은 미배정이 될 수 없다
+    const box=stage.querySelector('.exstagerow');
+    const chips=[...box.querySelectorAll('.stagechip')].filter(n=>n!==EXD.el&&n!==EXD.slot);
+    let idx=chips.length;
+    for(let i=0;i<chips.length;i++){const r=chips[i].getBoundingClientRect();
+      if(EXD.y<r.top+r.height/2){idx=i;break;}}
+    if(EXD.tgt&&EXD.tgt.stage&&EXD.idx===idx&&EXD.slot&&EXD.slot.parentNode===box)return;
+    exClearTarget();stage.classList.add('tgt');
+    const slot=document.createElement('div');slot.className='exslot';
+    box.insertBefore(slot,chips[idx]||null);
+    EXD.slot=slot;EXD.tgt={stage:true};EXD.idx=idx;
+    return;
+  }
   const ds=cell.dataset.d;
   const box=cell.querySelector('.exitems');
-  const chips=[...box.querySelectorAll('.exchip')].filter(n=>n!==EXD.el&&n!==EXD.slot);
-  let idx=chips.length;
-  for(let i=0;i<chips.length;i++){
-    const r=chips[i].getBoundingClientRect();
+  const und=[...box.querySelectorAll('.exchip')].filter(n=>
+    n!==EXD.el&&n!==EXD.slot&&!n.classList.contains('exam')&&!n.classList.contains('done'));
+  let idx=und.length;
+  for(let i=0;i<und.length;i++){
+    const r=und[i].getBoundingClientRect();
     if(EXD.y<r.top+r.height/2){idx=i;break;}
   }
+  const anchor=und[idx]||box.querySelector('.exchip.done')||null;   // 완료 더미 위에서 멈춘다
   if(EXD.tgt&&EXD.tgt.ds===ds&&EXD.idx===idx&&EXD.slot&&EXD.slot.parentNode===box)return;
   exClearTarget();
   cell.classList.add('tgt');
   const slot=document.createElement('div');slot.className='exslot';
-  box.insertBefore(slot,chips[idx]||null);
+  box.insertBefore(slot,anchor);
   EXD.slot=slot;EXD.tgt={ds};EXD.idx=idx;
 }
 /* 손가락이 화면 위·아래 끝에 닿아 있으면 계속 굴러간다. 달력이 길어서 이게 없으면
@@ -1960,16 +2069,56 @@ function exEnd(apply){
   EXD.on=false;EXD.armed=false;EXD.el=null;EXD.ghost=null;EXD.kind=null;EXD.id=null;
   clearInterval(EXD.scrollTimer);EXD.scrollTimer=null;
 }
+/* 그 날의 안 한 시험 일들 중 at 번째 자리에 t 를 끼운다. ord 는 그 날 전체에서
+   다시 매기므로 오늘 탭 미배정 레일의 순서도 함께 맞는다. */
+function placeExamTask(t,ds,at){
+  const all=tasksOf(ds).filter(v=>v.id!==t.id).sort((a,b)=>(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0));
+  const und=all.filter(v=>v.exam&&!v.done);
+  let pos;
+  if(at>=und.length)pos=und.length?all.indexOf(und[und.length-1])+1:all.length;
+  else pos=all.indexOf(und[at]);
+  all.splice(pos,0,t);
+  all.forEach((v,i)=>{v.ord=i;});
+}
 function examApplyDrop(){
   const tgt=EXD.tgt;
   if(EXD.kind==='exam'){
-    const x=subjOf(EXD.id);if(!x)return;
+    const x=subjOf(EXD.id);if(!x||tgt.stage)return;
     x.exam=tgt.tray?null:tgt.ds;
     save();paint();buzz(12);
     toast(tgt.tray?L.examCleared(x.name):L.examSet(x.name,fmtDot(parseD(tgt.ds))));
     return;
   }
-  const t=DB.tasks.find(v=>v.id===EXD.id);if(!t||!tgt.ds)return;
+  if(EXD.kind==='stage'){
+    const g=DB.stage.find(v=>v.id===EXD.id);if(!g)return;
+    if(tgt.stage){                                     // 레일 안 순서 바꾸기
+      const list=stageList().filter(v=>v.id!==g.id);
+      list.splice(Math.max(0,Math.min(list.length,EXD.idx)),0,g);
+      list.forEach((v,i)=>{v.ord=i;});DB.stage=list;
+    }else if(tgt.ds){                                  // 날짜에 배정 → 그 날의 미배정
+      DB.stage=DB.stage.filter(v=>v.id!==g.id);
+      DB.stage.forEach((v,i)=>{v.ord=i;});
+      const t={id:g.id,title:g.title,date:tgt.ds,min:null,dur:null,autoSlot:null,
+               ord:0,done:false,subj:null,mile:null,repId:null,exam:true};
+      DB.tasks.push(t);
+      placeExamTask(t,tgt.ds,EXD.idx);
+    }else return;
+    save();paint();buzz(12);
+    return;
+  }
+  const t=DB.tasks.find(v=>v.id===EXD.id);if(!t)return;
+  if(tgt.stage){                                       // 달력 → 레일: 날짜를 다시 비운다
+    const oldDs=t.date,oldBand=t.min!=null?(autoSlotBand(t)||bandAt(t.date,t.min)):null;
+    addRepException(t);
+    DB.tasks=DB.tasks.filter(v=>v.id!==t.id);
+    if(oldBand){if(oldBand.auto)splitAutoSlot(oldDs,oldBand,true);else splitBand(oldDs,oldBand,true);}
+    const list=stageList();
+    list.splice(Math.max(0,Math.min(list.length,EXD.idx)),0,{id:t.id,title:t.title,ord:0});
+    list.forEach((v,i)=>{v.ord=i;});DB.stage=list;
+    save();paint();buzz(12);
+    return;
+  }
+  if(!tgt.ds)return;
   const ds=tgt.ds;
   if(t.date!==ds){
     // 다른 날로 보내면 시간은 따라가지 않는다. 그날 계획은 그날 다시 짠다 —
@@ -1979,13 +2128,15 @@ function examApplyDrop(){
     Object.assign(t,{date:ds,min:null,dur:null,autoSlot:null,repId:null});
     if(oldBand){if(oldBand.auto)splitAutoSlot(oldDs,oldBand,true);else splitBand(oldDs,oldBand,true);}
   }
-  // 그 날 안의 순서를 손으로 정한 대로 다시 매긴다. 시험 칩은 순서에서 빼고 센다.
-  const exN=DB.subjects.filter(x=>x.exam===ds).length;
-  const list=tasksOf(ds).filter(v=>v.id!==t.id).sort((a,b)=>(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0));
-  let at=Math.max(0,Math.min(list.length,EXD.idx-exN));
-  list.splice(at,0,t);
-  list.forEach((v,i)=>{v.ord=i;});
+  placeExamTask(t,ds,EXD.idx);
   save();paint();buzz(12);
+}
+/* 탭 한 번은 완료, 두 번은 수정이다. 두 번째 탭이 올 때까지 조금 기다렸다가
+   완료를 실행한다 — 기다리지 않으면 수정하려는 손이 완료부터 눌러 버린다. */
+let _exClick={id:null,at:0,timer:null};
+function exToggleDone(id){
+  const t=DB.tasks.find(v=>v.id===id);if(!t)return;
+  t.done=!t.done;buzz(9);save();paint();
 }
 function bindExamDrag(){
   const v=$('#view');if(!v||v._exb)return;v._exb=true;
@@ -1993,9 +2144,11 @@ function bindExamDrag(){
     if(EXD.on)return;
     const chip=e.target.closest&&e.target.closest('.exchip');
     if(!chip)return;
+    if(chip.classList.contains('done'))return;           // 완료된 칩은 끌지 않는다
     const p=exPoint(e);EXD.x=p.x;EXD.y=p.y;
-    EXD.el=chip;EXD.kind=chip.dataset.sid?'exam':'task';
-    EXD.id=chip.dataset.sid||chip.dataset.tid;EXD.armed=true;
+    EXD.el=chip;
+    EXD.kind=chip.dataset.sid?'exam':(chip.dataset.gid?'stage':'task');
+    EXD.id=chip.dataset.sid||chip.dataset.gid||chip.dataset.tid;EXD.armed=true;
     exClearTimer();
     EXD.timer=setTimeout(()=>{if(EXD.armed)exLift();},EX_HOLD);
     clearInterval(EXD.scrollTimer);EXD.scrollTimer=setInterval(exAutoScroll,16);
@@ -2018,26 +2171,32 @@ function bindExamDrag(){
   v.addEventListener('mousedown',e=>{if(e.button===0)down(e);});
   window.addEventListener('mousemove',e=>{if(EXD.armed||EXD.on)move(e);});
   window.addEventListener('mouseup',()=>{if(EXD.armed||EXD.on)exEnd(true);});
-  /* 탭은 그대로 둔다 — 칩을 누르면 그 일을 고치고, 빈 칸을 누르면 그 날에 새 일을 만든다.
-     끌어 놓은 직후의 유령 클릭만 흘려보낸다. */
+  /* 탭 규칙 — 할 일 칩: 한 번은 완료 토글, 두 번은 수정. 시험 칩: 두 번에 과목 수정.
+     레일 칩: 한 번에 수정. 빈 칸 탭은 아무 일도 하지 않는다(오늘 탭과 같다). */
   v.addEventListener('click',e=>{
     if(Date.now()-GD.endedAt<320)return;
     const chip=e.target.closest('.exchip');
-    if(chip){
-      if(chip.dataset.sid)editExamSubject(chip.dataset.sid);
-      else openTask(chip.dataset.tid);
-      return;}
-    if(e.target.closest('.expill,.exadd,button'))return;
-    const cell=e.target.closest('.excell');
-    if(cell)newTask(cell.dataset.d,null);
+    if(!chip)return;
+    const id=chip.dataset.tid||chip.dataset.sid||chip.dataset.gid;
+    if(chip.dataset.gid){editStage(id);return;}
+    const dbl=_exClick.id===id&&Date.now()-_exClick.at<340;
+    clearTimeout(_exClick.timer);_exClick.timer=null;
+    if(dbl){
+      _exClick.id=null;
+      if(chip.dataset.sid)editExamSubject(id);else openTask(id);
+      return;
+    }
+    _exClick.id=id;_exClick.at=Date.now();
+    if(chip.dataset.tid)
+      _exClick.timer=setTimeout(()=>{if(_exClick.id===id)exToggleDone(id);_exClick.id=null;},350);
   });
 }
-
 /* ═════ 9. paint ═════ */
 function paint(){
   materializeWindow();
   $('#topin').innerHTML=topHTML();
-  $('#view').innerHTML=({today:todayHTML,cal:calHTML,exam:examHTML}[tab])();
+  document.body.dataset.tab=tab;               // 시험·시간표 탭은 화면을 넓게 쓴다
+  $('#view').innerHTML=({today:todayHTML,cal:calHTML,exam:examHTML,sched:schedHTML}[tab])();
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   placeThumb();attachDockDrag();
   if(tab==='today'){bindGrid($('#view'));requestAnimationFrame(fitRail);}
@@ -2088,9 +2247,10 @@ function go(t){
   if(t===tab){
     if(t==='today')focusToday('smooth');
     else if(t==='cal'){calM=new Date();$('#scroll').scrollTop=0;paint();}
+    else if(t==='sched'){$('#scroll').scrollTop=0;paint();}
     else{examReset();paint();requestAnimationFrame(examScrollToToday);}
     return;}
-  const order=['today','cal','exam'],dir=order.indexOf(t)>order.indexOf(tab)?1:-1;
+  const order=['today','cal','exam','sched'],dir=order.indexOf(t)>order.indexOf(tab)?1:-1;
   _anim=true;const v=$('#view');
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
   v.style.transform='translateX('+(-dir*28)+'px)';v.style.opacity='0';
@@ -2133,7 +2293,8 @@ function refresh(){
   }else paint();
 }
 function quickAdd(){
-  if(tab==='exam'){editExamSubject(null);return;}
+  if(tab==='exam'){openStageAdd();return;}     // 시험 탭의 +는 할 일이다. 과목은 과목 판에서.
+  if(tab==='sched'){addScheduleBlock();return;}
   if(tab==='cal'){openDay(TODAY());return;}
   newTask(TODAY(),null);
 }
@@ -2162,7 +2323,7 @@ $('#sheet').addEventListener('click',e=>{
   },{passive:false});
   const end=e=>{if(x0==null)return;const v=$('#view');
     if(horiz){const dx=(e.changedTouches?e.changedTouches[0].clientX:x0)-x0;
-      const order=['today','cal','exam'],i=order.indexOf(tab);
+      const order=['today','cal','exam','sched'],i=order.indexOf(tab);
       v.style.transition='transform .26s cubic-bezier(.3,1.1,.4,1),opacity .24s';
       v.style.transform='translateX(0)';v.style.opacity='1';
       if(dx<-58&&i<order.length-1)go(order[i+1]);else if(dx>58&&i>0)go(order[i-1]);}
@@ -2804,344 +2965,333 @@ function delSubject(){
   save();closeSheet();paint();toast(L.catDeleted);
 }
 
-/* ═════ 14. 요일별 시간표 ═════ */
+/* ═════ 14. 시간표 탭 ═════ */
+/* 시간표는 이제 시트가 아니라 **탭**이다. 목록 없이 원(다이얼) 하나로 하루를 나눈다.
+   위에서 요일 묶음을 고르고, 원에서 경계를 잡아 시간을 나누고, 칸을 누르면 이름을 고친다.
+   저장 버튼은 없다 — 손을 뗀 순간이 저장이다. */
 function daysText(days){
   const a=days.slice().sort((x,y)=>x-y);
   if(!a.length)return L.noDays;
   if(a.length===7)return L.everyDay;
   if(a.length===5&&[1,2,3,4,5].every(x=>a.includes(x)))return L.weekdays;
   if(a.length===2&&a.includes(0)&&a.includes(6))return L.weekends;
-  return a.map(i=>DOW[i]).join(' · ');
+  return a.map(i=>DOW[i]).join('·');
 }
-/* 카드 본문을 누르면 고르기만 하고, 실제 수정은 오른쪽 '수정' 버튼으로만 연다. */
-let _schedSel=null;
-function selectSchedRow(id){_schedSel=(_schedSel===id?null:id);openScheduleSettings();}
-function schedRowHTML(x,i){
-  const rowId='schedRow-'+x.id,days=setDays(x),blocks=setBlocks(x);
-  const dayTxt=days.length?days.map(d=>DOW[d]).join('·'):L.noDays;
-  const sub=dayTxt+' · '+L.blockCount(blocks.length)+(setEdited(x)&&x.kind?' · '+L.editedMark:'');
-  return '<div class="schedrow'+(days.length?'':' off')+(_schedSel===rowId?' sel':'')+'" id="'+rowId+'"'+
-    (i===0?' data-first="1"':'')+'>'+
-    '<button class="schedsum" onclick="selectSchedRow(\''+rowId+'\')">'+
-    '<div><b>'+esc(setName(x))+'</b><span>'+esc(sub)+'</span></div></button>'+
-    '<button class="schedbadge" onclick="editSchedSet(\''+x.id+'\')">'+esc(L.edit)+'</button></div>';
-}
-function openScheduleSettings(){
-  const sets=schedSets();
-  const used={};sets.forEach(x=>setDays(x).forEach(d=>{used[d]=1;}));
-  const wide=DOW.map((d,i)=>used[i]?null:d).filter(d=>d!=null);
-  const addBtn=SCHED_ADD_ON?'<div class="row2"><button class="btn s" onclick="editSchedSet(null)">'+esc(L.schedAdd)+'</button></div>':'';
-  // 처음 보는 사람에게 설명하던 안내 줄은 두지 않는다. 24시간으로 도는 요일만 짧게 적는다.
-  openSheet('<div class="sh2">'+esc(L.schedTitle)+'</div>'+
-    sets.map(schedRowHTML).join('')+
-    (wide.length?'<div class="fullnote">'+esc(L.schedFree)+esc(wide.join(' · '))+'</div>':'')+addBtn);
-}
-let _sched={};
 function timeVal(m){if(m===1440)return '00:00';m=Math.max(0,Math.min(1439,m));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
 function parseTime(v,end){if(!/^\d\d:\d\d$/.test(v||''))return NaN;const a=v.split(':').map(Number),m=a[0]*60+a[1];return end&&m===0?1440:m;}
 /* 진짜 입력은 <input type=time> 그대로다 — 시각 고르개는 기기가 주는 것을 쓴다.
-   다만 보이는 글자는 우리가 그린다. 기기 지역설정이 12시간제면 네이티브 표시가
-   '01:00 PM'이 되는데, 앱은 어디서나 24시간이라 그것만 어긋나 보인다.
-   input.value 는 지역설정과 무관하게 늘 'HH:MM' 24시간이라 그대로 쓸 수 있다. */
+   보이는 글자는 input.value(지역설정과 무관하게 늘 24시간)로 우리가 그린다. */
 function timeFieldHTML(cls,m,label){
   return '<div class="tfield"><span class="tval" aria-hidden="true">'+esc(timeVal(m))+'</span>'+
     '<input class="'+cls+'" type="time" step="300" value="'+timeVal(m)+'" aria-label="'+esc(label)+'" oninput="blockTimeInput(this)"></div>';
 }
-/* 묶음 하나를 고친다. 저장하면 그 묶음의 내용이 바뀔 뿐, 시간표가 하나 더 생기지 않는다.
-   id 가 없으면 이 시간대에 묶음을 하나 더 넣는다.
-   하루는 **빈틈없이** 칸으로 나뉜다. 그래서 고칠 게 '칸의 시작과 끝' 두 개가 아니라
-   **칸 사이의 경계 하나**뿐이고, 그걸 원 위에서 끌어 나눈다. */
-function editSchedSet(id){
-  const x=id?findSet(id):null;
-  _sched=x
-    ?{id:x.id,kind:x.kind||null,name:setName(x),days:setDays(x),blocks:fillDay(setBlocks(x)),sel:0,delArmed:false}
-    :{id:null,kind:null,name:'',days:[],blocks:newSetBlocks(),sel:0,delArmed:false};
-  scheduleEditor();
+/* 한 요일은 한 묶음에만 속한다. 새로 가져간 요일은 다른 묶음에서 뺀다. */
+function claimDays(days,exceptId){
+  schedSets().forEach(x=>{if(x.id!==exceptId)x.days=setDays(x).filter(d=>days.indexOf(d)<0);});
 }
-/* 새 묶음은 하루를 넷으로 나눈 채 시작한다. 한 칸짜리 원을 주면 무엇을 하라는 건지
-   알 수 없고, 잘게 주면 지우는 일부터 하게 된다. */
+const SCH={id:null,delArm:false};
+let _sched={};
+function schedLoad(){
+  const sets=schedSets();
+  if(!SCH.id||!findSet(SCH.id)){SCH.id=sets[0].id;SCH.delArm=false;}
+  const x=findSet(SCH.id);
+  _sched={id:x.id,kind:x.kind||null,name:setName(x),days:setDays(x),
+          blocks:fillDay(setBlocks(x)),cut:null,dragging:false};
+}
+/* 어느 손도 대지 않아도 화면을 떠나는 순간 저장돼 있어야 한다. 탭에는 저장 버튼이 없다. */
+function schedCommit(repaint){
+  const x=findSet(_sched.id);if(!x)return;
+  const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
+  claimDays(days,x.id);
+  const name=String(_sched.name||'').trim();
+  x.days=days;
+  x.blocks=fillDay(_sched.blocks);
+  x.name=(x.kind&&(!name||name===seedName(x.kind)))?'':(name||x.name||'');
+  save();tourSignal('schedule-saved');
+  if(repaint)paint();
+}
+function schedHTML(){
+  schedLoad();
+  const sets=schedSets(),x=findSet(SCH.id);
+  const dayRow=v=>{const d=setDays(v);return d.length?d.map(i=>DOW[i]).join(''):L.noDays;};
+  const chips=sets.map(v=>'<button class="schchip'+(v.id===SCH.id?' on':'')+'" onclick="pickSchedSet(\''+v.id+'\')">'+
+      '<b>'+esc(setName(v))+'</b><span>'+esc(dayRow(v))+'</span></button>').join('')+
+    '<button class="schchip add" onclick="addSchedSet()">+ '+esc(L.schedAdd2)+'</button>';
+  const tail=_sched.kind
+    ?(setEdited(x)?'<button class="mini schddel" onclick="resetSchedSet()">'+esc(L.defaultReset)+'</button>':'')
+    :'<button class="mini schddel danger" onclick="deleteSchedSet()">'+esc(SCH.delArm?L.reallyDel:L.setDel)+'</button>';
+  return '<div class="schwrap">'+
+    '<div class="schsets">'+chips+'</div>'+
+    '<section class="schmeta glass">'+
+      '<div class="schnamerow"><input class="fi" id="schName" placeholder="'+esc(L.schedSetNamePh)+'" value="'+esc(_sched.name)+'" '+
+        'oninput="_sched.name=this.value" onchange="schedCommit(true)">'+tail+'</div>'+
+      '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
+    '</section>'+
+    '<section class="schdial glass"><div id="piebox">'+pieHTML()+'</div>'+
+      '<div class="row2" style="margin-top:4px"><button class="btn s" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button></div>'+
+    '</section></div>';
+}
+function pickSchedSet(id){SCH.id=id;SCH.delArm=false;paint();}
+function addSchedSet(){
+  const x={id:uid(),kind:null,name:'',days:[],blocks:fillDay(newSetBlocks())};
+  schedSets().push(x);SCH.id=x.id;SCH.delArm=false;save();paint();
+}
 function newSetBlocks(){
   const cut=[0,M(6,0),M(12,0),M(18,0),1440];
   return L.newSetBlocks.map((n,i)=>({id:uid(),name:n,s:cut[i],e:cut[i+1]}));
 }
-function syncScheduleForm(){
-  const n=$('#schName');if(n)_sched.name=n.value;
-  document.querySelectorAll('.blockrow[data-bi]').forEach(row=>{
-    const b=_sched.blocks[Number(row.dataset.bi)];if(!b)return;
-    const nm=row.querySelector('.bname');if(nm)b.name=nm.value;});
+function toggleScheduleDay(i){
+  const p=_sched.days.indexOf(i);
+  if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);
+  schedCommit(true);
 }
-/* ── 원(케이크) 그리기 ───────────────────────────────────────────────
-   12시가 맨 위, 시계 방향으로 24시간. 칸은 도넛 조각이고 경계마다 손잡이가 선다. */
-const PIE_R=94, PIE_IN=54, PIE_C=120;
-function pieXY(min,r){
-  const a=(min/1440*360-90)*Math.PI/180;
-  return [PIE_C+r*Math.cos(a),PIE_C+r*Math.sin(a)];
+function resetSchedSet(){
+  const x=findSet(SCH.id);if(!x||!x.kind)return;
+  const days=x.kind==='weekend'?[0,6]:[1,2,3,4,5];
+  claimDays(days,x.id);x.days=days;x.blocks=null;x.name='';
+  save();paint();toast(L.defaultResetDone);
 }
-function pieArc(s,e){
-  const large=(e-s)>720?1:0;
-  const [x1,y1]=pieXY(s,PIE_R),[x2,y2]=pieXY(e,PIE_R);
-  const [x3,y3]=pieXY(e,PIE_IN),[x4,y4]=pieXY(s,PIE_IN);
-  return 'M'+x1.toFixed(2)+' '+y1.toFixed(2)+
-    'A'+PIE_R+' '+PIE_R+' 0 '+large+' 1 '+x2.toFixed(2)+' '+y2.toFixed(2)+
-    'L'+x3.toFixed(2)+' '+y3.toFixed(2)+
-    'A'+PIE_IN+' '+PIE_IN+' 0 '+large+' 0 '+x4.toFixed(2)+' '+y4.toFixed(2)+'Z';
+function deleteSchedSet(){
+  if(!SCH.delArm){SCH.delArm=true;paint();return;}
+  schedRoot().sets=schedSets().filter(v=>v.id!==SCH.id||v.kind);
+  SCH.id=null;SCH.delArm=false;save();paint();toast(L.setDeleted);
 }
-function pieHTML(){
-  const b=_sched.blocks;
-  let h='<div class="piewrap"><svg id="pie" viewBox="0 0 240 240" aria-label="'+esc(L.pieHint)+'">';
-  h+='<circle cx="120" cy="120" r="'+PIE_R+'" class="piebg"/>';
-  b.forEach((x,i)=>{
-    const e=x.e===1440?1439.999:x.e;                 // 360도짜리 호는 그릴 수 없다
-    h+='<path class="pieseg'+(i%2?' alt':'')+(i===_sched.sel?' sel':'')+
-      '" data-bi="'+i+'" d="'+pieArc(x.s,e)+'"/>';
-  });
-  // 3시간 눈금은 원 **바깥**에 둔다. 안쪽에 넣으면 가운데 글자와 겹친다.
-  for(let t=0;t<24;t+=3){
-    const [tx,ty]=pieXY(t*60,PIE_R+22);
-    h+='<text class="pienum" x="'+tx.toFixed(1)+'" y="'+(ty+3.2).toFixed(1)+'">'+t+'</text>';
-  }
-  /* 손잡이는 **고른 칸의 경계에만** 세운다. 칸이 스물이 넘는 시간표에서 경계마다
-     손잡이를 달면 서로 겹쳐 무엇을 잡는지 알 수 없다. 조각을 눌러 칸을 고르면
-     그 칸의 두 경계에 손잡이가 선다 — 앱의 다른 곳과 같은 '고르고 나서' 순서다.
-     자정(0시)은 하루의 시작이라 경계가 아니고 움직이지 않는다. */
-  const cuts=[];
-  if(_sched.sel>0)cuts.push([_sched.sel,PIE_IN-8]);         // 시작 손잡이는 안쪽 고리에
-  if(_sched.sel<b.length-1)cuts.push([_sched.sel+1,PIE_R+9]); // 끝 손잡이는 바깥 고리에
-  cuts.forEach(c=>{
-    const i=c[0],m=b[i].s;
-    const [ox,oy]=pieXY(m,PIE_R+2),[ix,iy]=pieXY(m,PIE_IN-2);
-    const [hx,hy]=pieXY(m,c[1]);
-    h+='<line class="piecut on" x1="'+ix.toFixed(1)+'" y1="'+iy.toFixed(1)+'" x2="'+ox.toFixed(1)+'" y2="'+oy.toFixed(1)+'"/>';
-    h+='<circle class="piegrip'+(i===_sched.drag?' on':'')+'" data-cut="'+i+'" cx="'+hx.toFixed(1)+'" cy="'+hy.toFixed(1)+'" r="9"/>';
-  });
-  const cur=b[_sched.sel]||b[0];
-  h+='</svg><div class="piemid"><b>'+esc(cur?cur.name:'')+'</b><span>'+
-     (cur?esc(hhmm(cur.s)+'~'+hhmm(cur.e===1440?0:cur.e)):'')+'</span><i>'+
-     (cur?esc(durTxt(cur.e-cur.s)):'')+'</i></div></div>';
-  return h;
-}
-/* 각도로 분을 읽는다. 5분 단위로 맞추고, 양옆 칸이 5분보다 짧아지지 않게 막는다. */
-function pieMin(ev){
-  const svg=$('#pie');if(!svg)return null;
-  const r=svg.getBoundingClientRect();
-  const t=ev.touches&&ev.touches[0]||ev.changedTouches&&ev.changedTouches[0]||ev;
-  const dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2);
-  if(Math.abs(dx)<1&&Math.abs(dy)<1)return null;
-  let a=Math.atan2(dy,dx)*180/Math.PI+90;
-  if(a<0)a+=360;
-  return Math.round(a/360*1440/SNAP)*SNAP;
-}
-function moveCut(i,min){
-  const b=_sched.blocks;
-  if(i<1||i>=b.length||min==null)return false;
-  const lo=b[i-1].s+SNAP,hi=b[i].e-SNAP;
-  min=Math.max(lo,Math.min(hi,min));
-  if(min===b[i].s)return false;
-  b[i-1].e=min;b[i].s=min;return true;
-}
-function bindPie(){
-  const svg=$('#pie');if(!svg||svg._b)return;svg._b=true;
-  let cut=null;
-  const start=e=>{
-    const g=e.target.closest&&e.target.closest('.piegrip');
-    if(!g)return;
-    cut=Number(g.dataset.cut);_sched.drag=cut;
-    if(e.cancelable)e.preventDefault();
-    buzz(10);g.classList.add('on');
-  };
-  const move=e=>{
-    if(cut==null)return;
-    if(e.cancelable)e.preventDefault();
-    if(moveCut(cut,pieMin(e))){_sched.sel=cut;piePaint();}
-  };
-  const end=()=>{if(cut==null)return;cut=null;_sched.drag=null;piePaint();buzz(8);};
-  svg.addEventListener('touchstart',start,{passive:false});
-  svg.addEventListener('touchmove',move,{passive:false});
-  svg.addEventListener('touchend',end);svg.addEventListener('touchcancel',end);
-  svg.addEventListener('mousedown',e=>{if(e.button===0)start(e);});
-  window.addEventListener('mousemove',e=>{if(cut!=null)move(e);});
-  window.addEventListener('mouseup',end);
-  /* 조각을 누르면 그 칸을 고른다 — 가운데 글자와 아래 목록이 그 칸을 가리킨다. */
-  svg.addEventListener('click',e=>{
-    const p=e.target.closest&&e.target.closest('.pieseg');
-    if(!p)return;
-    _sched.sel=Number(p.dataset.bi);piePaint();
-    const row=document.querySelector('.blockrow[data-bi="'+_sched.sel+'"]');
-    if(row)row.scrollIntoView({block:'nearest'});
-  });
-}
-/* 끄는 동안에는 시트를 통째로 다시 그리지 않는다 — 입력창에 있던 손가락과 스크롤이 튄다. */
-function piePaint(){
-  const wrap=$('#piebox');if(!wrap){scheduleEditor();return;}
-  wrap.innerHTML=pieHTML();
-  const svg=$('#pie');if(svg)svg._b=false;
-  bindPie();
-  _sched.blocks.forEach((b,i)=>{
-    const row=document.querySelector('.blockrow[data-bi="'+i+'"]');
-    if(!row)return;
-    row.classList.toggle('sel',i===_sched.sel);
-    const t=row.querySelector('.tval');if(t)t.textContent=timeVal(b.s);
-    const inp=row.querySelector('.bstart');if(inp)inp.value=timeVal(b.s);
-    const len=row.querySelector('.tlen');if(len)len.textContent=durTxt(b.e-b.s);
-  });
-}
-function scheduleEditor(){
-  const b=_sched.blocks;
-  const head='<div class="sh2">'+esc(_sched.id?L.schedSetEdit:L.schedSetNew)+'</div>'+
-    '<div class="fl">'+esc(L.schedSetName)+'</div><input class="fi" id="schName" placeholder="'+esc(L.schedSetNamePh)+'" value="'+esc(_sched.name)+'">';
-  const h=head+
-    '<div class="fl"><span>'+esc(L.schedDays)+'</span><span><button onclick="setScheduleDays(\'none\')">'+esc(L.clearDays)+'</button></span></div>'+
-    '<div class="dws">'+DOW.map((d,i)=>'<button class="dw'+(_sched.days.includes(i)?' on':'')+(i===0?' sun':'')+'" onclick="toggleScheduleDay('+i+')">'+d+'</button>').join('')+'</div>'+
-    '<div class="fl">'+esc(L.blocks)+'</div>'+
-    '<div id="piebox">'+pieHTML()+'</div>'+
-    b.map((x,i)=>'<div class="blockrow'+(i===_sched.sel?' sel':'')+'" data-bi="'+i+'" onclick="selectBlock('+i+')">'+
-      '<i class="bdot'+(i%2?' alt':'')+'"></i>'+
-      '<input class="fi bname" value="'+esc(x.name)+'" placeholder="'+esc(L.blockNamePh)+'">'+
-      '<div class="blocktimes">'+
-        (i===0
-          ?'<span class="tval fixed">'+esc(timeVal(x.s))+'</span>'
-          :timeFieldHTML('bstart',x.s,L.blockStart))+
-        '<div class="tlen">'+esc(durTxt(x.e-x.s))+'</div></div>'+
-      '<div class="blockside">'+
-        '<button class="blockgrip" aria-label="'+esc(L.aBlockMove)+'"><i></i><i></i><i></i></button>'+
-        (b.length>1?'<button class="blockdel" aria-label="'+esc(L.aBlockDel)+'" onclick="event.stopPropagation();removeScheduleBlock('+i+')">−</button>':'')+
-      '</div></div>').join('')+
-    '<button class="btn s" style="width:100%;margin-top:4px" onclick="addScheduleBlock()">'+esc(L.addBlock)+'</button>'+
-    '<div class="row2"><button class="btn p" onclick="saveSchedule()">'+esc(L.save)+'</button></div>'+
-    (_sched.kind
-      ?(setEdited(findSet(_sched.id)||{})?'<div class="row2"><button class="btn d" onclick="resetSchedSet()">'+esc(L.defaultReset)+'</button></div>':'')
-      :(_sched.id?'<div class="row2"><button class="btn d" onclick="deleteSchedSet()">'+esc(_sched.delArmed?L.reallyDel:L.setDel)+'</button></div>':''));
-  openSheet(h);
-  bindPie();bindBlockDrag();
-}
-function selectBlock(i){_sched.sel=i;piePaint();}
-/* 목록에서 시작 시각을 직접 고치면 그건 곧 앞 칸과의 경계를 옮기는 것이다. */
-function blockTimeInput(el){
-  const row=el.closest('.blockrow');if(!row)return;
-  const i=Number(row.dataset.bi),m=parseTime(el.value,false);
-  if(!Number.isFinite(m))return;
-  if(moveCut(i,Math.round(m/SNAP)*SNAP)){_sched.sel=i;piePaint();}
-  else piePaint();
-}
-/* 순서를 바꾸면 길이는 그대로 두고 자리만 바꾼다. 하루가 빈틈없이 차 있으므로
-   앞에서부터 길이째로 다시 이어 붙이면 전체 범위는 그대로다. */
-function reorderScheduleBlocks(from,to){
-  const b=_sched.blocks;
-  if(from===to||from<0||to<0||from>=b.length||to>=b.length)return false;
-  const len=b.map(x=>x.e-x.s);
-  const order=b.map((x,i)=>i);
-  order.splice(to,0,order.splice(from,1)[0]);
-  let cur=0;
-  _sched.blocks=order.map(oi=>{const x=b[oi],s=cur;cur+=len[oi];return {id:x.id,name:x.name,s,e:cur};});
-  _sched.sel=to;
-  return true;
-}
-/* 줄 오른쪽 손잡이를 잡으면 그 칸만 따라 움직이고 나머지는 자리를 비켜 준다.
-   손잡이만 세로 제스처를 가져간다 — 이름 입력창이 있는 줄 전체를 잡게 하면
-   글자를 만지려다 줄이 딸려 온다. */
-function bindBlockDrag(){
-  const sheet=$('#sheet');if(!sheet)return;
-  sheet.querySelectorAll('.blockgrip').forEach(grip=>{
-    if(grip._b)return;grip._b=true;
-    grip.addEventListener('pointerdown',e=>{
-      const el=grip.closest('.blockrow[data-bi]');if(!el)return;
-      e.preventDefault();
-      syncScheduleForm();                               // 끌기 전에 입력창 값을 먼저 거둔다
-      const items=[...sheet.querySelectorAll('.blockrow[data-bi]')];
-      const from=items.indexOf(el);if(from<0)return;
-      const step=items.length>1
-        ?Math.abs(items[1].getBoundingClientRect().top-items[0].getBoundingClientRect().top)
-        :el.offsetHeight;
-      const y0=e.clientY;let to=from,moved=false;
-      try{grip.setPointerCapture(e.pointerId);}catch(err){}
-      items.forEach(x=>{if(x!==el)x.style.transition='transform .18s cubic-bezier(.3,1.2,.5,1)';});
-      el.classList.add('liftrow');buzz(10);
-      const move=ev=>{
-        const dy=ev.clientY-y0;
-        if(!moved&&Math.abs(dy)>4){moved=true;el.classList.add('dragging');}
-        el.style.transform='translateY('+dy+'px)';
-        const t=Math.max(0,Math.min(items.length-1,from+Math.round(dy/(step||1))));
-        if(t!==to){to=t;buzz(6);}
-        items.forEach((it,i)=>{if(it===el)return;let sft=0;
-          if(from<to&&i>from&&i<=to)sft=-step;else if(from>to&&i>=to&&i<from)sft=step;
-          it.style.transform=sft?'translateY('+sft+'px)':'';});};
-      const end=()=>{
-        grip.removeEventListener('pointermove',move);
-        grip.removeEventListener('pointerup',end);grip.removeEventListener('pointercancel',end);
-        el.classList.remove('liftrow','dragging');
-        items.forEach(x=>{x.style.transition='';x.style.transform='';});
-        if(to!==from&&reorderScheduleBlocks(from,to))scheduleEditor();};
-      grip.addEventListener('pointermove',move);
-      grip.addEventListener('pointerup',end);grip.addEventListener('pointercancel',end);
-    });
-  });
-}
-
-function toggleScheduleDay(i){syncScheduleForm();const p=_sched.days.indexOf(i);if(p>=0)_sched.days.splice(p,1);else _sched.days.push(i);scheduleEditor();}
-function setScheduleDays(){syncScheduleForm();_sched.days=[];scheduleEditor();}
-/* 새 칸은 **맨 끝**에 붙는다. 마지막 칸의 뒷부분을 잘라 그 자리에 넣는다 —
+/* 새 칸은 맨 끝에 붙는다. 마지막 칸의 뒷부분을 잘라 그 자리에 넣는다 —
    하루는 이미 꽉 차 있으므로 어딘가에서 시간을 떼 오는 수밖에 없다. */
 function addScheduleBlock(){
-  syncScheduleForm();
   const b=_sched.blocks,last=b[b.length-1];
   const len=last.e-last.s;
   if(len<SNAP*2){toast(L.blockTooShort);return;}
   const mid=last.s+Math.max(SNAP,Math.round(len/2/SNAP)*SNAP);
   b.push({id:uid(),name:L.newBlock,s:mid,e:last.e});
   last.e=mid;
-  _sched.sel=b.length-1;
-  scheduleEditor();
+  _sched.cut=b.length-1;                     // 방금 생긴 경계를 잡아 둔다
+  schedCommit(true);
 }
 /* 칸을 지우면 그 시간은 앞 칸이 흡수한다. 첫 칸이면 뒤 칸이 받는다. */
 function removeScheduleBlock(i){
-  syncScheduleForm();
   const b=_sched.blocks;
   if(b.length<2){toast(L.lastBlock);return;}
   if(i>0)b[i-1].e=b[i].e;else b[1].s=b[0].s;
-  b.splice(i,1);
-  _sched.sel=Math.max(0,Math.min(b.length-1,i-1));
-  scheduleEditor();
-}
-/* 한 요일은 한 묶음에만 속한다. 새로 가져간 요일은 다른 묶음에서 뺀다. */
-function claimDays(days,exceptId){
-  schedSets().forEach(x=>{if(x.id!==exceptId)x.days=setDays(x).filter(d=>days.indexOf(d)<0);});
-}
-function saveSchedule(){
-  syncScheduleForm();
-  const days=[...new Set(_sched.days)].sort((a,b)=>a-b);
-  const name=String(_sched.name||'').trim();
-  if(!name){toast(L.needSetName);return;}
-  const blocks=_sched.blocks.map(b=>({id:b.id||uid(),name:String(b.name||'').trim(),s:Number(b.s),e:Number(b.e)}));
-  if(!blocks.length){toast(L.needBlock);return;}
-  for(let i=0;i<blocks.length;i++)if(!blocks[i].name){toast(L.needBlockNames);return;}
-  // 하루는 빈틈없이 차 있는 게 정본이다. 겹침을 따로 볼 게 아니라 그 꼴로 정리해 저장한다.
-  const filled=fillDay(blocks);
-  let x=_sched.id?findSet(_sched.id):null;
-  if(!x){x={id:uid(),kind:null,name,days:[],blocks:null};schedSets().push(x);}
-  claimDays(days,x.id);
-  // 씨앗의 이름을 그대로 두고 저장했으면 빈 이름으로 남긴다 — 정해진 이름을 계속 따라간다.
-  x.days=days;x.blocks=filled;x.name=(x.kind&&name===seedName(x.kind))?'':name;
-  save();paint();openScheduleSettings();toast(L.defaultSaved);
-  tourSignal('schedule-saved');
-}
-function resetSchedSet(){
-  const x=findSet(_sched.id);if(!x)return;
-  const days=x.kind==='weekend'?[0,6]:[1,2,3,4,5];
-  claimDays(days,x.id);x.days=days;x.blocks=null;x.name='';
-  save();paint();openScheduleSettings();toast(L.defaultResetDone);
-}
-function deleteSchedSet(){
-  if(!_sched.delArmed){syncScheduleForm();_sched.delArmed=true;scheduleEditor();return;}
-  const id=_sched.id;
-  schedRoot().sets=schedSets().filter(x=>x.id!==id||x.kind);
-  save();paint();openScheduleSettings();toast(L.setDeleted);
+  b.splice(i,1);_sched.cut=null;
+  schedCommit(true);
 }
 
+/* ── 원(다이얼) 그리기 ─────────────────────────────────────────────
+   12시가 맨 위, 시계 방향으로 24시간. 경계를 **꾹 누르면** 토글이 서고,
+   그 토글을 잡은 채로(또는 이미 서 있는 토글을 바로 잡아) 끌어 시간을 나눈다.
+   끄는 동안에는 5분 단위로 붙잡은 시각이 가운데에 크게 선다. */
+const PIE_R=98, PIE_IN=52, PIE_C=120;
+function pieXY(min,r){
+  const a=(min/1440*360-90)*Math.PI/180;
+  return [PIE_C+r*Math.cos(a),PIE_C+r*Math.sin(a)];
+}
+function pieArc(s,e,ro,ri){
+  ro=ro||PIE_R;ri=ri||PIE_IN;
+  const large=(e-s)>720?1:0;
+  const [x1,y1]=pieXY(s,ro),[x2,y2]=pieXY(e,ro);
+  const [x3,y3]=pieXY(e,ri),[x4,y4]=pieXY(s,ri);
+  return 'M'+x1.toFixed(2)+' '+y1.toFixed(2)+
+    'A'+ro+' '+ro+' 0 '+large+' 1 '+x2.toFixed(2)+' '+y2.toFixed(2)+
+    'L'+x3.toFixed(2)+' '+y3.toFixed(2)+
+    'A'+ri+' '+ri+' 0 '+large+' 0 '+x4.toFixed(2)+' '+y4.toFixed(2)+'Z';
+}
+function pieHTML(){
+  const b=_sched.blocks;
+  let h='<div class="piewrap"><svg id="pie" viewBox="0 0 240 240" aria-label="'+esc(L.aDial)+'">';
+  h+='<circle cx="120" cy="120" r="'+PIE_R+'" class="piebg"/>';
+  b.forEach((x,i)=>{
+    const e=x.e===1440?1439.999:x.e;
+    h+='<path class="pieseg'+(i%2?' alt':'')+'" data-bi="'+i+'" d="'+pieArc(x.s,e)+'"/>';
+  });
+  // 긴 칸에는 이름을 그 자리에 적는다 — 칸을 눌러 보기 전에 어디가 어딘지 보여야 한다.
+  b.forEach((x,i)=>{
+    const len=x.e-x.s;if(len<55)return;
+    const [tx,ty]=pieXY((x.s+x.e)/2,(PIE_R+PIE_IN)/2);
+    const name=x.name.length>4?x.name.slice(0,4):x.name;
+    h+='<text class="pielab'+(i%2?' alt':'')+'" x="'+tx.toFixed(1)+'" y="'+(ty+2.8).toFixed(1)+'">'+esc(name)+'</text>';
+  });
+  // 시간 눈금 — 매시 짧게, 3시간마다 숫자
+  for(let t=0;t<24;t++){
+    const big=t%3===0;
+    const [x1,y1]=pieXY(t*60,PIE_R+1.5),[x2,y2]=pieXY(t*60,PIE_R+(big?6:4));
+    h+='<line class="pietick'+(big?' big':'')+'" x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';
+    if(big){const [tx,ty]=pieXY(t*60,PIE_R+14);
+      h+='<text class="pienum" x="'+tx.toFixed(1)+'" y="'+(ty+3.2).toFixed(1)+'">'+t+'</text>';}
+  }
+  // 잡은 경계 — 굵은 안내선 + 토글. 끄는 동안에는 주변 5분 눈금을 촘촘히 깔아
+  // 지금 어느 5분 위에 있는지가 선명하게 보인다.
+  const cut=_sched.cut;
+  if(cut!=null&&_sched.blocks[cut]){
+    const m=_sched.blocks[cut].s;
+    if(_sched.dragging){
+      const lo=_sched.blocks[cut-1].s+SNAP,hi=_sched.blocks[cut].e-SNAP;
+      for(let t=Math.max(lo,m-40);t<=Math.min(hi,m+40);t+=SNAP){
+        if(t%60===0)continue;
+        const on=t===m;
+        const [x1,y1]=pieXY(t,PIE_R+1.5),[x2,y2]=pieXY(t,PIE_R+(on?8:(t%15===0?5.5:3.5)));
+        h+='<line class="piefine'+(on?' on':'')+'" x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';
+      }
+    }
+    const [ix,iy]=pieXY(m,PIE_IN-2),[ox,oy]=pieXY(m,PIE_R+2);
+    h+='<line class="piecuton'+(_sched.dragging?' drag':'')+'" x1="'+ix.toFixed(1)+'" y1="'+iy.toFixed(1)+'" x2="'+ox.toFixed(1)+'" y2="'+oy.toFixed(1)+'"/>';
+    const [hx,hy]=pieXY(m,PIE_R+2);
+    h+='<g class="pieknob'+(_sched.dragging?' drag':'')+'">'+
+       '<circle cx="'+hx.toFixed(1)+'" cy="'+hy.toFixed(1)+'" r="11"/>'+
+       '<circle class="dotc" cx="'+hx.toFixed(1)+'" cy="'+hy.toFixed(1)+'" r="3.4"/></g>';
+  }
+  // 가운데 — 잡은 경계가 있으면 그 시각을 크게, 없으면 묶음 이름
+  let mid;
+  if(cut!=null&&_sched.blocks[cut]){
+    const a=_sched.blocks[cut-1],c=_sched.blocks[cut];
+    mid='<b class="ptime">'+esc(timeVal(c.s))+'</b>'+
+        '<span>'+esc(a.name)+' '+esc(durTxt(a.e-a.s))+'</span>'+
+        '<span>'+esc(c.name)+' '+esc(durTxt(c.e-c.s))+'</span>';
+  }else{
+    mid='<b>'+esc(_sched.name||seedName(_sched.kind)||L.schedSetFallback)+'</b>'+
+        '<span>'+esc(L.blockCount(_sched.blocks.length))+'</span>';
+  }
+  h+='</svg><div class="piemid'+(cut!=null?' cuton':'')+'">'+mid+'</div></div>';
+  return h;
+}
+function schPaintPie(){
+  const box=$('#piebox');if(box)box.innerHTML=pieHTML();
+}
+/* 좌표 → 분·반지름(viewBox 단위). */
+function pieInfo(e){
+  const svg=$('#pie');if(!svg)return null;
+  const r=svg.getBoundingClientRect();if(!r.width)return null;
+  const t=e.touches&&e.touches[0]||e.changedTouches&&e.changedTouches[0]||e;
+  const scale=r.width/240;
+  const dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2);
+  let a=Math.atan2(dy,dx)*180/Math.PI+90;if(a<0)a+=360;
+  return {min:a/360*1440,rvb:Math.hypot(dx,dy)/scale,scale,x:t.clientX,y:t.clientY};
+}
+function nearestCut(min,scale){
+  const b=_sched.blocks;
+  // 화면에서 18px 안쪽이면 그 경계를 누른 것으로 본다 — 각도로 환산해서 잰다.
+  const rmid=((PIE_R+PIE_IN)/2)*scale;
+  const thr=Math.max(12,18*1440/(2*Math.PI*rmid));
+  let best=null,bd=thr;
+  for(let i=1;i<b.length;i++){
+    let d=Math.abs(b[i].s-min);d=Math.min(d,1440-d);
+    if(d<bd){bd=d;best=i;}
+  }
+  return best;
+}
+function moveCut(i,min){
+  const b=_sched.blocks;
+  if(i==null||i<1||i>=b.length||min==null)return false;
+  min=Math.round(min/SNAP)*SNAP;
+  const lo=b[i-1].s+SNAP,hi=b[i].e-SNAP;
+  min=Math.max(lo,Math.min(hi,min));
+  if(min===b[i].s)return false;
+  b[i-1].e=min;b[i].s=min;return true;
+}
+/* 리스너는 문서에 한 번만 건다. 끄는 도중 다이얼을 다시 그려도(svg 가 갈려도)
+   끌기가 끊기지 않아야 한다. */
+const SCHP={hold:null,cand:null,drag:false,sx:0,sy:0,swallow:0};
+function schPieStart(e){
+  if(tab!=='sched'||SCHP.drag)return;
+  const t=e.target;
+  if(!(t instanceof Element)||!t.closest('#pie'))return;
+  const p=pieInfo(e);if(!p)return;
+  SCHP.sx=p.x;SCHP.sy=p.y;
+  if(p.rvb<PIE_IN-16||p.rvb>PIE_R+20)return;
+  const c=nearestCut(p.min,p.scale);
+  if(c!=null&&c===_sched.cut){
+    // 이미 서 있는 토글은 바로 잡힌다
+    SCHP.drag=true;_sched.dragging=true;buzz(10);schPaintPie();
+    if(e.cancelable)e.preventDefault();
+    return;
+  }
+  if(c!=null){
+    clearTimeout(SCHP.hold);SCHP.cand=c;
+    SCHP.hold=setTimeout(()=>{
+      SCHP.hold=null;
+      _sched.cut=SCHP.cand;_sched.dragging=true;SCHP.drag=true;
+      buzz(12);schPaintPie();
+    },230);
+  }
+}
+function schPieMove(e){
+  if(tab!=='sched')return;
+  if(SCHP.drag){
+    if(e.cancelable)e.preventDefault();
+    const p=pieInfo(e);if(!p)return;
+    if(moveCut(_sched.cut,p.min))schPaintPie();
+    return;
+  }
+  if(SCHP.hold){
+    const t=e.touches&&e.touches[0]||e;
+    if(Math.abs(t.clientX-SCHP.sx)>10||Math.abs(t.clientY-SCHP.sy)>10){
+      clearTimeout(SCHP.hold);SCHP.hold=null;SCHP.cand=null;
+    }
+  }
+}
+function schPieEnd(){
+  if(tab!=='sched')return;
+  clearTimeout(SCHP.hold);SCHP.hold=null;SCHP.cand=null;
+  if(SCHP.drag){
+    SCHP.drag=false;_sched.dragging=false;
+    schedCommit(false);schPaintPie();buzz(8);
+    SCHP.swallow=Date.now();                     // 놓는 순간의 유령 클릭을 삼킨다
+  }
+}
+document.addEventListener('touchstart',schPieStart,{passive:false});
+document.addEventListener('touchmove',schPieMove,{passive:false});
+document.addEventListener('touchend',schPieEnd);
+document.addEventListener('touchcancel',schPieEnd);
+document.addEventListener('mousedown',e=>{if(e.button===0)schPieStart(e);});
+document.addEventListener('mousemove',e=>{if(SCHP.drag||SCHP.hold)schPieMove(e);});
+document.addEventListener('mouseup',schPieEnd);
+/* 조각을 짧게 누르면 그 칸의 이름을 고치는 시트. 토글이 서 있으면 먼저 접는다. */
+document.addEventListener('click',e=>{
+  if(tab!=='sched')return;
+  if(Date.now()-SCHP.swallow<300)return;
+  const t=e.target;
+  if(!(t instanceof Element))return;
+  const seg=t.closest&&t.closest('.pieseg');
+  if(seg){
+    if(_sched.cut!=null){_sched.cut=null;schPaintPie();return;}
+    openBlockSheet(Number(seg.dataset.bi));return;
+  }
+  if(t.closest&&t.closest('#pie'))return;
+  if(_sched.cut!=null&&!t.closest('.piemid')){_sched.cut=null;schPaintPie();}
+});
+let _blk=0;
+function openBlockSheet(i){
+  const b=_sched.blocks[i];if(!b)return;_blk=i;
+  let h='<div class="sh2">'+esc(L.blockEdit)+'</div>'+
+    '<input class="fi" id="f_bn" value="'+esc(b.name)+'" placeholder="'+esc(L.blockNamePh)+'">'+
+    '<div class="fl"><span>'+esc(L.blockStart)+'</span><span class="blocklen" id="blkLen">'+esc(durTxt(b.e-b.s))+'</span></div>'+
+    (i>0?timeFieldHTML('bstart',b.s,L.blockStart)
+        :'<span class="tval fixed" style="display:block">'+esc(timeVal(b.s))+'</span>')+
+    '<div class="row2"><button class="btn p" onclick="saveBlockSheet()">'+esc(L.save)+'</button></div>'+
+    (_sched.blocks.length>1?'<div class="row2"><button class="btn d" onclick="removeBlockSheet()">'+esc(L.aBlockDel)+'</button></div>':'');
+  openSheet(h);
+}
+/* 시작 시각을 직접 고치는 것은 곧 앞 칸과의 경계를 옮기는 것이다. */
+function blockTimeInput(el){
+  const m=parseTime(el.value,false);
+  if(Number.isFinite(m))moveCut(_blk,m);
+  const b=_sched.blocks[_blk];
+  const v=el.closest('.tfield').querySelector('.tval');
+  if(v)v.textContent=timeVal(b.s);el.value=timeVal(b.s);
+  const len=$('#blkLen');if(len)len.textContent=durTxt(b.e-b.s);
+  schPaintPie();
+}
+function saveBlockSheet(){
+  const b=_sched.blocks[_blk];if(!b)return;
+  const v=$('#f_bn').value.trim();if(!v){toast(L.needBlockNames);return;}
+  b.name=v;schedCommit(true);closeSheet();
+}
+function removeBlockSheet(){closeSheet();removeScheduleBlock(_blk);}
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=85';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=85';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=85';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=86';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=86';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=86';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3890,7 +4040,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=85').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=86').catch(()=>{});
 </script>
 </body>
 </html>
