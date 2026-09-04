@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=93">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=93">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=93">
-<link rel="apple-touch-icon" href="icon-192.png?v=93">
+<link rel="manifest" href="manifest.webmanifest?v=94">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=94">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=94">
+<link rel="apple-touch-icon" href="icon-192.png?v=94">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -167,17 +167,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   transition:transform .16s cubic-bezier(.2,1.5,.4,1),box-shadow .16s ease}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
-/* 끌기 시작하면 목록 밖으로 꺼내(absolute) 레일 위로 띄운다. 목록은 스크롤 영역이라
-   그 안에 두면 커진 만큼 잘린다. 기준은 .unbar 다. */
-/* 칩은 키우지 않고 띄우기만 한다. 조금이라도 키우면 그 칩의 이름만 줄이 어긋나
-   목록의 다른 이름·미리보기와 나란하지 않게 보인다. 목록에서 꺼내 그림자로 띄우는
-   것만으로도 잡혔다는 건 충분히 보인다. */
-.uchip.lift{position:absolute;border-color:var(--ac);background:var(--ac-s);box-shadow:var(--shadow-lg);
-  transform:translateY(-2px);z-index:40}
-/* 끌기 시작하면 꺼내 둔 원래 칩은 감춘다. 목록 밖으로 꺼내 띄운 것이라
-   흐리게만 두면 제자리에 남은 것처럼 보여, 미리보기와 함께 같은 일이 둘로 보인다. */
 .uchip.dragging{opacity:.3}
-.uchip.lift.dragging{opacity:0}
 .uchip.done{background:var(--done-bg)}
 .uchip.done .ut{opacity:.56}
 .uchip.done .ut>i{text-decoration:line-through}
@@ -185,12 +175,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .uchip .ut>i{display:block;font-style:normal;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .uchip .gr{width:14px;flex:none;display:flex;flex-direction:column;gap:2.5px;opacity:.35}
 .uchip .gr b{display:block;width:11px;height:1.6px;border-radius:1px;background:var(--ink2)}
-.uck{width:28px;height:28px;border-radius:9px;border:1.5px solid var(--line);background:var(--blur-strong);
-  display:grid;place-items:center;flex:none;z-index:2}
-.uck:active{transform:scale(.9)}
-.uck svg{width:11px;height:11px;color:#fff;opacity:0}
-.uck.on{background:var(--ok);border-color:var(--ok)}
-.uck.on svg{opacity:1}
 
 /* 전날 미완료 정리 — 오늘 시간표보다 먼저 선택하게 한다. */
 .carry{margin-bottom:14px;padding:14px;border-radius:var(--r);box-shadow:var(--shadow-md)}
@@ -242,9 +226,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .ev:active,.ev.done:active{background:var(--ac-s);border-color:var(--ac-b)}
 .ev.act{z-index:12;overflow:visible;box-shadow:var(--shadow-md);border-color:var(--ac);touch-action:none}
 /* 선택된 카드 */
-/* 잡혀서 움직이는 카드는 살짝 떠오른다 */
-.ev.lift{z-index:20;transform:scale(1.035);box-shadow:var(--shadow-lg)}
-.evb{flex:1;min-width:0;padding:4px 40px 4px 9px;overflow:hidden;border-radius:10px}
+/* 잡히면 원래 자리의 카드는 흐려지고, 손가락에는 살짝 커진 사본이 붙어 따라온다.
+   시험 탭 칩(#exghost)과 같은 신호다 — 이게 없으면 '잡혔다'가 보이지 않는다.
+   아주 긴 카드까지 그대로 띄우면 화면을 다 덮으므로 높이만 줄여 든다.
+   도착 자리와 실제 길이는 반투명 주황 유령(.dropghost)이 따로 보여준다. */
+#gridghost{position:fixed;left:0;top:0;z-index:190;pointer-events:none;will-change:transform}
+#gridghost>*{animation:gridlift .18s cubic-bezier(.3,1.5,.5,1) both;
+  box-shadow:var(--shadow-lg);opacity:1;border-color:var(--ac);width:100%;height:100%}
+@keyframes gridlift{from{transform:scale(1)}to{transform:scale(1.05)}}
+.evb{flex:1;min-width:0;padding:4px 9px;overflow:hidden;border-radius:10px}
 .evtitle{display:flex;align-items:center;gap:6px;min-width:0}
 .evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -258,7 +248,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .evm{font-size:10px;font-weight:700;color:var(--ink3);font-variant-numeric:tabular-nums;
   overflow:hidden;white-space:nowrap}
 .ev.sm .evm{display:none}
-.ev.sm .evb{padding:1px 34px 1px 7px}
+.ev.sm .evb{padding:1px 7px}
 .ev.sm .evt{font-size:12.5px}
 /* 선택하면 나오는 위·아래 손잡이. 보이는 막대는 그대로 두고 잡히는 범위만 넓힌다 —
    9px 막대만으로는 손가락이 자꾸 빗나간다. */
@@ -267,14 +257,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   background:var(--bg2);padding:0 4px;border-radius:5px}
 .ev.act .evtime{opacity:1}
 .ev.sm .evtime{display:none}
-.evck{position:absolute;right:2px;top:1px;bottom:1px;width:30px;min-height:0;border-radius:8px;border:2px solid var(--line);
-  display:grid;place-items:center;z-index:3;background:var(--bg2)}
-.evck:active{transform:scale(.9)}
-.evck.on{background:var(--ok);border-color:var(--ok)}
-.evck svg{width:11px;height:11px;color:#fff;opacity:0}
-.evck.on svg{opacity:1}
-.ev.sm .evck{right:1px;top:0;bottom:0;width:30px;border-radius:4px}
-.ev.sm .evck svg{display:block;width:10px;height:10px}
 /* 끌고 있는 동안 도착 자리를 미리 보여주는 반투명 주황 카드.
    시간 칸으로 갈 때든 미배정으로 되돌릴 때든 항상 이게 따라다닌다. */
 .dropghost{z-index:16;pointer-events:none;border-color:var(--ac);background:var(--ac-s);
@@ -333,8 +315,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .exchip.stagechip{font-size:12px;padding:7px 8px;border-radius:9px;
   display:flex;align-items:center;gap:7px}
 .exchip.stagechip>span{min-width:0;flex:1}
-.exchip.stagechip .uck{width:22px;height:22px;border-radius:7px}
-.exchip.stagechip .uck svg{width:10px;height:10px}
 .stageadd{display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:11px;
   border:1.5px dashed var(--line);color:var(--ink3);font-size:12px;font-weight:800}
 .stageadd svg{width:12px;height:12px;flex:none}
@@ -1537,14 +1517,12 @@ function evHTML(it,map){
   const t=it.t,h=Math.max(MIN_EVENT_PX,map.y(it.e)-map.y(it.s)),sm=h<40;
   const sj=taskSubj(t), end=abs(it.e);
   const done=t.done?' done':'', small=sm?' sm':'';
-  const ck='<button class="evck'+(t.done?' on':'')+'">'+
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>';
   return '<div class="ev'+done+small+'" data-id="'+t.id+'" '+
     'style="top:'+map.y(it.s)+'px;height:'+h+'px;left:3px;right:3px">'+
     '<div class="evb"><div class="evtitle"><div class="evt">'+esc(t.title)+'</div>'+
     (sj?'<span class="evcat"><i style="background:'+scVar(sj.color)+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
     '<div class="evm">'+hhmm(t.min)+'~'+hhmm(end)+' \u00b7 '+durTxt(it.e-it.s)+(t.repId?' \u00b7 '+L.repeatShort:'')+'</div></div>'+
-    '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div>'+ck+'</div>';
+    '<div class="evtime">'+hhmm(t.min)+'~'+hhmm(end)+'</div></div>';
 }
 function renderDay(ds){
   const map=timeMap(ds),H=map.height;
@@ -1574,7 +1552,6 @@ function renderDay(ds){
 function uchipHTML(t,extra){
   const sj=taskSubj(t);
   return '<div class="uchip'+(t.done?' done':'')+(extra||'')+'" data-id="'+t.id+'">'+
-    '<button class="uck'+(t.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
     '<div class="ut"><i>'+esc(t.title)+'</i>'+(sj?'<span class="ucat"><i style="background:'+scVar(sj.color)+'"></i><b>'+esc(sj.name)+'</b></span>':'')+'</div>'+
     '<div class="gr"><b></b><b></b><b></b></div></div>';
 }
@@ -1739,7 +1716,8 @@ function examReset(){
 }
 function examWeekDate(i,j){const d=parseD(EX.start);d.setDate(d.getDate()+i*7+(j||0));return d;}
 /* 완료된 일은 레일 바닥으로 가라앉는다 — 달력 칸과 같은 규칙이다. */
-function stageList(){return DB.stage.slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(a.ord||0)-(b.ord||0));}
+function stageList(){return DB.stage.slice().sort((a,b)=>
+  (exHeld(a.id)?0:a.done?1:0)-(exHeld(b.id)?0:b.done?1:0)||(a.ord||0)-(b.ord||0));}
 function examTasksOf(ds){return tasksOf(ds).filter(t=>t.exam);}
 /* 그 날에 놓인 것들. 시험이 맨 위, 그 다음 **안 한 일**(손으로 정한 순서), 완료된 일은
    전부 바닥으로 보낸다 — 남은 일이 항상 위에 모여 있어야 한눈에 읽힌다. */
@@ -1781,7 +1759,6 @@ function stageChipHTML(g,extra){
   const sj=subjOfTitle(g.title);
   const col=sj?('--c:'+scVar(sj.color)+';--cs:'+scSoft(sj.color)):'--c:var(--ink2);--cs:var(--muted)';
   return '<div class="exchip stagechip'+(g.done?' done':'')+(extra||'')+'" data-gid="'+g.id+'" style="'+col+'">'+
-    '<button class="uck'+(g.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>'+
     '<span>'+esc(g.title)+'</span></div>';
 }
 function examCellHTML(d,m){
@@ -1878,7 +1855,7 @@ function editStage(id){
 /* 레일 칩의 완료. 미배정인 채로 완료만 뒤집는다 — 완료하려고 날짜를 잡을 이유는 없다. */
 function toggleStageDone(id){
   const g=DB.stage.find(v=>v.id===id);if(!g)return;
-  g.done=!g.done;buzz(9);save();paint();
+  g.done=!g.done;buzz(9);save();exHoldSpot(id);paint();
 }
 
 /* ═════ 꾹 눌러 끌기 ═════
@@ -2101,7 +2078,6 @@ function bindExamDrag(){
   const v=$('#view');if(!v||v._exb)return;v._exb=true;
   const down=e=>{
     if(EXD.on)return;
-    if(e.target.closest&&e.target.closest('.uck'))return;  // 완료 버튼은 끌기와 분리한다
     const chip=e.target.closest&&e.target.closest('.exchip');
     if(!chip)return;
     if(chip.classList.contains('done'))return;           // 완료된 칩은 끌지 않는다
@@ -2142,20 +2118,21 @@ function bindExamDrag(){
     const chip=e.target.closest('.exchip');
     if(!chip)return;
     const id=chip.dataset.tid||chip.dataset.sid||chip.dataset.gid;
-    if(chip.dataset.gid){
-      if(e.target.closest('.uck'))toggleStageDone(id);else editStage(id);
-      return;}
     const dbl=_exClick.id===id&&Date.now()-_exClick.at<EX_DBL;
     if(dbl){
       _exClick.id=null;
       if(chip.dataset.sid){editExamSubject(id);return;}
-      const t=DB.tasks.find(v=>v.id===id);   // 첫 탭이 뒤집은 완료를 되돌린다
-      if(t){t.done=!t.done;save();}
+      // 첫 탭이 뒤집은 완료를 되돌리고 수정 시트를 연다
+      const g=chip.dataset.gid?DB.stage.find(v=>v.id===id):DB.tasks.find(v=>v.id===id);
+      if(g){g.done=!g.done;save();}
       clearTimeout(_exHold.timer);_exHold={id:null,until:0,timer:null};
-      openTask(id);return;
+      if(chip.dataset.gid)editStage(id);else openTask(id);
+      return;
     }
     _exClick.id=id;_exClick.at=Date.now();
-    if(chip.dataset.tid)exToggleDone(id);    // 기다리지 않고 바로 뒤집는다
+    // 기다리지 않고 바로 뒤집는다. 시험 칩(sid)만 완료가 없다.
+    if(chip.dataset.tid)exToggleDone(id);
+    else if(chip.dataset.gid)toggleStageDone(id);
   });
 }
 /* ═════ 9. paint ═════ */
@@ -2328,10 +2305,10 @@ function bindGrid(root){
   // 짧은 일정이 하나 생기면 그 아래 구간의 배율이 통째로 바뀌므로 바인딩 시점 값을 붙들면 안 된다.
   // 한 번의 드래그 안에서는 다시 그리지 않으니 제스처 도중에는 그대로 쓴다.
   let map=timeMap(dateOf());
-  let mode=null,el=null,tid=null,sx=0,sy=0,cx=0,cy=0,moved=0,blocked=false,virtualDoneId=null,ghost=null;
+  let mode=null,el=null,tid=null,sx=0,sy=0,cx=0,cy=0,moved=0,ghost=null;
   let baseD=0,curS=0,curD=0,overUn=false,prevBand=null,dropBand=null,dropIndex=null;
-  // 꾹 누르기 대기 타이머. 이 그리드 안에서만 산다.
-  let hold=null,lifted=null,unIndex=null,unGhost=null;
+  // 꾹 누르기 대기 타이머와 손가락에 붙어 따라오는 사본. 이 그리드 안에서만 산다.
+  let hold=null,unIndex=null,unGhost=null,fg=null,fdx=0,fdy=0;
 
   const relAt=cy=>{const r=grid().getBoundingClientRect();
     return map.min(cy-r.top);};
@@ -2347,7 +2324,6 @@ function bindGrid(root){
       if(Math.abs(da-db)>.01)return da-db;
       return (a.t.ord||0)-(b.t.ord||0);});
     return hits[0]||null;};
-  const inDoneZone=(cx)=>{const r=grid().getBoundingClientRect();return cx>=r.right-44;};
   const showTag=(txt,cy)=>{
     tag.textContent=txt;tag.classList.add('on');
     const r=tag.getBoundingClientRect(),g=grid().getBoundingClientRect();
@@ -2385,32 +2361,34 @@ function bindGrid(root){
     g.style.top=top+'px';g.style.height=h+'px';g.style.left='3px';g.style.right='3px';
     g.classList.toggle('sm',h<40);
     const m=g.querySelector('.evm');if(m)m.textContent=hhmm(abs(sMin))+'~'+hhmm(abs(sMin+dMin))+' \u00b7 '+durTxt(dMin);};
-  /* 미배정 칩을 목록 밖으로 꺼내 레일 위에 띄운다. 지금 자리 그대로 두되
-     기준만 .unbar 로 바꾸므로 눈에는 제자리에서 떠오른 것으로 보인다. */
-  const liftOut=chip=>{
-    const bar=unbar();if(!bar||!chip)return;
-    const r=chip.getBoundingClientRect(),br=bar.getBoundingClientRect(),cs=getComputedStyle(bar);
-    // 절대 위치의 기준은 테두리 안쪽(패딩 상자)이다. 테두리 두께를 빼지 않으면
-    // 그만큼 오른쪽·아래로 밀려 이름 줄이 옆 칩과 어긋난다. 반올림도 하지 않는다.
-    const bl=parseFloat(cs.borderLeftWidth)||0,bt=parseFloat(cs.borderTopWidth)||0;
-    chip.style.width=r.width.toFixed(2)+'px';
-    chip.style.left=(r.left-br.left-bl).toFixed(2)+'px';
-    chip.style.top=(r.top-br.top-bt).toFixed(2)+'px';
-    lifted=chip;};
-  /* 꺼낸 그 칩만 되돌린다. 아무 요소나 되돌리면 안 된다 — 배정 카드의
-     top·height 는 인라인 스타일이라, 지우는 순간 카드가 그리드 맨 위로
-     날아가 화면에서 사라진 것처럼 보인다. */
-  const dropIn=()=>{
-    if(!lifted)return;
-    lifted.style.width='';lifted.style.left='';lifted.style.top='';lifted=null;};
+  /* 잡힌 것을 그대로 복제해 손가락에 붙인다. 원래 자리의 것은 흐려지고, 이 사본이
+     살짝 커진 채 따라온다 — 시험 탭 칩과 같은 신호다. 아주 긴 카드는 화면을 다 덮으므로
+     높이만 줄여 든다(도착 자리와 실제 길이는 .dropghost 가 따로 보여준다). */
+  const floatOut=()=>{
+    if(!el||fg)return;
+    const r=el.getBoundingClientRect(),h=Math.min(r.height,96);
+    const g=document.createElement('div');g.id='gridghost';
+    g.style.width=r.width+'px';g.style.height=h+'px';
+    g.innerHTML=el.outerHTML;
+    const inner=g.firstElementChild;
+    if(inner){
+      inner.classList.remove('dragging','act');
+      inner.removeAttribute('data-id');
+      inner.style.position='static';inner.style.top='';inner.style.left='';inner.style.right='';}
+    document.body.appendChild(g);
+    fg=g;fdx=cx-r.left;fdy=Math.min(cy-r.top,h-10);
+    moveFloat();};
+  const moveFloat=()=>{
+    if(fg)fg.style.transform='translate3d('+(cx-fdx)+'px,'+(cy-fdy)+'px,0)';};
+  const dropFloat=()=>{if(fg){fg.remove();fg=null;}};
   const clearAll=()=>{
-    if(el)el.classList.remove('act','dragging','lift');
-    dropIn();
+    if(el)el.classList.remove('act','dragging');
+    dropFloat();
     if(ghost){ghost.remove();ghost=null;}
     clearUnGhost();
     const u=unbar();if(u)u.classList.remove('tgt');
     tag.classList.remove('on');
-    mode=null;el=null;tid=null;unIndex=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;blocked=false;virtualDoneId=null;
+    mode=null;el=null;tid=null;unIndex=null;overUn=false;prevBand=null;dropBand=null;dropIndex=null;
     // 진짜로 끌었을 때만 자취를 남긴다. 그냥 톡 누른 것까지 찍으면 바로 뒤따라오는
     // click 이 '끌기 직후 300ms' 걸름망에 걸려 완료·수정이 통째로 삼켜진다.
     if(GD.on){GD.on=false;GD.endedAt=Date.now();}};
@@ -2438,7 +2416,7 @@ function bindGrid(root){
     if(!el||GD.on)return;
     GD.on=true;buzz(12);
     el.classList.add('act','dragging');
-    if(mode==='new'){liftOut(el);el.classList.add('lift');}
+    floatOut();
     preview(cx,cy);
   };
   const arm=()=>{clearHold();hold=setTimeout(lift,EX_HOLD);};
@@ -2446,6 +2424,7 @@ function bindGrid(root){
   /* 손가락 자리에 맞춰 도착 자리를 계산해 유령으로 보여준다. 칸(시간표 밴드)이 있으면
      그 칸을 사람 수대로 나눈 자리에, 24시간 보기의 기본 60분짜리는 1시간 슬롯에 맞춘다. */
   function preview(px,py){
+    moveFloat();
     const ds=dateOf(),r=relAt(py);
     overUn=inUnbar(px,py);
     const u=unbar();if(u)u.classList.toggle('tgt',overUn);
@@ -2493,20 +2472,13 @@ function bindGrid(root){
     if(!live()||GD.on)return;
     clearHold();
     map=timeMap(dateOf());
-    const t=e.touches[0];sx=cx=t.clientX;sy=cy=t.clientY;moved=0;virtualDoneId=null;
-    if(e.target.closest('.evck,.uck')){       // 완료 버튼은 끌기와 분리한다
-      blocked=true;mode=null;el=null;tid=null;dropIndex=null;return;}
-    blocked=false;
+    const t=e.touches[0];sx=cx=t.clientX;sy=cy=t.clientY;moved=0;
     let ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
     // 실제 카드 밖을 눌러도 22px 안의 가장 가까운 일정이 잡힌다.
     if(!ev&&!uc){
       const picked=pickAt(t.clientX,t.clientY);
-      if(picked){
-        ev=root.querySelector('.ev[data-id="'+picked.t.id+'"]');
-        if(inDoneZone(t.clientX)){            // 그리드 오른쪽 44px 는 가상 완료 영역
-          virtualDoneId=picked.t.id;blocked=true;
-          mode=null;el=null;tid=null;dropIndex=null;return;}}}
+      if(picked)ev=root.querySelector('.ev[data-id="'+picked.t.id+'"]');}
     if(uc){
       el=uc;tid=uc.dataset.id;prevBand=null;
       const task=DB.tasks.find(x=>x.id===tid);
@@ -2533,12 +2505,6 @@ function bindGrid(root){
   const commit=()=>{
     if(!live())return;
     clearHold();
-    if(blocked){
-      const doneId=virtualDoneId,shouldToggle=doneId&&moved<=TAP_SLOP;
-      blocked=false;virtualDoneId=null;
-      // 여기서 처리했으면 뒤따라오는 합성 click 이 같은 일을 또 하지 않게 막는다.
-      if(shouldToggle){GD.endedAt=Date.now();toggleDone(doneId);}
-      return;}
     // 끌지 않았다 = 탭. 탭의 알맹이는 click 에서 처리한다(시험 탭과 같다).
     if(!GD.on){clearAll();return;}
     // 잡기만 하고 손가락을 움직이지 않았다. 어디로도 옮기지 않는다.
@@ -2578,10 +2544,6 @@ function bindGrid(root){
   /* 탭의 알맹이. 끌기가 방금 끝났으면(합성 click) 건너뛴다. */
   root.addEventListener('click',e=>{
     if(!live()||GD.on||Date.now()-GD.endedAt<300)return;
-    if(e.target.closest('.evck')){
-      const ev=e.target.closest('.ev');if(ev)toggleDone(ev.dataset.id);return;}
-    if(e.target.closest('.uck')){
-      const uc=e.target.closest('.uchip');if(uc)toggleDone(uc.dataset.id);return;}
     const ev=e.target.closest('.ev'),uc=e.target.closest('.uchip');
     let id=null;
     if(ev&&!ev.classList.contains('dropghost'))id=ev.dataset.id;
@@ -3159,9 +3121,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=93';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=93';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=93';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=94';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=94';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=94';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3907,7 +3869,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=93').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=94').catch(()=>{});
 </script>
 </body>
 </html>
