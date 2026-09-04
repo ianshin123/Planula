@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=95">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=95">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=95">
-<link rel="apple-touch-icon" href="icon-192.png?v=95">
+<link rel="manifest" href="manifest.webmanifest?v=96">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=96">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=96">
+<link rel="apple-touch-icon" href="icon-192.png?v=96">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -47,7 +47,7 @@
   --r:20px; --r2:16px; --r3:12px;
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
   --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
-  --dockh:78px; --wrap:780px; --gut:50px; --unw:144px;
+  --dockh:78px; --gut:50px; --unw:144px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121315; --bg2:#1B1D20; --solid:#1B1D20; --muted:#23262A;
@@ -128,7 +128,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 #app{height:100%;display:flex;flex-direction:column}
 #top{padding:calc(var(--st) + 42px) calc(var(--sr) + 20px) 8px calc(var(--sl) + 20px);flex:none}
-#topin{max-width:var(--wrap);margin:0 auto}
+/* 어느 탭에서나 화면을 가득 쓴다. 폭을 780px 로 묶어 두면 패드에서 양옆이
+   허옇게 비어 시간표도 달력도 정작 좁아진다. */
+#topin{margin:0 auto}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 /* 마스코트가 탭을 옮겨도 같은 자리에 있도록 제목이 남는 폭을 먹고 버튼 영역 폭을 고정한다.
    버튼 수가 탭마다 달라도(달력은 3개) 오른쪽 정렬이라 보이는 위치는 그대로다. */
@@ -147,7 +149,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 /* 2주 이내 마감 — 작은 빨간 글씨 */
 #scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:4px calc(var(--sr) + 20px) calc(var(--sb) + var(--dockh) + 26px) calc(var(--sl) + 20px)}
-#view{width:100%;max-width:var(--wrap);margin:0 auto;will-change:transform}
+#view{width:100%;margin:0 auto;will-change:transform}
 
 /* 미배정 — 오른쪽 세로 레일 */
 .daylayout{display:grid;grid-template-columns:minmax(0,1fr) var(--unw);gap:12px;align-items:start}
@@ -331,8 +333,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   border:1.5px dashed var(--line);color:var(--ink3);font-size:12px;font-weight:800}
 .stageadd svg{width:12px;height:12px;flex:none}
 .stageadd:active{background:var(--ac-s);color:var(--ac);border-color:var(--ac-b)}
-/* 시험 탭은 좌우를 넓게 쓴다 — 패드에서 달력이 화면을 가득 채운다. */
-body[data-tab="exam"] #view,body[data-tab="exam"] #topin{max-width:none}
 .ebi:active{transform:scale(.95)}
 .ebi.ebadd{background:transparent;border:1.5px dashed var(--line);color:var(--ink3)}
 @media(max-width:620px){
@@ -423,6 +423,10 @@ body.exdrag .dock,body.exdrag .dock>*{pointer-events:none}
 #popfab.on{opacity:1;pointer-events:auto;transform:none}
 @media(max-width:620px){
   :root{--gut:44px;--unw:104px}
+  /* 오늘 탭 헤더는 버튼이 여섯이라 좁은 화면에서 제목 자리를 뺏는다. 한 단계 줄인다. */
+  .ib{width:38px;height:38px}
+  .ib svg{width:20px;height:20px}
+  .hbtns{gap:5px;min-width:0}
   /* 헤더와 본문의 좌우 여백은 항상 같은 값이어야 화면 중앙에 맞는다. */
   #top{padding-left:14px;padding-right:14px}
   #scroll{padding-left:calc(var(--sl) + 14px);padding-right:calc(var(--sr) + 14px)}
@@ -686,7 +690,6 @@ body.tour-sheet-space #subsheet{max-height:52vh;max-height:52dvh}
   <div class="dock-bar frost" id="navtabs">
     <div class="dockthumb"></div>
     <button class="nb on" data-t="today" onclick="go('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg><span class="lb" data-i18n="tabToday">Today</span></button>
-    <button class="nb" data-t="cal" onclick="go('cal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3.4"/><path d="M3 9.4h18M8 2.6v3.8M16 2.6v3.8"/></svg><span class="lb" data-i18n="tabCal">Calendar</span></button>
     <button class="nb" data-t="exam" onclick="go('exam')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.2h8.2L19 7.5v13.3H6.5z"/><path d="M14.2 3.4v4.3H18.6"/><path d="M9.4 13.4l1.9 1.9 3.9-4.2"/></svg><span class="lb" data-i18n="tabExam">Exams</span></button>
   </div>
   <button class="fab" id="mainFab" aria-label="Add task" data-i18n-aria="aTask" onclick="quickAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
@@ -1629,17 +1632,24 @@ function themeIcon(){
   if(t==='dark')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.6 8.6 0 0 1 9.5 3.5a8.7 8.7 0 1 0 11 11z"/></svg>';
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor" stroke="none"/></svg>';
 }
+/* 달력은 독 탭이 아니라 오늘 탭 헤더의 버튼으로 연다. 두 화면은 같은 하루를
+   다르게 보는 것이라 나란한 탭보다 서로 오가는 한 쌍이 맞다.
+   달력 화면의 같은 자리에는 오늘로 돌아오는 버튼이 선다. */
+const CAL_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3.4"/><path d="M3 9.4h18M8 2.6v3.8M16 2.6v3.8"/><path d="M7.6 13.2h.01M12 13.2h.01M16.4 13.2h.01M7.6 16.8h.01M12 16.8h.01" stroke-width="2.6"/></svg>';
+const TODAY_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg>';
 function topHTML(){
   const th='<button class="ib" aria-label="'+esc(L.search)+'" onclick="openSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>'+
-    '<button class="ib" aria-label="'+esc(L.aSched)+'" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M3.5 9h17M8 2.8v3M16 2.8v3M8 13h3M13 13h3M8 16.5h3"/></svg></button>'+
+    '<button class="ib" aria-label="'+esc(L.aSched)+'" onclick="openScheduleSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 4.2v15.6"/><rect x="7.2" y="4.6" width="13.4" height="6" rx="2.2"/><rect x="7.2" y="13.4" width="13.4" height="6" rx="2.2"/></svg></button>'+
     '<button class="ib" aria-label="'+esc(L.aTheme)+'" onclick="cycleTheme()">'+themeIcon()+'</button>'+
     '<button class="ib" aria-label="'+esc(L.aData)+'" onclick="openData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5V3.5"/><path d="M8 7.5L12 3.5l4 4"/><path d="M4 14.5v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></button>';
   if(tab==='today'){
     const d=parseD(TODAY());
     return '<div class="hrow"><div class="h1"><small>'+esc(fmtMDW(d))+'</small><span class="hname">'+esc(L.headToday)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+
-      '<button class="ib'+(is24(TODAY())?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg></button>'+th+'</div></div>'+examBarHTML();
+      '<button class="ib" id="calbtn" aria-label="'+esc(L.tabCal)+'" onclick="go(\'cal\')">'+CAL_SVG+'</button>'+
+      '<button class="ib'+(is24(TODAY())?'':' on')+'" aria-label="'+esc(L.a24)+'" onclick="toggle24()">'+TODAY_SVG+'</button>'+th+'</div></div>'+examBarHTML();
   }
-  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>';
+  if(tab==='cal')return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headCal)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+
+    '<button class="ib" id="calbtn" aria-label="'+esc(L.tabToday)+'" onclick="go(\'today\')">'+TODAY_SVG+'</button>'+th+'</div></div>';
   // 시험 탭에도 같은 디데이 줄을 둔다 — 날짜를 옮기는 화면에서 남은 날이 바로 보여야 한다.
   // 요일 줄도 헤더에 붙인다 — 스크롤 위에 떠 있으면 뒤 날짜가 삐져나와 보인다.
   return '<div class="hrow"><div class="h1"><small>&nbsp;</small><span class="hname">'+esc(L.headExam)+'</span></div>'+mascotHTML('home')+'<div class="hbtns">'+th+'</div></div>'+examBarHTML(true)+
@@ -2188,7 +2198,10 @@ function paint(){
   $('#topin').innerHTML=topHTML();
   document.body.dataset.tab=tab;               // 시험·시간표 탭은 화면을 넓게 쓴다
   $('#view').innerHTML=({today:todayHTML,cal:calHTML,exam:examHTML}[tab])();
-  document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  // 달력은 독 탭이 아니라 오늘의 다른 보기다. 그동안 독은 '오늘'에 불을 켜 둔다 —
+  // 아무 데도 안 켜지면 지금 어디인지 알 수 없고 알약이 갈 곳을 잃는다.
+  const dockT=(tab==='cal')?'today':tab;
+  document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===dockT));
   placeThumb();attachDockDrag();
   if(tab==='today'){bindGrid($('#view'));requestAnimationFrame(fitRail);}
   if(tab==='exam')bindExamDrag();
@@ -2306,10 +2319,14 @@ function quickAdd(){
   },{passive:false});
   const end=e=>{if(x0==null)return;const v=$('#view');
     if(horiz){const dx=(e.changedTouches?e.changedTouches[0].clientX:x0)-x0;
-      const order=['today','cal','exam'],i=order.indexOf(tab);
       v.style.transition='transform .26s cubic-bezier(.3,1.1,.4,1),opacity .24s';
       v.style.transform='translateX(0)';v.style.opacity='1';
-      if(dx<-58&&i<order.length-1)go(order[i+1]);else if(dx>58&&i>0)go(order[i-1]);}
+      if(Math.abs(dx)>58){
+        // 달력은 독에 없는 '오늘의 다른 보기'다. 어느 쪽으로 쓸든 오늘로 돌아온다.
+        if(tab==='cal')go('today');
+        else{const order=['today','exam'],i=order.indexOf(tab);
+          if(dx<0&&i<order.length-1)go(order[i+1]);else if(dx>0&&i>0)go(order[i-1]);}
+      }}
     x0=null;decided=false;horiz=false;};
   S.addEventListener('touchend',end);S.addEventListener('touchcancel',end);
 })();
@@ -3187,9 +3204,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=95';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=95';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=95';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=96';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=96';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=96';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3935,7 +3952,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=95').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=96').catch(()=>{});
 </script>
 </body>
 </html>
