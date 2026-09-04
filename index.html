@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=100">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=100">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=100">
-<link rel="apple-touch-icon" href="icon-192.png?v=100">
+<link rel="manifest" href="manifest.webmanifest?v=101">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=101">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=101">
+<link rel="apple-touch-icon" href="icon-192.png?v=101">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -394,8 +394,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .exchip i{font-style:normal;opacity:.72;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:9.5px}
 .exchip.exam{background:var(--c);color:var(--exam-fg);font-weight:900;letter-spacing:-.02em}
 .exchip.done{opacity:.4;text-decoration:line-through}
-/* 고른 칩 — 여기서만 끌린다 */
-.exchip.sel{box-shadow:0 0 0 2px var(--ac-s);border-color:var(--ac)}
 .exchip.dragging{opacity:.24}
 .exchip:active{filter:brightness(.96)}
 /* 도착 자리 미리보기. 점선 빈 줄이 아니라 **진짜 그 모양 그대로** 서야
@@ -403,6 +401,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .exchip.dropghost{pointer-events:none;background:var(--ac-s);color:var(--ac);
   box-shadow:inset 0 0 0 1.5px var(--ac-b);opacity:.95}
 .exchip.dropghost i{opacity:.72}
+/* 꾹 눌러 잡히면 살짝 커지며 떠올라 손가락을 따라온다 — 칩이 작아 이 신호가 없으면
+   그냥 스크롤인 줄 안다. 도착 자리는 진짜 모양 미리보기가 따로 보여준다. */
+#exghost{position:fixed;left:0;top:0;z-index:190;pointer-events:none;will-change:transform}
+#exghost .exchip{animation:exlift .19s cubic-bezier(.3,1.5,.5,1) both;box-shadow:var(--shadow-lg);opacity:1}
+@keyframes exlift{from{transform:scale(1)}to{transform:scale(1.16)}}
 body.exdrag .dock,body.exdrag .dock>*{pointer-events:none}
 @media(min-width:560px){
   .excell{min-height:92px;padding:6px 5px 7px}
@@ -1802,7 +1805,7 @@ function placeExamSubject(x,ds,at){
 function examChipHTML(it,extra){
   if(it.exam){
     const x=it.s;
-    return '<div class="exchip exam'+(EXSEL===x.id?' sel':'')+(extra||'')+'" data-sid="'+x.id+'" style="--c:'+scVar(x.color)+';--cs:'+scSoft(x.color)+';--cb:'+scVar(x.color)+'">'+
+    return '<div class="exchip exam'+(extra||'')+'" data-sid="'+x.id+'" style="--c:'+scVar(x.color)+';--cs:'+scSoft(x.color)+';--cb:'+scVar(x.color)+'">'+
       esc(x.name)+' '+esc(L.examWord)+'</div>';}
   const t=it.t,sj=taskSubj(t);
   /* 분류(과목)가 없는 일은 칸과 같은 회색이면 경계가 사라져 어디까지가 한 일인지
@@ -1811,7 +1814,7 @@ function examChipHTML(it,extra){
               :'--c:var(--ink2);--cs:var(--bg2);--cb:var(--ink3)';
   /* 체크는 **이름 오른쪽**에 나란히 선다. 세로 화면처럼 열이 아주 좁을 때만
      아래 줄로 내려간다(CSS `@media`) — 그때는 옆에 두면 제목이 한 자씩 쪼개진다. */
-  return '<div class="exchip ck'+(t.done?' done':'')+(EXSEL===t.id?' sel':'')+(extra||'')+'" data-tid="'+t.id+'" style="'+col+'">'+
+  return '<div class="exchip ck'+(t.done?' done':'')+(extra||'')+'" data-tid="'+t.id+'" style="'+col+'">'+
     '<span>'+(t.min!=null?'<i>'+hhmm(t.min)+'</i> ':'')+(t.repId?'<i>\u21bb</i> ':'')+esc(t.title)+'</span>'+
     '<button class="exck'+(t.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button></div>';
 }
@@ -1821,7 +1824,7 @@ function stageChipHTML(g,extra){
      알 수 없다. 종이색으로 띄우고 테두리 색(--cb)을 따로 준다. */
   const col=sj?('--c:'+scVar(sj.color)+';--cs:'+scSoft(sj.color)+';--cb:'+scVar(sj.color))
               :'--c:var(--ink2);--cs:var(--bg2);--cb:var(--ink3)';
-  return '<div class="exchip stagechip ck'+(g.done?' done':'')+(EXSEL===g.id?' sel':'')+(extra||'')+'" data-gid="'+g.id+'" style="'+col+'">'+
+  return '<div class="exchip stagechip ck'+(g.done?' done':'')+(extra||'')+'" data-gid="'+g.id+'" style="'+col+'">'+
     '<span>'+esc(g.title)+'</span>'+
     '<button class="exck'+(g.done?' on':'')+'" aria-label="'+esc(L.aDone)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button></div>';
 }
@@ -1901,9 +1904,9 @@ function examMore(){
 }
 $('#scroll').addEventListener('scroll',examScroll,{passive:true});
 $('#scroll').addEventListener('click',e=>{
-  if(!SEL&&!EXSEL)return;
+  if(!SEL)return;
   if(e.target.closest('.ev,.uchip,button,input,textarea,select,.cell,.dd,.exchip,.excell'))return;
-  SEL=null;EXSEL=null;refresh();
+  SEL=null;refresh();
 });
 $('#sheet').addEventListener('click',e=>{
   if(!popDate||subSheetOn()||!SEL)return;
@@ -1934,25 +1937,41 @@ function editStage(id){
    완료된 칩은 끌지 않는다 — 완료는 바닥에 가라앉은 기록이지 다시 계획할 대상이 아니다. */
 const EXD={on:false,armed:false,el:null,ghost:null,kind:null,id:null,
            x:0,y:0,dx:0,dy:0,timer:null,tgt:null,idx:0,slot:null,scrollTimer:null};
-const EX_SLOP=10;   // 고른 칩을 이만큼 끌면 잡힌다
+/* 시험 탭은 오늘 탭과 **별개의 시스템**이다. 좁은 칸에 작은 칩이 빽빽해 고르기라는
+   한 단계를 더 두면 손이 두 번 가고, 손잡이를 붙이기엔 칩이 너무 작다.
+   여기서는 꾹 눌러 끌고, 수정은 두 번 톡톡, 완료는 체크 버튼이다. */
+const EX_HOLD=280, EX_SLOP=10;
 /* 터치가 끝나면 브라우저가 mousedown/mouseup/click 을 한 벌 더 만들어 보낸다.
    그걸 새 누름으로 받으면 꾹 누르기 타이머가 한 번 더 돌아 손도 안 댄 칩이 떠오른다. */
-let EXSEL=null;   // 시험 탭에서 고른 칩 id — 고른 것만 끌린다
+/* 두 번 톡톡으로 세는 창. 이 안에 두 번째 톡이 오면 수정이다. */
+const EX_DBL=340;
+let _exClick={id:null,at:0};
 let _exTouchAt=0;
 /* 손가락이 칩 위에서 시작해 흘러갔으면(= 스크롤·탭 넘기기) 그건 탭이 아니다.
    브라우저가 그런 경우 click 을 안 보내 주기를 기대하지 않고 우리가 직접 센다. */
 let _exMoved=false;
 function exPoint(e){const t=e.touches&&e.touches[0]||e.changedTouches&&e.changedTouches[0]||e;
   return {x:t.clientX,y:t.clientY};}
+function exClearTimer(){clearTimeout(EXD.timer);EXD.timer=null;}
 function exLift(){
   const el=EXD.el;if(!el)return;
   EXD.on=true;EXD.armed=false;GD.on=true;buzz(14);
   // 끌고 있는 동안에는 아래 독을 관통해 놓을 수 있어야 한다. 독이 화면 아래를 덮고 있어서
   // 이걸 빼면 자동 스크롤로 끝까지 내려가 놓으려는 순간 독에 막혀 아무 데도 안 놓인다.
   document.body.classList.add('exdrag');
-  // 손가락을 따라다니는 사본은 두지 않는다 — 정작 도착할 자리를 가린다.
-  // 원래 자리의 것이 흐려지고, 도착 자리에만 미리보기가 선다.
+  /* 잡힌 칩의 사본이 살짝 커진 채 손가락을 따라온다. 칩이 작아 원래 자리가 흐려지는
+     것만으로는 '잡혔다'가 보이지 않는다 — 도착 자리는 미리보기가 따로 보여준다. */
+  const r=el.getBoundingClientRect();
+  const g=document.createElement('div');g.id='exghost';
+  g.style.width=r.width+'px';
+  g.innerHTML=el.outerHTML;
+  document.body.appendChild(g);
+  EXD.ghost=g;EXD.dx=EXD.x-r.left;EXD.dy=EXD.y-r.top;
+  exMoveGhost();
   el.classList.add('dragging');
+}
+function exMoveGhost(){
+  if(EXD.ghost)EXD.ghost.style.transform='translate3d('+(EXD.x-EXD.dx)+'px,'+(EXD.y-EXD.dy)+'px,0)';
 }
 /* 도착 자리 미리보기 한 장. **가는 곳의 모양**으로 짓는다 — 레일로 가면 레일 칩,
    달력 칸으로 가면 그 칸의 할 일 칩이다. 다른 날로 보내면 시간이 따라가지 않으므로
@@ -1995,6 +2014,7 @@ function exClearTarget(){
    들어갈 자리에 빈 줄을 세운다. 자리는 **안 한 일들 사이**에만 선다 —
    완료 더미 사이나 그 아래로는 끼어들 수 없다. */
 function exHover(){
+  if(EXD.ghost)EXD.ghost.style.pointerEvents='none';
   const at=document.elementFromPoint(EXD.x,EXD.y);
   const cell=at&&at.closest?at.closest('.excell'):null;
   const stage=at&&at.closest?at.closest('.exstage'):null;
@@ -2051,9 +2071,11 @@ function exAutoScroll(){
   if(v){S.scrollTop+=v;exHover();}
 }
 function exEnd(apply){
+  exClearTimer();
   const el=EXD.el;
   if(EXD.on){
     if(apply&&EXD.tgt)examApplyDrop();
+    if(EXD.ghost&&EXD.ghost.parentNode)EXD.ghost.parentNode.removeChild(EXD.ghost);
     exClearTarget();
     if(el)el.classList.remove('dragging');
     document.body.classList.remove('exdrag');
@@ -2138,8 +2160,10 @@ function toggleStageDone(id){
 }
 function bindExamDrag(){
   const v=$('#view');if(!v||v._exb)return;v._exb=true;
-  /* 오늘 탭과 같다 — **고른 것만 끌린다.** 한 번 톡은 고르기, 고른 걸 또 톡 하면
-     수정, 고른 걸 끌면 이동이다. 안 고른 칩 위에서 손이 흘러가면 화면 스크롤이다. */
+  const disarm=()=>{EXD.armed=false;exClearTimer();
+    clearInterval(EXD.scrollTimer);EXD.scrollTimer=null;};
+  /* 꾹 누르면 잡힌다. 칸 안의 글자를 읽으려고 손을 얹었을 뿐인데 딸려 오면 안 되고,
+     그렇다고 손잡이를 붙이기엔 칩이 너무 작다. */
   const down=e=>{
     if(EXD.on)return;
     const chip=e.target.closest&&e.target.closest('.exchip');
@@ -2149,20 +2173,21 @@ function bindExamDrag(){
     const id=chip.dataset.sid||chip.dataset.gid||chip.dataset.tid;
     const p=exPoint(e);
     if(chip.classList.contains('done'))return;   // 완료된 칩은 끌지 않는다
-    if(EXSEL!==id)return;                        // 고른 것만 끌린다
     EXD.x=p.x;EXD.y=p.y;EXD.el=chip;EXD.kind=kind;EXD.id=id;EXD.armed=true;
+    exClearTimer();
+    EXD.timer=setTimeout(()=>{if(EXD.armed)exLift();},EX_HOLD);
     clearInterval(EXD.scrollTimer);EXD.scrollTimer=setInterval(exAutoScroll,16);
   };
   const move=e=>{
     const p=exPoint(e);
     if(!EXD.armed&&!EXD.on)return;
     if(EXD.armed){
-      // 고른 것을 이만큼 끌면 그때 잡힌다. 안 움직이면 탭으로 남아 수정 시트를 연다.
-      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){_exMoved=true;exLift();}
-      else return;
+      // 잡히기 전에 손이 흘러가면 그건 화면 스크롤이다 — 꾹 누르기 타이머를 죽인다.
+      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){_exMoved=true;disarm();}
+      return;
     }
     if(e.cancelable)e.preventDefault();
-    _exMoved=true;EXD.x=p.x;EXD.y=p.y;exHover();
+    _exMoved=true;EXD.x=p.x;EXD.y=p.y;exMoveGhost();exHover();
   };
   const up=apply=>{exEnd(apply);};
   v.addEventListener('touchstart',e=>{_exTouchAt=Date.now();_exMoved=false;down(e);},{passive:true});
@@ -2174,26 +2199,26 @@ function bindExamDrag(){
     if(e.button===0){_exMoved=false;down(e);}});
   window.addEventListener('mousemove',e=>{if(EXD.armed||EXD.on)move(e);});
   window.addEventListener('mouseup',()=>{if(EXD.armed||EXD.on)up(true);});
-  /* 완료는 칩 안의 체크 버튼. 한 번 톡은 고르기, 고른 걸 또 톡 하면 수정이다.
-     빈 칸 탭은 고른 것을 푼다 — 오늘 탭과 같다. */
+  /* 완료는 칩 안의 체크 버튼, 수정은 **두 번 톡톡**이다. 고르기라는 단계는 두지
+     않는다 — 좁은 칸에 작은 칩이 빽빽해 손이 한 번 더 가는 게 그대로 느껴진다.
+     한 번 톡과 빈 칸 탭은 아무 일도 하지 않는다. */
   v.addEventListener('click',e=>{
     // 끌었으면(합성 click) 탭이 아니다.
     if(Date.now()-GD.endedAt<320||_exMoved)return;
     const chip=e.target.closest('.exchip');
-    if(!chip||chip.classList.contains('dropghost')){
-      if(EXSEL&&!e.target.closest('button,input,textarea,select')){EXSEL=null;paint();}
-      return;}
+    if(!chip||chip.classList.contains('dropghost'))return;
     const id=chip.dataset.tid||chip.dataset.sid||chip.dataset.gid;
     if(e.target.closest('.uck,.exck')){
       if(chip.dataset.gid)toggleStageDone(id);
       else if(chip.dataset.tid)exToggleDone(id);
-      return;}
-    if(EXSEL===id){                              // 고른 걸 또 톡 → 수정
+      _exClick.id=null;return;}                  // 체크는 두 번 세지 않는다
+    if(_exClick.id===id&&Date.now()-_exClick.at<EX_DBL){
+      _exClick.id=null;
       if(chip.dataset.sid)editExamSubject(id);
       else if(chip.dataset.gid)editStage(id);
       else openTask(id);
       return;}
-    EXSEL=id;SEL=null;buzz(8);paint();           // 처음 톡 → 고르기
+    _exClick.id=id;_exClick.at=Date.now();
   });
 }
 /* ═════ 9. paint ═════ */
@@ -2258,7 +2283,7 @@ function go(t){
   _anim=true;const v=$('#view');
   v.style.transition='transform .17s ease-in,opacity .17s ease-in';
   v.style.transform='translateX('+(-dir*28)+'px)';v.style.opacity='0';
-  setTimeout(()=>{tab=t;SEL=null;EXSEL=null;$('#scroll').scrollTop=0;paint();
+  setTimeout(()=>{tab=t;SEL=null;$('#scroll').scrollTop=0;paint();
     playHomeMascot();                       // 탭을 옮길 때마다 캐릭터가 한 번 움직인다
     if(t==='today')requestAnimationFrame(()=>{focusToday();});
     if(t==='exam')requestAnimationFrame(examScrollToToday);
@@ -2775,7 +2800,7 @@ function openTaskSheet(html){
   if(popDate&&$('#sheet').classList.contains('on')&&$('#popbody'))openSubSheet(html);else openSheet(html);
 }
 function finishTaskSheet(){
-  SEL=null;EXSEL=null;
+  SEL=null;
   if(subSheetOn()){
     closeSubSheet();
     if(popDate&&$('#popbody')){$('#popbody').innerHTML=renderDay(popDate);
@@ -3263,9 +3288,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=100';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=100';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=100';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=101';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=101';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=101';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3977,7 +4002,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=100').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=101').catch(()=>{});
 </script>
 </body>
 </html>
