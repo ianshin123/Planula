@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Planula">
 <meta name="application-name" content="Planula">
-<link rel="manifest" href="manifest.webmanifest?v=94">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=94">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=94">
-<link rel="apple-touch-icon" href="icon-192.png?v=94">
+<link rel="manifest" href="manifest.webmanifest?v=95">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=95">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=95">
+<link rel="apple-touch-icon" href="icon-192.png?v=95">
 <title>Planula</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -163,7 +163,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
    내용 폭으로 좁아져 이름이 가운데부터 시작한 것처럼 보인다. */
 .unrow.hasghost{align-items:stretch;justify-content:flex-start;border-width:0}
 .unrow{display:flex;flex-direction:column;gap:7px;overflow-y:auto;overflow-x:hidden;min-height:0;padding-bottom:2px}
-.uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:var(--r3);
+.uchip{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:6px;padding:12px 9px;border-radius:var(--r3);
   background:var(--blur-surface);border:1px solid var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   transition:transform .16s cubic-bezier(.2,1.5,.4,1),box-shadow .16s ease}
 .uchip:active{background:var(--ac-s);border-color:var(--ac-b)}
@@ -172,7 +172,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .uchip.done .ut{opacity:.56}
 .uchip.done .ut>i{text-decoration:line-through}
 .uchip .ut{min-width:0;flex:1}
-.uchip .ut>i{display:block;font-style:normal;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uchip .ut>i{display:block;font-style:normal;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .uchip .gr{width:14px;flex:none;display:flex;flex-direction:column;gap:2.5px;opacity:.35}
 .uchip .gr b{display:block;width:11px;height:1.6px;border-radius:1px;background:var(--ink2)}
 
@@ -236,7 +236,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 @keyframes gridlift{from{transform:scale(1)}to{transform:scale(1.05)}}
 .evb{flex:1;min-width:0;padding:4px 9px;overflow:hidden;border-radius:10px}
 .evtitle{display:flex;align-items:center;gap:6px;min-width:0}
-.evt{font-size:13px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
+.evt{font-size:13.5px;font-weight:700;letter-spacing:-.02em;line-height:1.25;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* flex 컨테이너 안의 맨 텍스트에는 text-overflow 가 걸리지 않아 이름이 말줄임 없이 뚝 잘린다.
    이름을 b 로 감싸 거기에 말줄임을 건다. */
@@ -249,7 +249,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   overflow:hidden;white-space:nowrap}
 .ev.sm .evm{display:none}
 .ev.sm .evb{padding:1px 7px}
-.ev.sm .evt{font-size:12.5px}
+.ev.sm .evt{font-size:13px}
 /* 선택하면 나오는 위·아래 손잡이. 보이는 막대는 그대로 두고 잡히는 범위만 넓힌다 —
    9px 막대만으로는 손가락이 자꾸 빗나간다. */
 .evtime{position:absolute;right:8px;bottom:3px;font-size:11px;font-weight:850;color:var(--ac);
@@ -263,6 +263,18 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   box-shadow:0 6px 16px rgba(224,122,79,.2);opacity:.94}
 .uchip.dropghost{transform:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 .ev.dragging{opacity:.32}
+/* ── 옆으로 쓸어 완료 ─────────────────────────────────────────────────
+   탭은 이제 수정 하나뿐이라 완료는 이 손짓이 맡는다. 손가락을 따라 조금 끌리다가
+   놓으면 탄성 있게 제자리로 돌아오면서 완료된다. 끌리는 동안에는 전환을 끄고
+   (`.swiping`), 돌아올 때만 튕기는 곡선을 쓴다(`.swipeback`). */
+.ev.swiping,.uchip.swiping,.exchip.swiping{transition:none!important}
+.ev.swipeback,.uchip.swipeback,.exchip.swipeback{transition:transform .34s cubic-bezier(.34,1.56,.5,1)!important}
+.ev.swiping,.ev.swipeback{z-index:30}
+/* 여기서 놓으면 완료된다는 표시 */
+.swipeon{box-shadow:inset 0 0 0 2.5px var(--ok)!important}
+/* 스크롤 상자(overflow-y:auto)는 가로도 함께 잘라낸다. 쓰는 동안만 열어 두지 않으면
+   옆으로 밀린 칩이 레일 가장자리에서 뭉텅 잘려 보인다. */
+.unrow.swipehost,.exstagerow.swipehost{overflow:visible}
 #ptag{position:fixed;z-index:210;pointer-events:none;opacity:0;transition:opacity .12s;
   background:var(--ac);color:var(--on-ac);padding:6px 12px;border-radius:11px;font-size:12.5px;font-weight:800;
   box-shadow:var(--shadow-md);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -312,7 +324,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .exstage .uh{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase;margin:0 2px}
 .exstage.tgt{box-shadow:inset 0 0 0 2.5px var(--ac)}
 .exstagerow{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:12px}
-.exchip.stagechip{font-size:12px;padding:7px 8px;border-radius:9px;
+.exchip.stagechip{font-size:13px;padding:9px 9px;border-radius:10px;
   display:flex;align-items:center;gap:7px}
 .exchip.stagechip>span{min-width:0;flex:1}
 .stageadd{display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:11px;
@@ -327,7 +339,7 @@ body[data-tab="exam"] #view,body[data-tab="exam"] #topin{max-width:none}
   .exlayout{gap:8px}
   .exdow{padding-right:calc(var(--unw) + 8px)}
   .stageadd{font-size:11px;white-space:nowrap;gap:4px;padding:9px 4px}
-  .exchip.stagechip{font-size:11px;padding:6px 6px;gap:5px}
+  .exchip.stagechip{font-size:12px;padding:8px 7px;gap:5px}
 }
 /* 요일 줄은 스크롤을 따라 붙어 있어야 몇 월 며칠인지 잃지 않는다. */
 /* 요일 줄은 헤더의 일부다. 스크롤 위에 붙여 두면 뒤 날짜 숫자가 위로 삐져나온다.
@@ -343,8 +355,8 @@ body[data-tab="exam"] #view,body[data-tab="exam"] #topin{max-width:none}
 /* 달 이름은 흐르게 둔다. 붙여 두면(sticky) 바로 아래 줄의 날짜 숫자를 덮는다. */
 .exmonth{margin:13px 0 3px;font-size:15.5px;font-weight:850;letter-spacing:-.032em;color:var(--ink2)}
 .exweek{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-items:stretch}
-.excell{min-height:72px;border-radius:10px;background:var(--muted);border:1px solid transparent;
-  padding:5px 3px 6px;display:flex;flex-direction:column;gap:3px;min-width:0;
+.excell{min-height:80px;border-radius:10px;background:var(--muted);border:1px solid transparent;
+  padding:5px 2px 6px;display:flex;flex-direction:column;gap:3px;min-width:0;
   transition:background .16s,border-color .16s}
 .excell.out{opacity:1}
 .excell.today{background:var(--ac-s);border-color:var(--ac-b)}
@@ -356,8 +368,8 @@ body[data-tab="exam"] #view,body[data-tab="exam"] #topin{max-width:none}
 .exitems{display:flex;flex-direction:column;gap:3px;min-width:0}
 /* 제목을 자르지 않는다. 다 안 들어가면 칩이 여러 줄이 되고 그만큼 칸이 늘어난다 —
    '+3 더보기' 로 감추면 달력만 보고 그날 할 일을 아는 뜻이 없어진다. */
-.exchip{border-radius:6px;background:var(--cs);color:var(--c);padding:3px 4px;
-  font-size:10px;font-weight:800;line-height:1.3;letter-spacing:-.03em;
+.exchip{border-radius:7px;background:var(--cs);color:var(--c);padding:7px 3px;
+  font-size:10.5px;font-weight:800;line-height:1.35;letter-spacing:-.03em;
   word-break:keep-all;overflow-wrap:anywhere;touch-action:pan-y}
 .exchip i{font-style:normal;opacity:.72;font-variant-numeric:tabular-nums}
 .exchip.exam{background:var(--c);color:var(--exam-fg);font-weight:900;letter-spacing:-.02em}
@@ -371,8 +383,8 @@ body.exdrag .dock,body.exdrag .dock>*{pointer-events:none}
 #exghost .exchip{animation:exlift .19s cubic-bezier(.3,1.5,.5,1) both;box-shadow:var(--shadow-lg);opacity:1}
 @keyframes exlift{from{transform:scale(1)}to{transform:scale(1.16)}}
 @media(min-width:560px){
-  .excell{min-height:84px;padding:6px 5px 7px}
-  .exchip{font-size:11.5px;padding:4px 6px}
+  .excell{min-height:92px;padding:6px 5px 7px}
+  .exchip{font-size:11.5px;padding:8px 5px}
 }
 .dd{display:flex;align-items:center;gap:11px;padding:12px 17px;border-top:1px solid var(--line2)}
 .ddn{flex:1;min-width:0;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -948,7 +960,7 @@ const M=(h,m)=>h*60+m;
    나중에 다시 옮기더라도 한 곳만 고친다. */
 const DAY0=M(0,0);
 const PPM=1.4;              // 기본 1분당 픽셀
-const MIN_EVENT_PX=20;      // 짧은 일정 카드의 최소 터치 높이
+const MIN_EVENT_PX=26;      // 짧은 일정 카드의 최소 터치 높이 — 옆으로 쓸어 완료하려면 이만큼은 잡혀야 한다
 const SNAP=5;               // 길이 조절과 자동 분할은 5분 단위
 const PLACE_SNAP=5;         // 직접 배치도 5분 단위 — 6시 정각처럼 5분 끝자리를 맞출 수 있어야 한다
 const LEGACY_CLASSES=[
@@ -1717,14 +1729,14 @@ function examReset(){
 function examWeekDate(i,j){const d=parseD(EX.start);d.setDate(d.getDate()+i*7+(j||0));return d;}
 /* 완료된 일은 레일 바닥으로 가라앉는다 — 달력 칸과 같은 규칙이다. */
 function stageList(){return DB.stage.slice().sort((a,b)=>
-  (exHeld(a.id)?0:a.done?1:0)-(exHeld(b.id)?0:b.done?1:0)||(a.ord||0)-(b.ord||0));}
+  (a.done?1:0)-(b.done?1:0)||(a.ord||0)-(b.ord||0));}
 function examTasksOf(ds){return tasksOf(ds).filter(t=>t.exam);}
 /* 그 날에 놓인 것들. 시험이 맨 위, 그 다음 **안 한 일**(손으로 정한 순서), 완료된 일은
    전부 바닥으로 보낸다 — 남은 일이 항상 위에 모여 있어야 한눈에 읽힌다. */
 function examItems(ds){
   const ex=DB.subjects.filter(x=>x.exam===ds).sort((a,b)=>(a.ord||0)-(b.ord||0)).map(x=>({exam:true,s:x}));
   const ts=examTasksOf(ds).sort((a,b)=>
-    (exHeld(a.id)?0:a.done?1:0)-(exHeld(b.id)?0:b.done?1:0)||(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0)).map(t=>({exam:false,t}));
+    (a.done?1:0)-(b.done?1:0)||(a.ord||0)-(b.ord||0)||(a.min||0)-(b.min||0)).map(t=>({exam:false,t}));
   return ex.concat(ts);
 }
 /* 과목 순서는 `ord` 하나가 정한다. 같은 날 시험이 여럿이면 그 순서가 곧
@@ -1852,11 +1864,6 @@ function editStage(id){
     subj:null,mile:null,exam:true,rep:null,repId:null};
   _adv=true;taskSheet();
 }
-/* 레일 칩의 완료. 미배정인 채로 완료만 뒤집는다 — 완료하려고 날짜를 잡을 이유는 없다. */
-function toggleStageDone(id){
-  const g=DB.stage.find(v=>v.id===id);if(!g)return;
-  g.done=!g.done;buzz(9);save();exHoldSpot(id);paint();
-}
 
 /* ═════ 꾹 눌러 끌기 ═════
    시험 탭의 이동은 **꾹 누르기**다. 칸 안의 글자를 읽으려고 손을 얹었을 뿐인데 딸려 오면
@@ -1866,10 +1873,66 @@ function toggleStageDone(id){
 const EXD={on:false,armed:false,el:null,ghost:null,kind:null,id:null,
            x:0,y:0,dx:0,dy:0,timer:null,tgt:null,idx:0,slot:null,scrollTimer:null};
 const EX_HOLD=280, EX_SLOP=10;
-/* 두 번째 탭을 기다리는 시간. 완료를 이만큼 미뤄 두고, 그 안에 두 번째 탭이 오면 수정이다.
-   기다리는 시간과 두 번으로 세는 창은 **같은 값**이어야 한다 — 창이 더 좁으면 그 틈에
-   떨어진 두 번째 탭이 두 번으로도, 새 한 번으로도 못 세어져 아무 일도 안 일어난다. */
-const EX_DBL=340;
+/* ═════ 옆으로 쓸어 완료 ═════
+   탭은 수정 하나뿐이다. 완료는 카드·칩을 옆으로 쓸어 한다 — 같은 손짓의 횟수 차이
+   (한 번/두 번)로 두 가지를 가르면 누르는 사람도 코드도 늘 헷갈린다.
+
+   **꾹 눌러 끌기와는 구조적으로 겹칠 수 없다.** 손이 `SW_SLOP` 만큼 흘러간 순간
+   꾹 누르기 타이머는 죽고, 반대로 이미 잡힌 뒤(`GD.on`/`EXD.on`)에는 쓸기가 아예
+   시작되지 않는다. 방향이 세로면 둘 다 손을 떼고 화면 스크롤에 맡긴다.
+   가로가 세로보다 뚜렷하게 클 때만(1.3배) 쓸기로 본다. */
+const SW_SLOP=12;    // 이만큼 흘러가야 방향을 정한다
+const SW_TRIG=52;    // 이만큼 쓸면 완료
+const SW_MAX=72;     // 더 끌어도 이 이상은 안 따라간다 — 손맛만 남기고 화면은 안 흔든다
+const SW_BACK=340;   // 튕겨 돌아오는 시간. 다 돌아온 뒤에 목록 자리를 정리한다
+const SW={el:null,id:null,kind:null,host:null,x:0,y:0,on:false,dx:0};
+function swArm(el,id,kind,x,y){SW.el=el;SW.id=id;SW.kind=kind;SW.x=x;SW.y=y;SW.on=false;SW.dx=0;}
+/* 0 = 아직 방향을 모름, 1 = 쓸기다, -1 = 내 손짓이 아니다(스크롤) */
+function swDecide(x,y){
+  if(!SW.el)return -1;
+  const dx=x-SW.x,dy=y-SW.y;
+  if(Math.abs(dx)<SW_SLOP&&Math.abs(dy)<SW_SLOP)return 0;
+  if(Math.abs(dx)<=Math.abs(dy)*1.3){swArm(null,null,null,0,0);return -1;}
+  SW.on=true;SW.el.classList.add('swiping');
+  SW.host=SW.el.closest('.unrow,.exstagerow');
+  if(SW.host)SW.host.classList.add('swipehost');
+  return 1;
+}
+function swMove(x){
+  if(!SW.on||!SW.el)return;
+  SW.dx=x-SW.x;
+  const t=(SW.dx<0?-1:1)*Math.min(Math.abs(SW.dx)*.62,SW_MAX);
+  SW.el.style.transform='translateX('+t.toFixed(1)+'px)';
+  SW.el.classList.toggle('swipeon',Math.abs(SW.dx)>=SW_TRIG);
+}
+/* 손을 뗀다. 쓸기가 아니었으면 null 을 돌려줘 탭으로 넘어가게 하고,
+   쓸기였으면 {id} 를 돌려준다(문턱을 못 넘었으면 id 는 null — 탭으로도 세지 않는다).
+   완료 표시는 여기서 바로 붙인다. 목록의 자리 정리는 다 돌아온 뒤에 한다 —
+   돌아오는 도중에 다시 그리면 애니메이션이 끊기고 칩이 순간이동한다. */
+function swRelease(apply){
+  const el=SW.el,on=SW.on,id=SW.id,kind=SW.kind;
+  const hit=on&&apply&&Math.abs(SW.dx)>=SW_TRIG;
+  if(el){
+    el.classList.remove('swiping','swipeon');
+    if(on){
+      el.classList.add('swipeback');el.style.transform='';
+      if(hit)el.classList.toggle('done');
+      setTimeout(()=>{el.classList.remove('swipeback');},SW_BACK);
+    }else el.style.transform='';
+  }
+  const host=SW.host;
+  if(host)setTimeout(()=>{host.classList.remove('swipehost');},SW_BACK);
+  SW.host=null;
+  swArm(null,null,null,0,0);
+  return on?{id:hit?id:null,kind}:null;
+}
+/* 쓸어서 뒤집는다. 데이터는 손을 떼는 순간 바뀌고, 화면 자리 정리만 뒤로 미룬다. */
+function swApplyDone(id,kind,after){
+  const g=kind==='stage'?DB.stage.find(v=>v.id===id):DB.tasks.find(v=>v.id===id);
+  if(!g)return;
+  g.done=!g.done;buzz(11);save();
+  setTimeout(after,SW_BACK);
+}
 /* 터치가 끝나면 브라우저가 mousedown/mouseup/click 을 한 벌 더 만들어 보낸다.
    그걸 새 누름으로 받으면 꾹 누르기 타이머가 한 번 더 돌아 손도 안 댄 칩이 떠오른다. */
 let _exTouchAt=0;
@@ -2054,85 +2117,69 @@ function examApplyDrop(){
   placeExamTask(t,ds,EXD.idx);
   save();paint();buzz(12);
 }
-/* 탭 한 번은 완료, 두 번은 수정이다. 완료는 **기다리지 않고 그 자리에서** 뒤집는다 —
-   두 번째 탭을 기다렸다 실행하면 한 번 누를 때마다 반응이 늦어 앱이 굼떠 보인다.
-   두 번째 탭이 오면 첫 탭이 뒤집은 것을 되돌리고 수정 시트를 연다.
-   대신 완료된 칩은 그 칸 바닥으로 가라앉으므로, 두 번째 탭을 받는 동안에는
-   방금 누른 칩만 제자리에 붙들어 둔다(`_exHold`). 안 붙들면 첫 탭에 칩이 밑으로
-   내려가 버려 두 번째 탭이 엉뚱한 칩에 떨어진다. */
-let _exClick={id:null,at:0,timer:null};
-let _exHold={id:null,until:0,timer:null};
-function exHeld(id){return _exHold.id===id&&Date.now()<_exHold.until;}
-function exHoldSpot(id){
-  clearTimeout(_exHold.timer);
-  _exHold={id,until:Date.now()+EX_DBL,timer:setTimeout(()=>{
-    _exHold={id:null,until:0,timer:null};
-    if(tab==='exam')paint();                 // 창이 닫히면 제자리로 가라앉는다
-  },EX_DBL)};
-}
-function exToggleDone(id){
-  const t=DB.tasks.find(v=>v.id===id);if(!t)return;
-  t.done=!t.done;buzz(9);save();exHoldSpot(id);paint();
-}
 function bindExamDrag(){
   const v=$('#view');if(!v||v._exb)return;v._exb=true;
+  const disarm=()=>{EXD.armed=false;exClearTimer();
+    clearInterval(EXD.scrollTimer);EXD.scrollTimer=null;};
   const down=e=>{
     if(EXD.on)return;
     const chip=e.target.closest&&e.target.closest('.exchip');
     if(!chip)return;
-    if(chip.classList.contains('done'))return;           // 완료된 칩은 끌지 않는다
-    const p=exPoint(e);EXD.x=p.x;EXD.y=p.y;
-    _exMoved=false;EXD.el=chip;
-    EXD.kind=chip.dataset.sid?'exam':(chip.dataset.gid?'stage':'task');
-    EXD.id=chip.dataset.sid||chip.dataset.gid||chip.dataset.tid;EXD.armed=true;
+    const kind=chip.dataset.sid?'exam':(chip.dataset.gid?'stage':'task');
+    const id=chip.dataset.sid||chip.dataset.gid||chip.dataset.tid;
+    const p=exPoint(e);_exMoved=false;
+    // 시험 칩은 완료라는 게 없으니 쓸기도 없다. 완료된 칩은 끌 수는 없어도
+    // 쓸어서 되돌릴 수는 있어야 하므로 쓸기는 먼저 걸어 둔다.
+    if(kind!=='exam')swArm(chip,id,kind,p.x,p.y);
+    if(chip.classList.contains('done'))return;
+    EXD.x=p.x;EXD.y=p.y;EXD.el=chip;EXD.kind=kind;EXD.id=id;EXD.armed=true;
     exClearTimer();
     EXD.timer=setTimeout(()=>{if(EXD.armed)exLift();},EX_HOLD);
     clearInterval(EXD.scrollTimer);EXD.scrollTimer=setInterval(exAutoScroll,16);
   };
   const move=e=>{
-    if(!EXD.armed&&!EXD.on)return;
     const p=exPoint(e);
+    // 아직 아무것도 안 잡혔으면 먼저 방향을 정한다. 가로면 쓸기(그 순간 꾹 누르기는
+    // 죽는다), 세로면 둘 다 손을 떼고 스크롤에 맡긴다.
+    if(SW.el&&!SW.on&&!EXD.on){
+      const d=swDecide(p.x,p.y);
+      if(d!==0){_exMoved=true;disarm();}
+    }
+    if(SW.on){if(e.cancelable)e.preventDefault();swMove(p.x);return;}
+    if(!EXD.armed&&!EXD.on)return;
     if(EXD.armed){
-      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){
-        _exMoved=true;EXD.armed=false;exClearTimer();
-        clearInterval(EXD.scrollTimer);EXD.scrollTimer=null;}
+      if(Math.abs(p.x-EXD.x)>EX_SLOP||Math.abs(p.y-EXD.y)>EX_SLOP){_exMoved=true;disarm();}
       return;
     }
     if(e.cancelable)e.preventDefault();
     _exMoved=true;EXD.x=p.x;EXD.y=p.y;exMoveGhost();exHover();
   };
+  const up=apply=>{
+    const r=swRelease(apply);
+    if(r){_exMoved=true;
+      if(r.id)swApplyDone(r.id,r.kind,()=>{if(tab==='exam')paint();});}
+    exEnd(apply);
+  };
   v.addEventListener('touchstart',e=>{_exTouchAt=Date.now();down(e);},{passive:true});
   v.addEventListener('touchmove',move,{passive:false});
-  v.addEventListener('touchend',()=>{_exTouchAt=Date.now();exEnd(true);});
-  v.addEventListener('touchcancel',()=>{_exTouchAt=Date.now();exEnd(false);});
+  v.addEventListener('touchend',()=>{_exTouchAt=Date.now();up(true);});
+  v.addEventListener('touchcancel',()=>{_exTouchAt=Date.now();up(false);});
   v.addEventListener('mousedown',e=>{
     if(Date.now()-_exTouchAt<700)return;      // 터치가 만든 합성 mousedown 은 받지 않는다
     if(e.button===0)down(e);});
-  window.addEventListener('mousemove',e=>{if(EXD.armed||EXD.on)move(e);});
-  window.addEventListener('mouseup',()=>{if(EXD.armed||EXD.on)exEnd(true);});
-  /* 탭 규칙 — 할 일 칩: 한 번은 완료 토글, 두 번은 수정. 시험 칩: 두 번에 과목 수정.
-     레일 칩: 한 번에 수정. 빈 칸 탭은 아무 일도 하지 않는다(오늘 탭과 같다). */
+  window.addEventListener('mousemove',e=>{if(SW.el||EXD.armed||EXD.on)move(e);});
+  window.addEventListener('mouseup',()=>{if(SW.el||EXD.armed||EXD.on)up(true);});
+  /* 탭은 수정 하나뿐이다 — 할 일 칩·레일 칩은 수정 시트, 시험 칩은 과목 시트.
+     완료는 옆으로 쓸어서 하고, 빈 칸 탭은 아무 일도 하지 않는다(오늘 탭과 같다). */
   v.addEventListener('click',e=>{
-    // 끌기가 방금 끝났거나(합성 click), 손가락이 흘러가 스크롤이 된 손짓은 탭이 아니다.
+    // 끌었거나 쓸었으면(합성 click) 탭이 아니다.
     if(Date.now()-GD.endedAt<320||_exMoved)return;
     const chip=e.target.closest('.exchip');
     if(!chip)return;
     const id=chip.dataset.tid||chip.dataset.sid||chip.dataset.gid;
-    const dbl=_exClick.id===id&&Date.now()-_exClick.at<EX_DBL;
-    if(dbl){
-      _exClick.id=null;
-      if(chip.dataset.sid){editExamSubject(id);return;}
-      // 첫 탭이 뒤집은 완료를 되돌리고 수정 시트를 연다
-      const g=chip.dataset.gid?DB.stage.find(v=>v.id===id):DB.tasks.find(v=>v.id===id);
-      if(g){g.done=!g.done;save();}
-      clearTimeout(_exHold.timer);_exHold={id:null,until:0,timer:null};
-      if(chip.dataset.gid)editStage(id);else openTask(id);
-      return;
-    }
-    _exClick.id=id;_exClick.at=Date.now();
-    // 기다리지 않고 바로 뒤집는다. 시험 칩(sid)만 완료가 없다.
-    if(chip.dataset.tid)exToggleDone(id);
-    else if(chip.dataset.gid)toggleStageDone(id);
+    if(chip.dataset.sid)editExamSubject(id);
+    else if(chip.dataset.gid)editStage(id);
+    else openTask(id);
   });
 }
 /* ═════ 9. paint ═════ */
@@ -2210,20 +2257,9 @@ function moveMonth(n){calM=new Date(calM.getFullYear(),calM.getMonth()+n,1);pain
 /* 시계 버튼의 불은 '시간대(시간표) 보기'를 뜻한다. 24시간 보기면 불이 꺼진다.
    오늘 탭 헤더와 날짜 팝업이 같은 규칙을 쓴다. */
 function toggle24(){const ds=TODAY();if(setDateViewMode(ds)){paint();toast(is24(ds)?L.view24:L.viewSched);}}
-function toggleDone(id){const t=DB.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;buzz(9);save();refresh();}
-/* 한 번 톡 = 완료, 두 번 톡톡 = 수정. 시험 탭과 **같은 규칙·같은 시간**이다.
-   완료는 기다리지 않고 그 자리에서 뒤집고, 두 번째 톡이 오면 그것을 되돌린 뒤 시트를 연다.
-   두 번째를 기다렸다 완료를 실행하면 한 번 누를 때마다 반응이 늦어 앱이 굼떠 보인다.
-   여기 카드는 완료해도 자리가 바뀌지 않으므로 시험 탭처럼 자리를 붙들 필요는 없다. */
-let _tap={id:null,at:0};
-function tapTask(id){
-  const t=DB.tasks.find(x=>x.id===id);if(!t)return;
-  if(_tap.id===id&&Date.now()-_tap.at<EX_DBL){
-    _tap.id=null;t.done=!t.done;save();     // 첫 톡이 뒤집은 완료를 되돌린다
-    openTask(id);return;}
-  _tap.id=id;_tap.at=Date.now();
-  toggleDone(id);
-}
+/* 탭은 수정 하나뿐이다. 완료는 옆으로 쓸어서 한다 — 같은 손짓의 횟수 차이로
+   두 가지를 가르면 누르는 사람도 코드도 늘 헷갈린다. 시험 탭과 같은 규칙이다. */
+function tapTask(id){openTask(id);}
 function carryAction(id,action){
   const prev=addDays(TODAY(),-1),t=DB.tasks.find(x=>x.id===id&&x.date===prev&&!x.done);if(!t)return;
   if(action==='done'){
@@ -2256,7 +2292,10 @@ function quickAdd(){
 /* ═════ 10. 스와이프 — 가로로 쓸어 탭을 넘긴다 ═════ */
 (function(){
   const S=$('#scroll');let x0=null,y0=null,decided=false,horiz=false;
-  S.addEventListener('touchstart',e=>{if(_anim||GD.on){x0=null;return;}
+  // 카드·칩 위에서 시작한 가로 손짓은 '완료 쓸기' 몫이다. 여기서 탭까지 넘어가면
+  // 하나를 완료하려다 화면이 통째로 바뀐다.
+  S.addEventListener('touchstart',e=>{
+    if(_anim||GD.on||(e.target.closest&&e.target.closest('.ev,.uchip,.exchip'))){x0=null;return;}
     x0=e.touches[0].clientX;y0=e.touches[0].clientY;decided=false;horiz=false;},{passive:true});
   S.addEventListener('touchmove',e=>{
     if(x0==null||GD.on)return;
@@ -2475,6 +2514,10 @@ function bindGrid(root){
     const t=e.touches[0];sx=cx=t.clientX;sy=cy=t.clientY;moved=0;
     let ev=e.target.closest('.ev');
     const uc=e.target.closest('.uchip');
+    // 쓸기는 **진짜로 그 위에서 시작했을 때만** 건다. 카드 밖 22px 에서 시작한
+    // 손짓까지 쓸기로 받으면 빈 곳을 문지르다 엉뚱한 일이 완료된다.
+    const hit=ev||uc;
+    if(hit&&!hit.classList.contains('dropghost'))swArm(hit,hit.dataset.id,'task',t.clientX,t.clientY);
     // 실제 카드 밖을 눌러도 22px 안의 가장 가까운 일정이 잡힌다.
     if(!ev&&!uc){
       const picked=pickAt(t.clientX,t.clientY);
@@ -2496,6 +2539,10 @@ function bindGrid(root){
     if(!live())return;
     const t=e.touches[0];cx=t.clientX;cy=t.clientY;
     moved=Math.max(moved,Math.abs(cx-sx)+Math.abs(cy-sy));
+    // 아직 아무것도 안 잡혔으면 먼저 방향을 정한다. 가로면 쓸기(그 순간 꾹 누르기는
+    // 죽는다), 세로면 둘 다 손을 떼고 스크롤에 맡긴다.
+    if(SW.el&&!SW.on&&!GD.on){if(swDecide(cx,cy)!==0)clearHold();}
+    if(SW.on){if(e.cancelable)e.preventDefault();swMove(cx);return;}
     // 잡히기 전에 손이 흘러가면 그건 화면 스크롤이다 — 손을 뗀다.
     if(!GD.on){if(hold&&moved>TAP_SLOP)clearHold();return;}
     if(e.cancelable)e.preventDefault();
@@ -2505,6 +2552,12 @@ function bindGrid(root){
   const commit=()=>{
     if(!live())return;
     clearHold();
+    const sw=swRelease(true);
+    if(sw){
+      // 쓸었으면 탭이 아니다. 뒤따라오는 합성 click 도 여기서 막는다.
+      GD.endedAt=Date.now();
+      if(sw.id)swApplyDone(sw.id,'task',refresh);
+      clearAll();return;}
     // 끌지 않았다 = 탭. 탭의 알맹이는 click 에서 처리한다(시험 탭과 같다).
     if(!GD.on){clearAll();return;}
     // 잡기만 하고 손가락을 움직이지 않았다. 어디로도 옮기지 않는다.
@@ -2539,8 +2592,21 @@ function bindGrid(root){
       if(!overUn&&task.min!=null)tourSignal('task-placed');}
     clearAll();refresh();};
   root.addEventListener('touchend',commit);
-  root.addEventListener('touchcancel',()=>{if(!live())return;clearHold();clearAll();refresh();});
+  root.addEventListener('touchcancel',()=>{if(!live())return;clearHold();swRelease(false);clearAll();refresh();});
 
+  /* 마우스로도 옆으로 끌어 완료한다. 터치가 만든 합성 mousedown 은 받지 않는다. */
+  root.addEventListener('mousedown',e=>{
+    if(!live()||e.button!==0||GD.on||Date.now()-_exTouchAt<700)return;
+    const hit=e.target.closest('.ev,.uchip');
+    if(hit&&!hit.classList.contains('dropghost'))swArm(hit,hit.dataset.id,'task',e.clientX,e.clientY);});
+  window.addEventListener('mousemove',e=>{
+    if(!SW.el||GD.on)return;
+    if(!SW.on&&swDecide(e.clientX,e.clientY)!==1)return;
+    if(SW.on)swMove(e.clientX);});
+  window.addEventListener('mouseup',()=>{
+    if(!SW.el)return;
+    const sw=swRelease(true);
+    if(sw){GD.endedAt=Date.now();if(sw.id)swApplyDone(sw.id,'task',refresh);}});
   /* 탭의 알맹이. 끌기가 방금 끝났으면(합성 click) 건너뛴다. */
   root.addEventListener('click',e=>{
     if(!live()||GD.on||Date.now()-GD.endedAt<300)return;
@@ -3121,9 +3187,9 @@ function deleteSchedSet(){
 }
 /* ═════ 15. 화면을 직접 따라가는 사용법 ═════ */
 /* 자산 URL에도 캐시 버전을 붙인다. 파일명이 같으면 그림을 바꿔도 옛 파일이 계속 나온다. */
-const MASCOT_IDLE='assets/planner-mascot-idle.png?v=94';
-const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=94';
-const MASCOT_ONCE='assets/planner-mascot-once.gif?v=94';
+const MASCOT_IDLE='assets/planner-mascot-idle.png?v=95';
+const MASCOT_LOOP='assets/planner-mascot-loop.gif?v=95';
+const MASCOT_ONCE='assets/planner-mascot-once.gif?v=95';
 const MASCOT_CYCLE_MS=5040;
 let _homeMascotTimer=null,_homeMascotUntil=0,_homeMascotToken=0;
 function mascotHTML(place){
@@ -3869,7 +3935,7 @@ try{history.replaceState({p:0},'');navPush();}catch(e){}
 /* 뒤로가기는 아무 데도 가지 않는다. 되돌아갈 화면을 만들어 두면 시트가 닫히거나
    탭이 넘어가 오히려 헷갈렸다. 상태만 다시 밀어 넣어 앱이 나가지 않게 막는다. */
 window.addEventListener('popstate',()=>{navPush();});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=94').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js?v=95').catch(()=>{});
 </script>
 </body>
 </html>
